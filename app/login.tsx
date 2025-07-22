@@ -4,7 +4,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { EyeOff, Eye } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
-import Logo from '../components/Logo';
 import { router } from 'expo-router';
 
 export default function LoginScreen() {
@@ -50,7 +49,11 @@ export default function LoginScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View style={styles.loginCard}>
-              <Logo size="large" />
+              <Image
+                source={require('../assets/images/App Icon Vector.png')}
+                style={styles.appIcon}
+                resizeMode="contain"
+              />
               
               <Text style={styles.title}>Connecter vous à votre compte</Text>
               <Text style={styles.subtitle}>
@@ -209,5 +212,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.primary,
     fontWeight: '600',
+  },
+  appIcon: {
+    width: 80,
+    height: 80,
+    marginBottom: 24,
   },
 });
