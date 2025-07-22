@@ -24,6 +24,8 @@ export default function AccountSettingsScreen() {
           onPress: async () => {
             try {
               await logout();
+              // Rediriger immédiatement vers la page de connexion après déconnexion
+              router.replace('/login');
             } catch (error) {
               console.error('Erreur lors de la déconnexion:', error);
               Alert.alert('Erreur', 'Impossible de se déconnecter');
