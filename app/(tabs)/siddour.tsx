@@ -60,7 +60,7 @@ export default function SiddourScreen() {
             <View style={styles.bookContainer}>
               <View style={styles.bookCard}>
                 <Image
-                  source={require('../../assets/images/siddourIllu.png')}
+                  source={require('../../assets/images/siddourIllu.jpg')}
                   style={styles.bookImage}
                   resizeMode="cover"
                 />

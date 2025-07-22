@@ -165,7 +165,7 @@ export default function HomeScreen() {
             <View style={styles.essentialsContainer}>
               <TouchableOpacity style={styles.essentialCard} onPress={navigateToSiddour}>
                 <Image
-                  source={require('../../assets/images/siddourIllu.png')}
+                  source={require('../../assets/images/siddourIllu.jpg')}
                   style={styles.essentialImage}
                 />
               </TouchableOpacity>
