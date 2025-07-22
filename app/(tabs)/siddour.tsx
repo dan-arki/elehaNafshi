@@ -53,7 +53,7 @@ export default function SiddourScreen() {
         subcategory.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         subcategory.parentChapterName.toLowerCase().includes(searchQuery.toLowerCase())
       )
-      .slice(0, 5); // Limiter à 5 suggestions
+      .slice(0, 10); // Augmenter à 10 suggestions pour tester le scroll
   }, [searchQuery, allSubcategories]);
 
   const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string; parentChapterName: string}) => {
@@ -155,22 +155,29 @@ export default function SiddourScreen() {
             {/* Search Suggestions */}
             {showSuggestions && filteredSubcategories.length > 0 && (
               <View style={styles.suggestionsContainer}>
-                {filteredSubcategories.map((subcategory) => (
-                  <TouchableOpacity
-                    key={subcategory.id}
-                    style={styles.suggestionItem}
-                    onPressIn={handleSuggestionPressIn}
-                    onPressOut={handleSuggestionPressOut}
-                    onPress={() => handleSelectSuggestion(subcategory)}
-                    activeOpacity={0.7}
-                  >
-                    <Search size={16} color={Colors.text.muted} />
-                    <View style={styles.suggestionTextContainer}>
-                      <Text style={styles.suggestionText}>{subcategory.title}</Text>
-                      <Text style={styles.suggestionParentText}>dans {subcategory.parentChapterName}</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
+                <ScrollView 
+                  style={styles.suggestionsScrollView}
+                  showsVerticalScrollIndicator={true}
+                  keyboardShouldPersistTaps="handled"
+                  nestedScrollEnabled={true}
+                >
+                  {filteredSubcategories.map((subcategory) => (
+                    <TouchableOpacity
+                      key={subcategory.id}
+                      style={styles.suggestionItem}
+                      onPressIn={handleSuggestionPressIn}
+                      onPressOut={handleSuggestionPressOut}
+                      onPress={() => handleSelectSuggestion(subcategory)}
+                      activeOpacity={0.7}
+                    >
+                      <Search size={16} color={Colors.text.muted} />
+                      <View style={styles.suggestionTextContainer}>
+                        <Text style={styles.suggestionText}>{subcategory.title}</Text>
+                        <Text style={styles.suggestionParentText}>dans {subcategory.parentChapterName}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
               </View>
             )}
 
@@ -295,6 +302,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     maxHeight: 200,
+    overflow: 'hidden',
+  },
+  suggestionsScrollView: {
+    maxHeight: 200,
   },
   suggestionItem: {
     flexDirection: 'row',
@@ -303,6 +314,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.background,
+    minHeight: 56,
   },
   suggestionTextContainer: {
     flex: 1,
