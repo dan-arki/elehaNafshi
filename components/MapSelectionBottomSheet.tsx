@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Alert, Linking } from 'react-native';
+import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Alert, Linking, Image } from 'react-native';
 import { X, Navigation, MapPin } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 
@@ -13,7 +13,7 @@ interface MapSelectionBottomSheetProps {
 
 interface MapApp {
   name: string;
-  icon: React.ReactNode;
+  logo: any;
   url: string;
   fallbackUrl?: string;
 }
@@ -29,19 +29,19 @@ export default function MapSelectionBottomSheet({
   const mapApps: MapApp[] = [
     {
       name: 'Waze',
-      icon: <Navigation size={24} color={Colors.primary} />,
+      logo: require('../assets/images/wazeLogo.jpg'),
       url: `waze://?ll=${latitude},${longitude}&navigate=yes`,
       fallbackUrl: `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`
     },
     {
       name: 'Apple Maps',
-      icon: <MapPin size={24} color={Colors.primary} />,
+      logo: require('../assets/images/applePlans.png'),
       url: `maps://?q=${latitude},${longitude}`,
       fallbackUrl: `https://maps.apple.com/?q=${latitude},${longitude}`
     },
     {
       name: 'Google Maps',
-      icon: <MapPin size={24} color={Colors.primary} />,
+      logo: require('../assets/images/maps.jpg'),
       url: `comgooglemaps://?q=${latitude},${longitude}`,
       fallbackUrl: `https://maps.google.com/?q=${latitude},${longitude}`
     }
@@ -117,7 +117,11 @@ export default function MapSelectionBottomSheet({
                   activeOpacity={0.7}
                 >
                   <View style={styles.mapAppIcon}>
-                    {mapApp.icon}
+                    <Image 
+                      source={mapApp.logo}
+                      style={styles.logoImage}
+                      resizeMode="contain"
+                    />
                   </View>
                   <Text style={styles.mapAppName}>{mapApp.name}</Text>
                   <View style={styles.mapAppArrow}>
@@ -236,6 +240,10 @@ const styles = StyleSheet.create({
   },
   mapAppArrow: {
     opacity: 0.5,
+  },
+  logoImage: {
+    width: 28,
+    height: 28,
   },
   infoBox: {
     backgroundColor: '#F3E8FF',
