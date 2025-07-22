@@ -15,7 +15,7 @@ export default function HomeScreen() {
   const userGreeting = user?.displayName ? `Bonjour ${user.displayName}` : "Bienvenue";
   
   const [searchQuery, setSearchQuery] = useState('');
-  const [allSubcategories, setAllSubcategories] = useState<{id: string; title: string; chapterId: string}[]>([]);
+  const [allSubcategories, setAllSubcategories] = useState<{id: string; title: string; chapterId: string; parentChapterName: string}[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const isTappingSuggestion = useRef(false);
 
@@ -63,12 +63,13 @@ export default function HomeScreen() {
     
     return allSubcategories
       .filter(subcategory => 
-        subcategory.title.toLowerCase().includes(searchQuery.toLowerCase())
+        subcategory.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        subcategory.parentChapterName.toLowerCase().includes(searchQuery.toLowerCase())
       )
-      .slice(0, 5); // Limiter à 5 suggestions
+      .slice(0, 10); // Augmenter à 10 suggestions pour démontrer le scroll
   }, [searchQuery, allSubcategories]);
 
-  const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string}) => {
+  const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string; parentChapterName: string}) => {
     console.log('🔍 [DEBUG] handleSelectSuggestion: Starting navigation to:', subcategory);
     
     // Hide keyboard immediately
@@ -157,13 +158,15 @@ export default function HomeScreen() {
                   <Text style={styles.username}>{String(userGreeting)}</Text>
                 </View>
               </View>
-              
-              {/* Search Bar */}
-              <View style={styles.searchBarContainer}>
-                <Search size={16} color={Colors.text.muted} />
+            </View>
+
+            {/* Enhanced Search Bar */}
+            <View style={styles.searchContainer}>
+              <View style={styles.searchInputContainer}>
+                <Search size={20} color={Colors.text.muted} style={styles.searchIcon} />
                 <TextInput
                   style={styles.searchInput}
-                  placeholder="Chercher une prière"
+                  placeholder="Rechercher une prière..."
                   placeholderTextColor={Colors.text.muted}
                   value={searchQuery}
                   onChangeText={handleSearchQueryChange}
@@ -173,25 +176,34 @@ export default function HomeScreen() {
               </View>
             </View>
 
-            {/* Search Suggestions */}
+            {/* Enhanced Search Suggestions */}
             {showSuggestions && filteredSubcategories.length > 0 && (
               <View style={styles.suggestionsContainer}>
-                {filteredSubcategories.map((subcategory) => (
-                  <TouchableOpacity
-                    key={subcategory.id}
-                    style={styles.suggestionItem}
-                    onPressIn={handleSuggestionPressIn}
-                    onPressOut={handleSuggestionPressOut}
-                    onPress={() => handleSelectSuggestion(subcategory)}
-                    activeOpacity={0.7}
-                  >
-                    <Search size={16} color={Colors.text.muted} />
-                    <Text style={styles.suggestionText}>{subcategory.title}</Text>
-                  </TouchableOpacity>
-                ))}
+                <ScrollView 
+                  style={styles.suggestionsScrollView}
+                  showsVerticalScrollIndicator={true}
+                  keyboardShouldPersistTaps="handled"
+                  nestedScrollEnabled={true}
+                >
+                  {filteredSubcategories.map((subcategory) => (
+                    <TouchableOpacity
+                      key={subcategory.id}
+                      style={styles.suggestionItem}
+                      onPressIn={handleSuggestionPressIn}
+                      onPressOut={handleSuggestionPressOut}
+                      onPress={() => handleSelectSuggestion(subcategory)}
+                      activeOpacity={0.7}
+                    >
+                      <Search size={16} color={Colors.text.muted} />
+                      <View style={styles.suggestionTextContainer}>
+                        <Text style={styles.suggestionText}>{subcategory.title}</Text>
+                        <Text style={styles.suggestionParentText}>dans {subcategory.parentChapterName}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
               </View>
             )}
-
             {/* Hebrew Date */}
             <Text style={styles.hebrewDate}>{hebrewDate}</Text>
 
@@ -264,12 +276,13 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     marginBottom: 20,
   },
   profileContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
   },
   profileImage: {
     width: 40,
@@ -286,38 +299,46 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.text.secondary,
   },
-  searchBarContainer: {
+  searchContainer: {
+    paddingVertical: 16,
+  },
+  searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.background,
-    borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    elevation: 1,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
-    minWidth: 140,
-    maxWidth: 180,
+    shadowRadius: 3,
+  },
+  searchIcon: {
+    marginRight: 12,
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.text.primary,
-    paddingVertical: 4,
-    marginLeft: 8,
+    paddingVertical: 12,
   },
   suggestionsContainer: {
-    backgroundColor: Colors.white,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)', // Semi-transparent white for blur effect
     borderRadius: 12,
-    marginTop: 8,
     marginBottom: 16,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.15, // Slightly stronger shadow for better separation
+    shadowRadius: 8, // Larger shadow radius for softer appearance
+    maxHeight: 200,
+    overflow: 'hidden',
+    // Blur effect simulation with enhanced styling
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.1)', // Subtle purple border matching primary color
+  },
+  suggestionsScrollView: {
     maxHeight: 200,
   },
   suggestionItem: {
@@ -325,13 +346,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.background,
+    borderBottomWidth: 0.5, // Thinner border for subtle separation
+    borderBottomColor: 'rgba(139, 92, 246, 0.15)', // Light purple separator
+    minHeight: 56,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background for each item
+    // Add subtle hover effect simulation
+    borderRadius: 0, // Keep rectangular for list items
+  },
+  suggestionTextContainer: {
+    flex: 1,
+    marginLeft: 8,
   },
   suggestionText: {
     fontSize: 14,
     color: Colors.text.primary,
-    marginLeft: 8,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  suggestionParentText: {
+    fontSize: 12,
+    color: Colors.primary,
+    fontStyle: 'italic',
+    opacity: 0.8,
   },
   hebrewDate: {
     fontSize: 16,
