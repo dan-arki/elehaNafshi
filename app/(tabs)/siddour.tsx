@@ -25,7 +25,6 @@ export default function SiddourScreen() {
       const chaptersData = await getChapters();
       setChapters(chaptersData);
     } catch (error) {
-      console.error('Erreur lors du chargement des chapitres:', error);
       // En cas d'erreur, afficher un message à l'utilisateur mais ne pas bloquer l'interface
       setChapters([]);
     } finally {
