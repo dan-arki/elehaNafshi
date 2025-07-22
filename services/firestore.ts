@@ -206,6 +206,41 @@ export const checkIfFavorite = async (userId: string, prayerId: string): Promise
   }
 };
 
+// Get favorite prayer by document ID
+export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | null> => {
+  try {
+    console.log('🔍 [firestore] getFavoritePrayerByDocId: Starting for docId:', docId);
+    const favoriteRef = doc(db, 'fav_siddour_sub_categories', docId);
+    const docSnapshot = await getDoc(favoriteRef);
+    
+    if (docSnapshot.exists()) {
+      const data = docSnapshot.data();
+      const favoritePrayer = {
+        id: docSnapshot.id,
+        ...data,
+        isFavorite: true,
+        createdAt: data.addedAt?.toDate() || new Date(),
+      } as Prayer;
+      console.log('✅ [firestore] getFavoritePrayerByDocId: Success, found prayer:', favoritePrayer.title);
+      return favoritePrayer;
+    }
+    
+    console.warn('⚠️ [firestore] getFavoritePrayerByDocId: Prayer not found for docId:', docId);
+    return null;
+  } catch (error: any) {
+    console.error('❌ [firestore] getFavoritePrayerByDocId: Error:', error);
+    if (error.code === 'permission-denied') {
+      console.warn('Permissions Firestore non configurées pour getFavoritePrayerByDocId');
+      return null;
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour null');
+      return null;
+    }
+    throw error;
+  }
+};
+
 // Chapters and Prayers (read-only for now)
 export const getChapters = async (): Promise<PrayerChapter[]> => {
   try {
