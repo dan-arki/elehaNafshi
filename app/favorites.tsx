@@ -74,7 +74,15 @@ export default function FavoritesScreen() {
   }, [favoritePrayers, selectedCategory, searchQuery]);
 
   const navigateToPrayer = (prayerId: string) => {
-    router.push(`/prayer/${prayerId}`);
+    router.push({
+      pathname: `/prayer/${prayer.id}`,
+      params: {
+        category: prayer.category || 'autres',
+        originalId: prayer.originalId || prayer.id,
+        chapterId: prayer.chapterId || '',
+        title: prayer.title || ''
+      }
+    });
   };
 
   return (
@@ -154,7 +162,7 @@ export default function FavoritesScreen() {
                   <TouchableOpacity
                     key={prayer.id}
                     style={styles.prayerItem}
-                    onPress={() => navigateToPrayer(prayer.id)}
+                    onPress={() => navigateToPrayer(prayer)}
                   >
                     <View style={styles.prayerContent}>
                       <View style={styles.prayerHeader}>
