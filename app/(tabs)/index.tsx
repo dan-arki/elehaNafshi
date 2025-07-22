@@ -123,9 +123,6 @@ export default function HomeScreen() {
     setSearchQuery(text);
   };
 
-  const navigateToKevarim = () => {
-    router.push(`/chapter/${subcategory.chapterId}?subcategoryId=${subcategory.id}`);
-  };
 
   const navigateToKevarim = () => {
     router.push('/kevarim');
