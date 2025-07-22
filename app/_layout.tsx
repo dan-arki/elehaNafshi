@@ -87,7 +87,8 @@ function RootLayoutNav() {
           <Stack.Screen 
             name="login" 
             options={{ 
-              gestureEnabled: false 
+              gestureEnabled: false,
+              animation: 'none'
             }} 
           />
           <Stack.Screen name="register" />
