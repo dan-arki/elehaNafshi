@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { EyeOff, Eye, ChevronLeft } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
@@ -47,110 +47,119 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={{flex: 1}}>
-          <ScrollView 
-            style={styles.scrollView}
-            contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            {/* Back Button */}
-            <TouchableOpacity style={styles.backButton} onPress={handleBackToLogin}>
-              <ChevronLeft size={24} color={Colors.text.primary} />
-            </TouchableOpacity>
-
-            <View style={styles.registerCard}>
-              <Image
-                source={require('../assets/images/App Icon Vector.png')}
-                style={styles.appIcon}
-                resizeMode="contain"
-              />
-              
-              <Text style={styles.title}>Créer votre compte</Text>
-              <Text style={styles.subtitle}>
-                Entrez vos informations pour créer un nouveau compte
-              </Text>
-
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Entrer votre email"
-                  placeholderTextColor={Colors.text.muted}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
-
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Entrer votre mot de passe"
-                  placeholderTextColor={Colors.text.muted}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                />
-                <TouchableOpacity
-                  style={styles.eyeIcon}
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <Eye size={20} color={Colors.text.muted} />
-                  ) : (
-                    <EyeOff size={20} color={Colors.text.muted} />
-                  )}
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Confirmer votre mot de passe"
-                  placeholderTextColor={Colors.text.muted}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry={!showConfirmPassword}
-                />
-                <TouchableOpacity
-                  style={styles.eyeIcon}
-                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                >
-                  {showConfirmPassword ? (
-                    <Eye size={20} color={Colors.text.muted} />
-                  ) : (
-                    <EyeOff size={20} color={Colors.text.muted} />
-                  )}
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                <Text style={styles.registerButtonText}>
-                  {loading ? 'Création...' : 'Créer le compte'}
-                </Text>
+    <ImageBackground
+      source={require('../assets/images/bannerViolet.jpg')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={{flex: 1}}>
+            <ScrollView 
+              style={styles.scrollView}
+              contentContainerStyle={styles.content}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              {/* Back Button */}
+              <TouchableOpacity style={styles.backButton} onPress={handleBackToLogin}>
+                <ChevronLeft size={24} color={Colors.white} />
               </TouchableOpacity>
 
-              <View style={styles.loginContainer}>
-                <Text style={styles.loginText}>Vous avez déjà un compte ? </Text>
-                <TouchableOpacity onPress={handleBackToLogin}>
-                  <Text style={styles.loginLink}>Se connecter</Text>
+              <View style={styles.registerCard}>
+                <Image
+                  source={require('../assets/images/App Icon Vector.png')}
+                  style={styles.appIcon}
+                  resizeMode="contain"
+                />
+                
+                <Text style={styles.title}>Créer votre compte</Text>
+                <Text style={styles.subtitle}>
+                  Entrez vos informations pour créer un nouveau compte
+                </Text>
+
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Entrer votre email"
+                    placeholderTextColor={Colors.text.muted}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.passwordInput}
+                    placeholder="Entrer votre mot de passe"
+                    placeholderTextColor={Colors.text.muted}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity
+                    style={styles.eyeIcon}
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <Eye size={20} color={Colors.text.muted} />
+                    ) : (
+                      <EyeOff size={20} color={Colors.text.muted} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.passwordInput}
+                    placeholder="Confirmer votre mot de passe"
+                    placeholderTextColor={Colors.text.muted}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={!showConfirmPassword}
+                  />
+                  <TouchableOpacity
+                    style={styles.eyeIcon}
+                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <Eye size={20} color={Colors.text.muted} />
+                    ) : (
+                      <EyeOff size={20} color={Colors.text.muted} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+                  <Text style={styles.registerButtonText}>
+                    {loading ? 'Création...' : 'Créer le compte'}
+                  </Text>
                 </TouchableOpacity>
+
+                <View style={styles.loginContainer}>
+                  <Text style={styles.loginText}>Vous avez déjà un compte ? </Text>
+                  <TouchableOpacity onPress={handleBackToLogin}>
+                    <Text style={styles.loginLink}>Se connecter</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </ScrollView>
-        </View>
-      </SafeAreaView>
-    </View>
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent overlay
   },
   safeArea: {
     flex: 1,

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView, Image, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { EyeOff, Eye } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
@@ -39,88 +39,97 @@ export default function LoginScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={{flex: 1}}>
-          <ScrollView 
-            style={styles.scrollView}
-            contentContainerStyle={styles.content}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            <View style={styles.loginCard}>
-              <Image
-                source={require('../assets/images/App Icon Vector.png')}
-                style={styles.appIcon}
-                resizeMode="contain"
-              />
-              
-              <Text style={styles.title}>Connecter vous à votre compte</Text>
-              <Text style={styles.subtitle}>
-                Entrer votre mail et mot de passe pour vous connecter
-              </Text>
-
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Entrer votre email"
-                  placeholderTextColor={Colors.text.muted}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
+    <ImageBackground
+      source={require('../assets/images/bannerViolet.jpg')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
+        <SafeAreaView style={styles.safeArea}>
+          <View style={{flex: 1}}>
+            <ScrollView 
+              style={styles.scrollView}
+              contentContainerStyle={styles.content}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              <View style={styles.loginCard}>
+                <Image
+                  source={require('../assets/images/App Icon Vector.png')}
+                  style={styles.appIcon}
+                  resizeMode="contain"
                 />
-              </View>
-
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Entrer votre mot de passe"
-                  placeholderTextColor={Colors.text.muted}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                />
-                <TouchableOpacity
-                  style={styles.eyeIcon}
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <Eye size={20} color={Colors.text.muted} />
-                  ) : (
-                    <EyeOff size={20} color={Colors.text.muted} />
-                  )}
-                </TouchableOpacity>
-              </View>
-
-              <TouchableOpacity onPress={handleForgotPassword}>
-                <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                <Text style={styles.loginButtonText}>
-                  {loading ? 'Connexion...' : 'Se connecter'}
+                
+                <Text style={styles.title}>Connecter vous à votre compte</Text>
+                <Text style={styles.subtitle}>
+                  Entrer votre mail et mot de passe pour vous connecter
                 </Text>
-              </TouchableOpacity>
 
-              <View style={styles.signUpContainer}>
-                <Text style={styles.signUpText}>Vous n'avez pas de compte ? </Text>
-                <TouchableOpacity onPress={handleSignUp}>
-                  <Text style={styles.signUpLink}>S'inscrire</Text>
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Entrer votre email"
+                    placeholderTextColor={Colors.text.muted}
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <View style={styles.inputContainer}>
+                  <TextInput
+                    style={styles.passwordInput}
+                    placeholder="Entrer votre mot de passe"
+                    placeholderTextColor={Colors.text.muted}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity
+                    style={styles.eyeIcon}
+                    onPress={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <Eye size={20} color={Colors.text.muted} />
+                    ) : (
+                      <EyeOff size={20} color={Colors.text.muted} />
+                    )}
+                  </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity onPress={handleForgotPassword}>
+                  <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                  <Text style={styles.loginButtonText}>
+                    {loading ? 'Connexion...' : 'Se connecter'}
+                  </Text>
+                </TouchableOpacity>
+
+                <View style={styles.signUpContainer}>
+                  <Text style={styles.signUpText}>Vous n'avez pas de compte ? </Text>
+                  <TouchableOpacity onPress={handleSignUp}>
+                    <Text style={styles.signUpLink}>S'inscrire</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </ScrollView>
-        </View>
-      </SafeAreaView>
-    </View>
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Semi-transparent overlay
   },
   safeArea: {
     flex: 1,
