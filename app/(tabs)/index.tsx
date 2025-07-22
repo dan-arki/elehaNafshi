@@ -12,7 +12,7 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const [hebrewDate, setHebrewDate] = useState<string>("Chargement...");
   const userName = user?.displayName || user?.email?.split('@')[0] || "Shalom 👋";
-  const userGreeting = user?.displayName ? `Bonjour ${user.displayName}` : "Bienvenue";
+  const userGreeting = user?.displayName ? `Bonjour ${user.displayName}` : "Shalom 👋";
   
   const [searchQuery, setSearchQuery] = useState('');
   const [allSubcategories, setAllSubcategories] = useState<{id: string; title: string; chapterId: string; parentChapterName: string}[]>([]);
