@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronLeft, Info, ChevronRight } from 'lucide-react-native';
+import { ChevronLeft, Info, ChevronRight, Search } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
-import { getChapters } from '../../services/firestore';
+import { getChapters, getAllSiddourSubcategoriesForSearch } from '../../services/firestore';
 import { PrayerChapter } from '../../types';
 import PrayerInfoBottomSheet from '../../components/PrayerInfoBottomSheet';
 import { router } from 'expo-router';
@@ -13,9 +13,14 @@ export default function SiddourScreen() {
   const [showPrayerInfo, setShowPrayerInfo] = useState(false);
   const [chapters, setChapters] = useState<PrayerChapter[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [allSubcategories, setAllSubcategories] = useState<{id: string; title: string; chapterId: string}[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const isTappingSuggestion = React.useRef(false);
 
   useEffect(() => {
     loadChapters();
+    loadSubcategoriesForSearch();
   }, []);
 
   const loadChapters = async () => {
@@ -29,6 +34,80 @@ export default function SiddourScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadSubcategoriesForSearch = async () => {
+    try {
+      const subcategories = await getAllSiddourSubcategoriesForSearch();
+      setAllSubcategories(subcategories);
+    } catch (error) {
+      console.error('Erreur lors du chargement des sous-catégories pour la recherche:', error);
+    }
+  };
+
+  const filteredSubcategories = React.useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    
+    return allSubcategories
+      .filter(subcategory => 
+        subcategory.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .slice(0, 5); // Limiter à 5 suggestions
+  }, [searchQuery, allSubcategories]);
+
+  const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string}) => {
+    console.log('🔍 [DEBUG] handleSelectSuggestion: Starting navigation to:', subcategory);
+    
+    // Hide keyboard immediately
+    Keyboard.dismiss();
+    
+    // Hide suggestions immediately
+    setShowSuggestions(false);
+    setSearchQuery('');
+    
+    // Reset the tapping state
+    isTappingSuggestion.current = false;
+    
+    // Navigate with a small delay to ensure state updates are processed
+    setTimeout(() => {
+      console.log('🔍 [DEBUG] handleSelectSuggestion: Executing navigation');
+      router.push(`/chapter/${subcategory.chapterId}?subcategoryId=${subcategory.id}`);
+    }, 50);
+  };
+
+  const handleSuggestionPressIn = () => {
+    console.log('🔍 [DEBUG] handleSuggestionPressIn: Setting isTappingSuggestion to true');
+    isTappingSuggestion.current = true;
+  };
+
+  const handleSuggestionPressOut = () => {
+    console.log('🔍 [DEBUG] handleSuggestionPressOut: Resetting isTappingSuggestion after delay');
+    // Reset after a short delay to allow onPress to complete
+    setTimeout(() => {
+      isTappingSuggestion.current = false;
+    }, 100);
+  };
+
+  const handleSearchInputBlur = () => {
+    console.log('🔍 [DEBUG] handleSearchInputBlur: onBlur triggered, isTappingSuggestion:', isTappingSuggestion.current);
+    
+    // Only hide suggestions if we're not currently tapping a suggestion
+    if (!isTappingSuggestion.current) {
+      setTimeout(() => {
+        console.log('🔍 [DEBUG] handleSearchInputBlur: Hiding suggestions after delay');
+        setShowSuggestions(false);
+      }, 200);
+    }
+  };
+
+  const handleSearchInputFocus = () => {
+    console.log('🔍 [DEBUG] handleSearchInputFocus: onFocus triggered');
+    setShowSuggestions(true);
+  };
+
+  const handleSearchQueryChange = (text: string) => {
+    console.log('🔍 [DEBUG] handleSearchQueryChange: Search query changed to:', text);
+    setSearchQuery(text);
   };
 
   const navigateToChapter = (chapterId: string) => {
@@ -54,7 +133,43 @@ export default function SiddourScreen() {
             style={styles.scrollView} 
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
+            {/* Search Bar */}
+            <View style={styles.searchContainer}>
+              <View style={styles.searchInputContainer}>
+                <Search size={20} color={Colors.text.muted} style={styles.searchIcon} />
+                <TextInput
+                  style={styles.searchInput}
+                  placeholder="Rechercher une prière..."
+                  placeholderTextColor={Colors.text.muted}
+                  value={searchQuery}
+                  onChangeText={handleSearchQueryChange}
+                  onFocus={handleSearchInputFocus}
+                  onBlur={handleSearchInputBlur}
+                />
+              </View>
+            </View>
+
+            {/* Search Suggestions */}
+            {showSuggestions && filteredSubcategories.length > 0 && (
+              <View style={styles.suggestionsContainer}>
+                {filteredSubcategories.map((subcategory) => (
+                  <TouchableOpacity
+                    key={subcategory.id}
+                    style={styles.suggestionItem}
+                    onPressIn={handleSuggestionPressIn}
+                    onPressOut={handleSuggestionPressOut}
+                    onPress={() => handleSelectSuggestion(subcategory)}
+                    activeOpacity={0.7}
+                  >
+                    <Search size={16} color={Colors.text.muted} />
+                    <Text style={styles.suggestionText}>{subcategory.title}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
             {/* Siddour Book Image */}
             <View style={styles.bookContainer}>
               <View style={styles.bookCard}>
@@ -141,6 +256,54 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     paddingHorizontal: 20,
     paddingBottom: 120, // Espace pour la navigation du bas
+  },
+  searchContainer: {
+    paddingVertical: 16,
+  },
+  searchInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.background,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  searchIcon: {
+    marginRight: 12,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: Colors.text.primary,
+    paddingVertical: 12,
+  },
+  suggestionsContainer: {
+    backgroundColor: Colors.white,
+    borderRadius: 12,
+    marginBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    maxHeight: 200,
+  },
+  suggestionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.background,
+  },
+  suggestionText: {
+    fontSize: 14,
+    color: Colors.text.primary,
+    marginLeft: 8,
   },
   bookContainer: {
     alignItems: 'center',
