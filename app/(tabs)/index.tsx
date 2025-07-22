@@ -49,6 +49,7 @@ export default function HomeScreen() {
       setHebrewDate("21 Tamuz 5785"); // Fallback en cas d'erreur
     }
   };
+
   const loadSubcategoriesForSearch = async () => {
     try {
       const subcategories = await getAllSiddourSubcategoriesForSearch();
@@ -158,6 +159,17 @@ export default function HomeScreen() {
                   <Text style={styles.username}>{String(userGreeting)}</Text>
                 </View>
               </View>
+              
+              {/* Hebrew Date in Header */}
+              <View style={styles.hebrewDateContainer}>
+                <View style={styles.hebrewDateIcon}>
+                  <Text style={styles.hebrewDateIconText}>📅</Text>
+                </View>
+                <View style={styles.hebrewDateTextContainer}>
+                  <Text style={styles.hebrewDateLabel}>Date hébraïque</Text>
+                  <Text style={styles.hebrewDateText}>{hebrewDate}</Text>
+                </View>
+              </View>
             </View>
 
             {/* Enhanced Search Bar */}
@@ -204,8 +216,6 @@ export default function HomeScreen() {
                 </ScrollView>
               </View>
             )}
-            {/* Hebrew Date */}
-            <Text style={styles.hebrewDate}>{hebrewDate}</Text>
 
             {/* Kevarim Section */}
             <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
@@ -276,7 +286,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     marginBottom: 20,
   },
   profileContainer: {
@@ -298,6 +308,47 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 14,
     color: Colors.text.secondary,
+  },
+  hebrewDateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.background,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  hebrewDateIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+  hebrewDateIconText: {
+    fontSize: 16,
+  },
+  hebrewDateTextContainer: {
+    alignItems: 'flex-end',
+  },
+  hebrewDateLabel: {
+    fontSize: 10,
+    color: Colors.text.muted,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  hebrewDateText: {
+    fontSize: 12,
+    color: Colors.text.primary,
+    fontWeight: '600',
+    marginTop: 1,
   },
   searchContainer: {
     paddingVertical: 16,
@@ -368,11 +419,6 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontStyle: 'italic',
     opacity: 0.8,
-  },
-  hebrewDate: {
-    fontSize: 16,
-    color: Colors.text.primary,
-    marginBottom: 24,
   },
   kevarimSection: {
     flexDirection: 'row',
