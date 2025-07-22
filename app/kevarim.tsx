@@ -8,6 +8,7 @@ import { router } from 'expo-router';
 import * as Location from 'expo-location';
 import { getSiddourSubcategoriesWithPosition, addToFavorites, removeFromFavorites, getFavoritePrayers } from '../services/firestore';
 import { Prayer } from '../types';
+import MapSelectionBottomSheet from '../components/MapSelectionBottomSheet';
 
 interface KeverLocation {
   id: string;
@@ -27,6 +28,9 @@ export default function KevarimScreen() {
   const [locationPermission, setLocationPermission] = useState<boolean>(false);
   const [closestKever, setClosestKever] = useState<KeverLocation | null>(null);
   const [favoriteKeverIds, setFavoriteKeverIds] = useState<Set<string>>(new Set());
+
+  const [showMapSelection, setShowMapSelection] = useState(false);
+  const [selectedKeverForMap, setSelectedKeverForMap] = useState<KeverLocation | null>(null);
 
   useEffect(() => {
     requestLocationPermission();
@@ -202,9 +206,9 @@ export default function KevarimScreen() {
     return `${distance}km`;
   };
 
-  const openInMaps = (kever: KeverLocation) => {
-    const url = `https://maps.google.com/?q=${kever.position.latitude},${kever.position.longitude}`;
-    Linking.openURL(url);
+  const handleOpenMaps = (kever: KeverLocation) => {
+    setSelectedKeverForMap(kever);
+    setShowMapSelection(true);
   };
 
   const navigateToKever = (keverId: string) => {
@@ -337,7 +341,9 @@ export default function KevarimScreen() {
                           fill={favoriteKeverIds.has(kever.id) ? Colors.error : 'transparent'}
                         />
                       </TouchableOpacity>
-                      <Send size={20} color={Colors.text.muted} />
+                      <TouchableOpacity onPress={() => handleOpenMaps(kever)}>
+                        <Send size={20} color={Colors.text.muted} />
+                      </TouchableOpacity>
                     </View>
                   </TouchableOpacity>
                 ))}
@@ -346,6 +352,19 @@ export default function KevarimScreen() {
           </ScrollView>
         </View>
       </SafeAreaView>
+
+      {selectedKeverForMap && (
+        <MapSelectionBottomSheet
+          visible={showMapSelection}
+          onClose={() => {
+            setShowMapSelection(false);
+            setSelectedKeverForMap(null);
+          }}
+          latitude={selectedKeverForMap.position.latitude}
+          longitude={selectedKeverForMap.position.longitude}
+          locationName={selectedKeverForMap.name}
+        />
+      )}
     </View>
   );
 }

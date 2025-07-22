@@ -9,6 +9,7 @@ import { getSiddourSubcategoryById, getSiddourBlocks, addToFavorites, removeFrom
 import { Prayer, SiddourSubcategory, SiddourBlockData } from '../../types';
 import SettingsBottomSheet from '../../components/SettingsBottomSheet';
 import SymbolsInfoBottomSheet from '../../components/SymbolsInfoBottomSheet';
+import MapSelectionBottomSheet from '../../components/MapSelectionBottomSheet';
 import { DisplaySettings } from '../../types';
 import { useDisplaySettings } from '../../contexts/DisplaySettingsContext';
 
@@ -30,6 +31,7 @@ export default function KeverScreen() {
   const [showSymbolsInfo, setShowSymbolsInfo] = useState(false);
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showMapSelection, setShowMapSelection] = useState(false);
   
   useEffect(() => {
     loadKeverData();
@@ -175,7 +177,7 @@ export default function KeverScreen() {
   };
 
   const openInMaps = () => {
-    // Implementation for opening in maps
+    setShowMapSelection(true);
   };
 
   if (loading) {
@@ -444,6 +446,16 @@ export default function KeverScreen() {
         visible={showSymbolsInfo}
         onClose={() => setShowSymbolsInfo(false)}
       />
+
+      {subcategory && (
+        <MapSelectionBottomSheet
+          visible={showMapSelection}
+          onClose={() => setShowMapSelection(false)}
+          latitude={32.9717} // Default coordinates - you'll need to get actual coordinates from subcategory data
+          longitude={35.4439}
+          locationName={subcategory.title}
+        />
+      )}
     </SafeAreaView>
   );
 }
