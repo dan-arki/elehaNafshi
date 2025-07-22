@@ -48,20 +48,16 @@ export default function ChapterScreen() {
     if (!id) return;
     
     try {
-      console.log('🚀 [DEBUG] loadChapterData: Starting to load chapter data for ID:', id);
       setLoading(true);
       const chapterData = await getChapterById(id as string);
-      console.log('📖 [DEBUG] loadChapterData: Chapter data received:', chapterData);
       
       const subcategoriesData = await getSiddourSubcategories(id as string);
-      console.log('📂 [DEBUG] loadChapterData: Subcategories data received:', subcategoriesData);
       
       setChapter(chapterData);
       setSubcategories(subcategoriesData);
       
       // Charger les blocs de la première sous-catégorie si elle existe
       if (subcategoriesData.length > 0) {
-        console.log('🎯 [DEBUG] loadChapterData: Loading blocks for first subcategory:', subcategoriesData[0]);
         
         // Si un subcategoryId est fourni, trouver son index
         let initialIndex = 0;
@@ -75,7 +71,7 @@ export default function ChapterScreen() {
         setSelectedSubcategoryIndex(initialIndex);
         await loadBlocksForSubcategory(subcategoriesData[initialIndex].id);
       } else {
-        console.warn('⚠️ [DEBUG] loadChapterData: No subcategories found for chapter ID:', id);
+
       }
     } catch (error) {
       console.error('❌ [DEBUG] loadChapterData: Error loading chapter data:', error);
