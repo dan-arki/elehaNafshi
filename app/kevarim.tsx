@@ -6,7 +6,6 @@ import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
-import AnimatedScreenWrapper from '../components/AnimatedScreenWrapper';
 import { getSiddourSubcategoriesWithPosition, addToFavorites, removeFromFavorites, getFavoritePrayers } from '../services/firestore';
 import { Prayer } from '../types';
 
@@ -238,7 +237,7 @@ export default function KevarimScreen() {
           <View style={styles.headerSpacer} />
         </View>
 
-        <AnimatedScreenWrapper animationType="slideUp" duration={600} style={styles.flex}>
+        <View style={{flex: 1}}>
           <ScrollView 
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
@@ -345,7 +344,7 @@ export default function KevarimScreen() {
               </View>
             )}
           </ScrollView>
-        </AnimatedScreenWrapper>
+        </View>
       </SafeAreaView>
     </View>
   );

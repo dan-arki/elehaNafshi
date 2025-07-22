@@ -5,7 +5,6 @@ import { ChevronLeft, LogOut, Trash2 } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
 import { router } from 'expo-router';
-import AnimatedScreenWrapper from '../components/AnimatedScreenWrapper';
 
 export default function AccountSettingsScreen() {
   const { logout } = useAuth();
@@ -68,7 +67,7 @@ export default function AccountSettingsScreen() {
           <View style={styles.headerSpacer} />
         </View>
 
-        <AnimatedScreenWrapper animationType="slideUp" duration={500} style={styles.flex}>
+        <View style={{flex: 1}}>
           <ScrollView 
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
@@ -100,7 +99,7 @@ export default function AccountSettingsScreen() {
               </Text>
             </View>
           </ScrollView>
-        </AnimatedScreenWrapper>
+        </View>
       </SafeAreaView>
     </View>
   );

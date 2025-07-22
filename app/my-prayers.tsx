@@ -7,7 +7,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { getCustomPrayers, deleteCustomPrayer } from '../services/firestore';
 import { Prayer } from '../types';
 import { router } from 'expo-router';
-import AnimatedScreenWrapper from '../components/AnimatedScreenWrapper';
 import PrayerInstructionsBottomSheet from '../components/PrayerInstructionsBottomSheet';
 
 export default function MyPrayersScreen() {
@@ -98,7 +97,7 @@ export default function MyPrayersScreen() {
           </TouchableOpacity>
         </View>
 
-        <AnimatedScreenWrapper animationType="slideUp" duration={600} style={styles.flex}>
+        <View style={{flex: 1}}>
           <ScrollView 
             style={styles.scrollView} 
             contentContainerStyle={styles.scrollContent}
@@ -177,7 +176,7 @@ export default function MyPrayersScreen() {
               </View>
             )}
           </ScrollView>
-        </AnimatedScreenWrapper>
+        </View>
 
         <PrayerInstructionsBottomSheet
           visible={showInstructions}

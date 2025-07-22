@@ -6,7 +6,6 @@ import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
 import Logo from '../components/Logo';
 import { router } from 'expo-router';
-import AnimatedScreenWrapper from '../components/AnimatedScreenWrapper';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
@@ -51,7 +50,7 @@ export default function RegisterScreen() {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <AnimatedScreenWrapper animationType="scale" duration={800}>
+        <View style={{flex: 1}}>
           <ScrollView 
             style={styles.scrollView}
             contentContainerStyle={styles.content}
@@ -139,7 +138,7 @@ export default function RegisterScreen() {
               </View>
             </View>
           </ScrollView>
-        </AnimatedScreenWrapper>
+        </View>
       </SafeAreaView>
     </View>
   );

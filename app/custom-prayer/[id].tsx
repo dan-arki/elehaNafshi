@@ -7,7 +7,6 @@ import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { getCustomPrayerById } from '../../services/firestore';
 import { Prayer } from '../../types';
-import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 import { HomeIcon } from '../(tabs)/_layout';
 
 export default function CustomPrayerDetailScreen() {
@@ -118,7 +117,7 @@ export default function CustomPrayerDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      <AnimatedScreenWrapper animationType="slideUp" duration={600}>
+      <View style={{flex: 1}}>
         <ScrollView 
           style={styles.scrollView} 
           contentContainerStyle={styles.scrollContent}
@@ -176,7 +175,7 @@ export default function CustomPrayerDetailScreen() {
           )}
           <View style={styles.bottomSpacing} />
         </ScrollView>
-      </AnimatedScreenWrapper>
+      </View>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNavigation}>

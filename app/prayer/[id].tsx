@@ -6,7 +6,6 @@ import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { getFavoritePrayerByDocId } from '../../services/firestore';
 import { Prayer } from '../../types';
-import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 
 export default function PrayerDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -93,11 +92,11 @@ export default function PrayerDetailScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <AnimatedScreenWrapper animationType="fade" duration={300}>
+        <View style={{flex: 1}}>
           <View style={styles.centerContent}>
             <Text style={styles.loadingText}>Chargement de la prière...</Text>
           </View>
-        </AnimatedScreenWrapper>
+        </View>
       </SafeAreaView>
     );
   }
@@ -105,7 +104,7 @@ export default function PrayerDetailScreen() {
   if (error) {
     return (
       <SafeAreaView style={styles.container}>
-        <AnimatedScreenWrapper animationType="fade" duration={300}>
+        <View style={{flex: 1}}>
           <View style={styles.centerContent}>
             <Text style={styles.errorTitle}>Erreur</Text>
             <Text style={styles.errorText}>{error}</Text>
@@ -113,7 +112,7 @@ export default function PrayerDetailScreen() {
               Retour aux favoris
             </Text>
           </View>
-        </AnimatedScreenWrapper>
+        </View>
       </SafeAreaView>
     );
   }

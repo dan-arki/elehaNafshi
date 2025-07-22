@@ -8,7 +8,6 @@ import { getChapters } from '../../services/firestore';
 import { PrayerChapter } from '../../types';
 import PrayerInfoBottomSheet from '../../components/PrayerInfoBottomSheet';
 import { router } from 'expo-router';
-import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 
 export default function SiddourScreen() {
   const [showPrayerInfo, setShowPrayerInfo] = useState(false);
@@ -50,7 +49,7 @@ export default function SiddourScreen() {
           </TouchableOpacity>
         </View>
 
-        <AnimatedScreenWrapper animationType="scale" duration={700} style={styles.flex}>
+        <View style={{flex: 1}}>
           <ScrollView 
             style={styles.scrollView} 
             contentContainerStyle={styles.scrollContent}
@@ -101,7 +100,7 @@ export default function SiddourScreen() {
               )}
             </View>
           </ScrollView>
-        </AnimatedScreenWrapper>
+        </View>
         
         <PrayerInfoBottomSheet 
           visible={showPrayerInfo}

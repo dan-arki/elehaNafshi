@@ -5,7 +5,6 @@ import { Settings, Heart, BookOpen, MapPin, MessageCircle, Share2 } from 'lucide
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
-import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -52,7 +51,7 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <AnimatedScreenWrapper animationType="fade" duration={600} style={styles.flex}>
+        <View style={{flex: 1}}>
           <ScrollView 
             style={styles.scrollView}
             contentContainerStyle={styles.scrollContent}
@@ -128,7 +127,7 @@ export default function ProfileScreen() {
               />
             </TouchableOpacity>
           </ScrollView>
-        </AnimatedScreenWrapper>
+        </View>
       </SafeAreaView>
     </View>
   );

@@ -7,7 +7,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { getFavoritePrayers } from '../services/firestore';
 import { Prayer } from '../types';
 import { router } from 'expo-router';
-import AnimatedScreenWrapper from '../components/AnimatedScreenWrapper';
 
 import { getCategoryDisplayName, getEffectivePrayerCategory } from '../utils/categoryUtils';
 
@@ -131,7 +130,7 @@ export default function FavoritesScreen() {
         </ScrollView>
 
         {/* Prayers List */}
-        <AnimatedScreenWrapper animationType="slideUp" duration={500} delay={100} style={styles.flex}>
+        <View style={{flex: 1}}>
           <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
             {loading ? (
               <View style={styles.emptyContainer}>
@@ -174,7 +173,7 @@ export default function FavoritesScreen() {
               </View>
             )}
           </ScrollView>
-        </AnimatedScreenWrapper>
+        </View>
       </SafeAreaView>
     </View>
   );

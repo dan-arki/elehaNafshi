@@ -11,7 +11,6 @@ import SettingsBottomSheet from '../../components/SettingsBottomSheet';
 import SymbolsInfoBottomSheet from '../../components/SymbolsInfoBottomSheet';
 import { DisplaySettings } from '../../types';
 import { useDisplaySettings } from '../../contexts/DisplaySettingsContext';
-import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 
 import { getCategoryDisplayName } from '../../utils/categoryUtils';
 
@@ -262,7 +261,7 @@ export default function KeverScreen() {
       </View>
 
       {/* Scrollable Content */}
-      <AnimatedScreenWrapper animationType="slideUp" duration={600} style={styles.contentWrapper}>
+      <View style={{flex: 1}}>
         <ScrollView 
           style={styles.scrollView} 
           contentContainerStyle={styles.scrollContent}
@@ -432,7 +431,7 @@ export default function KeverScreen() {
           {/* Bottom spacing for navigation */}
           <View style={styles.bottomSpacing} />
         </ScrollView>
-      </AnimatedScreenWrapper>
+      </View>
 
       <SettingsBottomSheet
         visible={showSettings}

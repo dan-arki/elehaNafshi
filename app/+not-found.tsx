@@ -1,19 +1,18 @@
 import { Link, Stack } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
-import AnimatedScreenWrapper from '../components/AnimatedScreenWrapper';
 
 export default function NotFoundScreen() {
   return (
     <>
       <Stack.Screen options={{ title: 'Oops!' }} />
-      <AnimatedScreenWrapper animationType="fade" duration={500}>
+      <View style={{flex: 1}}>
         <View style={styles.container}>
           <Text style={styles.text}>This screen doesn't exist.</Text>
           <Link href="/" style={styles.link}>
             <Text>Go to home screen!</Text>
           </Link>
         </View>
-      </AnimatedScreenWrapper>
+      </View>
     </>
   );
 }
