@@ -210,11 +210,29 @@ export const checkIfFavorite = async (userId: string, prayerId: string): Promise
 export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | null> => {
   try {
     console.log('🔍 [firestore] getFavoritePrayerByDocId: Starting for docId:', docId);
+    
+    // Vérifier que l'utilisateur est authentifié avant de faire la requête
+    const { currentUser } = await import('firebase/auth');
+    const { auth } = await import('../config/firebase');
+    const user = auth.currentUser;
+    
+    if (!user) {
+      console.warn('⚠️ [firestore] getFavoritePrayerByDocId: User not authenticated');
+      return null;
+    }
+    
     const favoriteRef = doc(db, 'fav_siddour_sub_categories', docId);
     const docSnapshot = await getDoc(favoriteRef);
     
     if (docSnapshot.exists()) {
       const data = docSnapshot.data();
+      
+      // Vérifier que la prière appartient à l'utilisateur connecté
+      if (data.userId && data.userId !== user.uid) {
+        console.warn('⚠️ [firestore] getFavoritePrayerByDocId: Prayer belongs to different user');
+        return null;
+      }
+      
       const favoritePrayer = {
         id: docSnapshot.id,
         ...data,
@@ -229,8 +247,9 @@ export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | 
     return null;
   } catch (error: any) {
     console.error('❌ [firestore] getFavoritePrayerByDocId: Error:', error);
-    if (error.code === 'permission-denied') {
+    if (error.code === 'permission-denied' || error.message?.includes('Missing or insufficient permissions')) {
       console.warn('Permissions Firestore non configurées pour getFavoritePrayerByDocId');
+      console.warn('Vérifiez vos règles de sécurité Firestore pour la collection fav_siddour_sub_categories');
       return null;
     }
     if (error.code === 'unavailable') {
