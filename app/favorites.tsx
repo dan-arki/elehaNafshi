@@ -73,7 +73,7 @@ export default function FavoritesScreen() {
     return filtered;
   }, [favoritePrayers, selectedCategory, searchQuery]);
 
-  const navigateToPrayer = (prayerId: string) => {
+  const navigateToPrayer = (prayer: Prayer) => {
     router.push({
       pathname: `/prayer/${prayer.id}`,
       params: {
