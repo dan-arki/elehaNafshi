@@ -14,7 +14,7 @@ export default function SiddourScreen() {
   const [chapters, setChapters] = useState<PrayerChapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [allSubcategories, setAllSubcategories] = useState<{id: string; title: string; chapterId: string}[]>([]);
+  const [allSubcategories, setAllSubcategories] = useState<{id: string; title: string; chapterId: string; parentChapterName: string}[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const isTappingSuggestion = React.useRef(false);
 
@@ -50,12 +50,13 @@ export default function SiddourScreen() {
     
     return allSubcategories
       .filter(subcategory => 
-        subcategory.title.toLowerCase().includes(searchQuery.toLowerCase())
+        subcategory.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        subcategory.parentChapterName.toLowerCase().includes(searchQuery.toLowerCase())
       )
       .slice(0, 5); // Limiter à 5 suggestions
   }, [searchQuery, allSubcategories]);
 
-  const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string}) => {
+  const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string; parentChapterName: string}) => {
     console.log('🔍 [DEBUG] handleSelectSuggestion: Starting navigation to:', subcategory);
     
     // Hide keyboard immediately
@@ -164,7 +165,10 @@ export default function SiddourScreen() {
                     activeOpacity={0.7}
                   >
                     <Search size={16} color={Colors.text.muted} />
-                    <Text style={styles.suggestionText}>{subcategory.title}</Text>
+                    <View style={styles.suggestionTextContainer}>
+                      <Text style={styles.suggestionText}>{subcategory.title}</Text>
+                      <Text style={styles.suggestionParentText}>dans {subcategory.parentChapterName}</Text>
+                    </View>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -300,10 +304,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.background,
   },
+  suggestionTextContainer: {
+    flex: 1,
+    marginLeft: 8,
+  },
   suggestionText: {
     fontSize: 14,
     color: Colors.text.primary,
-    marginLeft: 8,
+    fontWeight: '500',
+    marginBottom: 2,
+  },
+  suggestionParentText: {
+    fontSize: 12,
+    color: Colors.primary,
+    fontStyle: 'italic',
+    opacity: 0.8,
   },
   bookContainer: {
     alignItems: 'center',

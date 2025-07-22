@@ -625,10 +625,24 @@ export const getCustomPrayerById = async (userId: string, prayerId: string): Pro
 };
 
 // Search functionality
-export const getAllSiddourSubcategoriesForSearch = async (): Promise<{id: string; title: string; chapterId: string}[]> => {
+export const getAllSiddourSubcategoriesForSearch = async (): Promise<{id: string; title: string; chapterId: string; parentChapterName: string}[]> => {
   try {
     console.log('🔍 [DEBUG] getAllSiddourSubcategoriesForSearch: Fetching all subcategories for search...');
     
+    // First, load all chapters to get their names
+    const chaptersRef = collection(db, 'siddour_categories');
+    const chaptersQuery = query(chaptersRef, orderBy('order'));
+    const chaptersSnapshot = await getDocs(chaptersQuery);
+    
+    // Create a map of chapter ID to chapter name for quick lookup
+    const chapterNamesMap = new Map<string, string>();
+    chaptersSnapshot.docs.forEach(doc => {
+      chapterNamesMap.set(doc.id, doc.data().name || '');
+    });
+    
+    console.log('📚 [DEBUG] getAllSiddourSubcategoriesForSearch: Loaded chapter names:', chapterNamesMap);
+    
+    // Now load subcategories
     const subcategoriesRef = collection(db, 'siddour_sub_categories');
     const q = query(subcategoriesRef, orderBy('order'));
     const querySnapshot = await getDocs(q);
@@ -641,6 +655,7 @@ export const getAllSiddourSubcategoriesForSearch = async (): Promise<{id: string
         id: doc.id,
         title: data.name || '',
         chapterId: categoryRef?.id || '',
+        parentChapterName: chapterNamesMap.get(categoryRef?.id || '') || 'Autre',
       };
     });
     
