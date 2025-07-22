@@ -84,7 +84,12 @@ function RootLayoutNav() {
       <ErrorBoundary>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="login" />
+          <Stack.Screen 
+            name="login" 
+            options={{ 
+              gestureEnabled: false 
+            }} 
+          />
           <Stack.Screen name="register" />
           <Stack.Screen name="account-settings" />
           <Stack.Screen name="chapter/[id]" />
