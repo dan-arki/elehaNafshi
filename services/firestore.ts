@@ -250,14 +250,15 @@ export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | 
     if (error.code === 'permission-denied' || error.message?.includes('Missing or insufficient permissions') || error.code === 'unauthenticated') {
       console.warn('Permissions Firestore non configurées pour getFavoritePrayerByDocId');
       console.warn('Vérifiez vos règles de sécurité Firestore pour la collection fav_siddour_sub_categories');
+      // Return null silently to prevent app crash
       return null;
     }
     if (error.code === 'unavailable') {
       console.warn('Firestore temporairement indisponible, retour null');
       return null;
     }
-    // Instead of throwing, return null to prevent app crashes
-    console.warn('⚠️ [firestore] getFavoritePrayerByDocId: Unexpected error, returning null to prevent crash');
+    // For any other errors, return null silently to prevent app crash
+    console.warn(`⚠️ [firestore] getFavoritePrayerByDocId: Returning null due to error for docId ${docId}`);
     return null;
   }
 };
