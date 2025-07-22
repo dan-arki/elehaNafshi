@@ -1,0 +1,79 @@
+# Fichiers et dossiers générés par le système ou l'IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.bak
+*.orig
+*.rej
+
+# Dépendances et builds
+node_modules/
+.expo/
+.expo-shared/
+web-build/
+android/build/
+android/.gradle/
+android/app/build/
+ios/build/
+ios/DerivedData/
+dist/
+build/
+out/
+coverage/
+
+# Fichiers de contrôle de version
+.git/
+.gitignore
+
+# Fichiers de log et temporaires
+*.log
+logs/
+tmp/
+temp/
+cache/
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Fichiers d'archives et de compression
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Fichiers multimédias et de design (souvent volumineux et non nécessaires au build)
+# Excluez ces fichiers si vous avez des versions optimisées ou si ce sont des sources de travail
+# qui ne doivent pas être incluses dans l'application finale.
+*.mp3
+*.wav
+*.aiff
+*.ogg
+*.flac
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.psd
+*.ai
+*.sketch
+*.xd
+*.blend
+*.obj
+*.fbx
+*.gltf
+*.glb
+*.hdr
+*.exr
+
+# Fichiers de base de données locaux (si utilisés pour le développement)
+*.db
+*.sqlite
+*.sqlite3
+data/ # Exclure si ce dossier contient des données de développement non nécessaires au build
+
+# Fichiers de configuration spécifiques à certains frameworks (si non utilisés)
+.next/ # Pour les projets Next.js
