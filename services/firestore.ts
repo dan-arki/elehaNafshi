@@ -18,6 +18,7 @@ import { Prayer, PrayerChapter, SiddourSubcategory, SiddourBlockData } from '../
 // Custom Prayers CRUD
 export const getCustomPrayers = async (userId: string): Promise<Prayer[]> => {
   try {
+    console.log('🔍 [firestore] getCustomPrayers: Starting for userId:', userId);
     const customPrayersRef = collection(db, 'my_prieres');
     const q = query(customPrayersRef, where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
@@ -29,11 +30,18 @@ export const getCustomPrayers = async (userId: string): Promise<Prayer[]> => {
     })) as Prayer[];
     
     // Trier côté client pour éviter l'index composite
-    return prayers.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    const sortedPrayers = prayers.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    console.log('✅ [firestore] getCustomPrayers: Success, found', sortedPrayers.length, 'prayers');
+    return sortedPrayers;
   } catch (error: any) {
+    console.error('❌ [firestore] getCustomPrayers: Error:', error);
     // Si erreur de permissions ou d'index, retourner un tableau vide
     if (error.code === 'permission-denied' || error.code === 'failed-precondition') {
       console.warn('Permissions Firestore non configurées pour les prières personnalisées');
+      return [];
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour de données vides');
       return [];
     }
     throw error;
@@ -42,16 +50,22 @@ export const getCustomPrayers = async (userId: string): Promise<Prayer[]> => {
 
 export const createCustomPrayer = async (userId: string, prayer: Omit<Prayer, 'id'>): Promise<string> => {
   try {
+    console.log('🔍 [firestore] createCustomPrayer: Starting for userId:', userId);
     const customPrayersRef = collection(db, 'my_prieres');
     const docRef = await addDoc(customPrayersRef, {
       ...prayer,
       userId: userId,
       createdAt: Timestamp.now(),
     });
+    console.log('✅ [firestore] createCustomPrayer: Success, created prayer with ID:', docRef.id);
     return docRef.id;
   } catch (error: any) {
+    console.error('❌ [firestore] createCustomPrayer: Error:', error);
     if (error.code === 'permission-denied') {
       throw new Error('Les permissions Firestore ne sont pas configurées. Veuillez configurer les règles de sécurité dans la console Firebase.');
+    }
+    if (error.code === 'unavailable') {
+      throw new Error('Service temporairement indisponible. Veuillez réessayer plus tard.');
     }
     throw error;
   }
@@ -59,37 +73,64 @@ export const createCustomPrayer = async (userId: string, prayer: Omit<Prayer, 'i
 
 export const updateCustomPrayer = async (userId: string, prayerId: string, prayer: Partial<Prayer>): Promise<void> => {
   try {
+    console.log('🔍 [firestore] updateCustomPrayer: Starting for prayerId:', prayerId);
     const prayerRef = doc(db, 'my_prieres', prayerId);
     await updateDoc(prayerRef, prayer);
+    console.log('✅ [firestore] updateCustomPrayer: Success');
   } catch (error: any) {
+    console.error('❌ [firestore] updateCustomPrayer: Error:', error);
     if (error.code === 'permission-denied') {
       throw new Error('Les permissions Firestore ne sont pas configurées. Veuillez configurer les règles de sécurité dans la console Firebase.');
+    }
+    if (error.code === 'unavailable') {
+      throw new Error('Service temporairement indisponible. Veuillez réessayer plus tard.');
     }
     throw error;
   }
 };
 
 export const deleteCustomPrayer = async (userId: string, prayerId: string): Promise<void> => {
-  const prayerRef = doc(db, 'my_prieres', prayerId);
-  await deleteDoc(prayerRef);
+  try {
+    console.log('🔍 [firestore] deleteCustomPrayer: Starting for prayerId:', prayerId);
+    const prayerRef = doc(db, 'my_prieres', prayerId);
+    await deleteDoc(prayerRef);
+    console.log('✅ [firestore] deleteCustomPrayer: Success');
+  } catch (error: any) {
+    console.error('❌ [firestore] deleteCustomPrayer: Error:', error);
+    if (error.code === 'permission-denied') {
+      throw new Error('Les permissions Firestore ne sont pas configurées. Veuillez configurer les règles de sécurité dans la console Firebase.');
+    }
+    if (error.code === 'unavailable') {
+      throw new Error('Service temporairement indisponible. Veuillez réessayer plus tard.');
+    }
+    throw error;
+  }
 };
 
 // Favorites CRUD
 export const getFavoritePrayers = async (userId: string): Promise<Prayer[]> => {
   try {
+    console.log('🔍 [firestore] getFavoritePrayers: Starting for userId:', userId);
     const favoritesRef = collection(db, 'fav_siddour_sub_categories');
     const q = query(favoritesRef, where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
     
-    return querySnapshot.docs.map(doc => ({
+    const favorites = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
       isFavorite: true,
       createdAt: doc.data().addedAt?.toDate() || new Date(),
     })) as Prayer[];
+    console.log('✅ [firestore] getFavoritePrayers: Success, found', favorites.length, 'favorites');
+    return favorites;
   } catch (error: any) {
+    console.error('❌ [firestore] getFavoritePrayers: Error:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les favoris');
+      return [];
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour de données vides');
       return [];
     }
     throw error;
@@ -98,15 +139,21 @@ export const getFavoritePrayers = async (userId: string): Promise<Prayer[]> => {
 
 export const addToFavorites = async (userId: string, prayer: Prayer): Promise<void> => {
   try {
+    console.log('🔍 [firestore] addToFavorites: Starting for prayer:', prayer.title);
     const favoritesRef = collection(db, 'fav_siddour_sub_categories');
     await addDoc(favoritesRef, {
       ...prayer,
       userId: userId,
       addedAt: Timestamp.now(),
     });
+    console.log('✅ [firestore] addToFavorites: Success');
   } catch (error: any) {
+    console.error('❌ [firestore] addToFavorites: Error:', error);
     if (error.code === 'permission-denied') {
       throw new Error('Les permissions Firestore ne sont pas configurées pour les favoris. Veuillez configurer les règles de sécurité dans la console Firebase.');
+    }
+    if (error.code === 'unavailable') {
+      throw new Error('Service temporairement indisponible. Veuillez réessayer plus tard.');
     }
     throw error;
   }
@@ -114,6 +161,7 @@ export const addToFavorites = async (userId: string, prayer: Prayer): Promise<vo
 
 export const removeFromFavorites = async (userId: string, prayerId: string): Promise<void> => {
   try {
+    console.log('🔍 [firestore] removeFromFavorites: Starting for prayerId:', prayerId);
     const favoritesRef = collection(db, 'fav_siddour_sub_categories');
     const q = query(favoritesRef, where('userId', '==', userId), where('originalId', '==', prayerId));
     const querySnapshot = await getDocs(q);
@@ -121,9 +169,14 @@ export const removeFromFavorites = async (userId: string, prayerId: string): Pro
     querySnapshot.docs.forEach(async (docSnapshot) => {
       await deleteDoc(docSnapshot.ref);
     });
+    console.log('✅ [firestore] removeFromFavorites: Success, removed', querySnapshot.docs.length, 'documents');
   } catch (error: any) {
+    console.error('❌ [firestore] removeFromFavorites: Error:', error);
     if (error.code === 'permission-denied') {
       throw new Error('Les permissions Firestore ne sont pas configurées pour les favoris. Veuillez configurer les règles de sécurité dans la console Firebase.');
+    }
+    if (error.code === 'unavailable') {
+      throw new Error('Service temporairement indisponible. Veuillez réessayer plus tard.');
     }
     throw error;
   }
@@ -131,14 +184,22 @@ export const removeFromFavorites = async (userId: string, prayerId: string): Pro
 
 export const checkIfFavorite = async (userId: string, prayerId: string): Promise<boolean> => {
   try {
+    console.log('🔍 [firestore] checkIfFavorite: Starting for prayerId:', prayerId);
     const favoritesRef = collection(db, 'fav_siddour_sub_categories');
     const q = query(favoritesRef, where('userId', '==', userId), where('originalId', '==', prayerId));
     const querySnapshot = await getDocs(q);
   
-    return !querySnapshot.empty;
+    const isFavorite = !querySnapshot.empty;
+    console.log('✅ [firestore] checkIfFavorite: Success, isFavorite:', isFavorite);
+    return isFavorite;
   } catch (error: any) {
+    console.error('❌ [firestore] checkIfFavorite: Error:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les favoris');
+      return false;
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour false');
       return false;
     }
     throw error;
@@ -166,6 +227,11 @@ export const getChapters = async (): Promise<PrayerChapter[]> => {
     return chapters;
   } catch (error: any) {
     console.error('❌ [DEBUG] getChapters: Error fetching chapters:', error);
+    console.error('❌ [DEBUG] getChapters: Error details:', {
+      code: error.code,
+      message: error.message,
+      stack: error.stack
+    });
     // Si erreur de permissions, retourner des données par défaut
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées, utilisation de données par défaut');
@@ -192,6 +258,10 @@ export const getChapters = async (): Promise<PrayerChapter[]> => {
           prayers: []
         }
       ];
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, utilisation de données par défaut');
+      return [];
     }
     throw error;
   }
@@ -221,6 +291,11 @@ export const getChapterById = async (chapterId: string): Promise<PrayerChapter |
     return null;
   } catch (error: any) {
     console.error('❌ [DEBUG] getChapterById: Error fetching chapter:', error);
+    console.error('❌ [DEBUG] getChapterById: Error details:', {
+      code: error.code,
+      message: error.message,
+      chapterId: chapterId
+    });
     // Si erreur de permissions, retourner des données par défaut
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées, utilisation de données par défaut');
@@ -249,21 +324,29 @@ export const getChapterById = async (chapterId: string): Promise<PrayerChapter |
       ];
       return defaultChapters.find(chapter => chapter.id === chapterId) || null;
     }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour null');
+      return null;
+    }
     throw error;
   }
 };
 
 export const getPrayersByChapter = async (chapterId: string): Promise<Prayer[]> => {
   try {
+    console.log('🔍 [firestore] getPrayersByChapter: Starting for chapterId:', chapterId);
     const prayersRef = collection(db, 'prayers');
     const q = query(prayersRef, where('chapterId', '==', chapterId), orderBy('order'));
     const querySnapshot = await getDocs(q);
     
-    return querySnapshot.docs.map(doc => ({
+    const prayers = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as Prayer[];
+    console.log('✅ [firestore] getPrayersByChapter: Success, found', prayers.length, 'prayers');
+    return prayers;
   } catch (error: any) {
+    console.error('❌ [firestore] getPrayersByChapter: Error:', error);
     // Si erreur de permissions, retourner des données par défaut
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées, utilisation de données par défaut');
@@ -284,22 +367,43 @@ export const getPrayersByChapter = async (chapterId: string): Promise<Prayer[]> 
         }
       ];
     }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour de données vides');
+      return [];
+    }
     throw error;
   }
 };
 
 export const getPrayerById = async (prayerId: string): Promise<Prayer | null> => {
-  const prayerRef = doc(db, 'prayers', prayerId);
-  const docSnapshot = await getDoc(prayerRef);
-  
-  if (docSnapshot.exists()) {
-    return {
-      id: docSnapshot.id,
-      ...docSnapshot.data(),
-    } as Prayer;
+  try {
+    console.log('🔍 [firestore] getPrayerById: Starting for prayerId:', prayerId);
+    const prayerRef = doc(db, 'prayers', prayerId);
+    const docSnapshot = await getDoc(prayerRef);
+    
+    if (docSnapshot.exists()) {
+      const prayer = {
+        id: docSnapshot.id,
+        ...docSnapshot.data(),
+      } as Prayer;
+      console.log('✅ [firestore] getPrayerById: Success, found prayer:', prayer.title);
+      return prayer;
+    }
+    
+    console.warn('⚠️ [firestore] getPrayerById: Prayer not found for ID:', prayerId);
+    return null;
+  } catch (error: any) {
+    console.error('❌ [firestore] getPrayerById: Error:', error);
+    if (error.code === 'permission-denied') {
+      console.warn('Permissions Firestore non configurées pour getPrayerById');
+      return null;
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour null');
+      return null;
+    }
+    throw error;
   }
-  
-  return null;
 };
 
 // Siddour Subcategories
@@ -339,8 +443,17 @@ export const getSiddourSubcategories = async (chapterId: string): Promise<Siddou
     return subcategories;
   } catch (error: any) {
     console.error('❌ [DEBUG] getSiddourSubcategories: Error fetching subcategories:', error);
+    console.error('❌ [DEBUG] getSiddourSubcategories: Error details:', {
+      code: error.code,
+      message: error.message,
+      chapterId: chapterId
+    });
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les sous-catégories');
+      return [];
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour de données vides');
       return [];
     }
     throw error;
@@ -400,8 +513,17 @@ export const getSiddourBlocks = async (subcategoryId: string): Promise<SiddourBl
     return blocks;
   } catch (error: any) {
     console.error('❌ [DEBUG] getSiddourBlocks: Error fetching blocks:', error);
+    console.error('❌ [DEBUG] getSiddourBlocks: Error details:', {
+      code: error.code,
+      message: error.message,
+      subcategoryId: subcategoryId
+    });
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les blocs');
+      return [];
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour de données vides');
       return [];
     }
     throw error;
@@ -410,6 +532,7 @@ export const getSiddourBlocks = async (subcategoryId: string): Promise<SiddourBl
 
 export const getCustomPrayerById = async (userId: string, prayerId: string): Promise<Prayer | null> => {
   try {
+    console.log('🔍 [firestore] getCustomPrayerById: Starting for prayerId:', prayerId);
     const prayerRef = doc(db, 'my_prieres', prayerId);
     const docSnapshot = await getDoc(prayerRef);
     
@@ -417,18 +540,27 @@ export const getCustomPrayerById = async (userId: string, prayerId: string): Pro
       const data = docSnapshot.data();
       // Vérifier que la prière appartient bien à l'utilisateur
       if (data.userId === userId) {
-        return {
+        const prayer = {
           id: docSnapshot.id,
           ...data,
           createdAt: data.createdAt?.toDate() || new Date(),
         } as Prayer;
+        console.log('✅ [firestore] getCustomPrayerById: Success, found prayer:', prayer.title);
+        return prayer;
       }
+      console.warn('⚠️ [firestore] getCustomPrayerById: Prayer belongs to different user');
     }
     
+    console.warn('⚠️ [firestore] getCustomPrayerById: Prayer not found for ID:', prayerId);
     return null;
   } catch (error: any) {
+    console.error('❌ [firestore] getCustomPrayerById: Error:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour la prière personnalisée');
+      return null;
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour null');
       return null;
     }
     throw error;
@@ -461,8 +593,16 @@ export const getAllSiddourSubcategoriesForSearch = async (): Promise<{id: string
     return subcategories;
   } catch (error: any) {
     console.error('❌ [DEBUG] getAllSiddourSubcategoriesForSearch: Error fetching subcategories:', error);
+    console.error('❌ [DEBUG] getAllSiddourSubcategoriesForSearch: Error details:', {
+      code: error.code,
+      message: error.message
+    });
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour la recherche');
+      return [];
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour de données vides');
       return [];
     }
     throw error;
@@ -494,8 +634,17 @@ export const getSiddourSubcategoryById = async (subcategoryId: string): Promise<
     return null;
   } catch (error: any) {
     console.error('❌ [DEBUG] getSiddourSubcategoryById: Error fetching subcategory:', error);
+    console.error('❌ [DEBUG] getSiddourSubcategoryById: Error details:', {
+      code: error.code,
+      message: error.message,
+      subcategoryId: subcategoryId
+    });
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour la sous-catégorie');
+      return null;
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour null');
       return null;
     }
     throw error;
@@ -534,8 +683,16 @@ export const getSiddourSubcategoriesWithPosition = async (): Promise<{id: string
     return subcategoriesWithPosition;
   } catch (error: any) {
     console.error('❌ [DEBUG] getSiddourSubcategoriesWithPosition: Error fetching subcategories with position:', error);
+    console.error('❌ [DEBUG] getSiddourSubcategoriesWithPosition: Error details:', {
+      code: error.code,
+      message: error.message
+    });
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les kevarim');
+      return [];
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour de données vides');
       return [];
     }
     throw error;
