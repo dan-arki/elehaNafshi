@@ -30,7 +30,7 @@ export default function CustomPrayerDetailScreen() {
       const prayerData = await getCustomPrayerById(user.uid, id as string);
       setPrayer(prayerData);
     } catch (error) {
-      console.error('Erreur lors du chargement de la prière:', error);
+
     } finally {
       setLoading(false);
     }
