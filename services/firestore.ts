@@ -12,7 +12,9 @@ import {
   Timestamp,
   DocumentReference
 } from 'firebase/firestore';
+import { User } from 'firebase/auth';
 import { db } from '../config/firebase';
+import { auth } from '../config/firebase';
 import { Prayer, PrayerChapter, SiddourSubcategory, SiddourBlockData } from '../types';
 
 // Custom Prayers CRUD
@@ -212,8 +214,6 @@ export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | 
     console.log('🔍 [firestore] getFavoritePrayerByDocId: Starting for docId:', docId);
     
     // Vérifier que l'utilisateur est authentifié avant de faire la requête
-    const { currentUser } = await import('firebase/auth');
-    const { auth } = await import('../config/firebase');
     const user = auth.currentUser;
     
     if (!user) {
