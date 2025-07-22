@@ -293,16 +293,19 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   suggestionsContainer: {
-    backgroundColor: Colors.white,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)', // Semi-transparent white for blur effect
     borderRadius: 12,
     marginBottom: 16,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowOpacity: 0.15, // Slightly stronger shadow for better separation
+    shadowRadius: 8, // Larger shadow radius for softer appearance
     maxHeight: 200,
     overflow: 'hidden',
+    // Blur effect simulation with enhanced styling
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.1)', // Subtle purple border matching primary color
   },
   suggestionsScrollView: {
     maxHeight: 200,
@@ -312,9 +315,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.background,
+    borderBottomWidth: 0.5, // Thinner border for subtle separation
+    borderBottomColor: 'rgba(139, 92, 246, 0.15)', // Light purple separator
     minHeight: 56,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background for each item
+    // Add subtle hover effect simulation
+    borderRadius: 0, // Keep rectangular for list items
   },
   suggestionTextContainer: {
     flex: 1,
