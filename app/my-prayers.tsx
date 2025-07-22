@@ -108,7 +108,7 @@ export default function MyPrayersScreen() {
             <View style={styles.bookContainer}>
               <View style={styles.bookCard}>
                 <Image
-                  source={require('../assets/images/myPriere.png')}
+                  source={require('../assets/images/myPriere.jpg')}
                   style={styles.bookImage}
                   resizeMode="cover"
                 />

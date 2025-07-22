@@ -172,7 +172,7 @@ export default function HomeScreen() {
 
               <TouchableOpacity style={styles.essentialCard} onPress={() => router.push('/my-prayers')}>
                 <Image
-                  source={require('../../assets/images/myPriere.png')}
+                  source={require('../../assets/images/myPriere.jpg')}
                   style={styles.essentialImage}
                 />
               </TouchableOpacity>
