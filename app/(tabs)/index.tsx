@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronRight, Heart, Search } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
@@ -17,6 +17,7 @@ export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [allSubcategories, setAllSubcategories] = useState<{id: string; title: string; chapterId: string}[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const isTappingSuggestion = useRef(false);
 
   useEffect(() => {
     console.log('[index.tsx] Chargement des sous-catégories et de la date hébraïque');
@@ -68,9 +69,62 @@ export default function HomeScreen() {
   }, [searchQuery, allSubcategories]);
 
   const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string}) => {
-    router.push(`/chapter/${subcategory.chapterId}?subcategoryId=${subcategory.id}`);
-    setSearchQuery('');
+    console.log('🔍 [DEBUG] handleSelectSuggestion: Starting navigation to:', subcategory);
+    
+    // Hide keyboard immediately
+    Keyboard.dismiss();
+    
+    // Hide suggestions immediately
     setShowSuggestions(false);
+    setSearchQuery('');
+    
+    // Reset the tapping state
+    isTappingSuggestion.current = false;
+    
+    // Navigate with a small delay to ensure state updates are processed
+    setTimeout(() => {
+      console.log('🔍 [DEBUG] handleSelectSuggestion: Executing navigation');
+      router.push(`/chapter/${subcategory.chapterId}?subcategoryId=${subcategory.id}`);
+    }, 50);
+  };
+
+  const handleSuggestionPressIn = () => {
+    console.log('🔍 [DEBUG] handleSuggestionPressIn: Setting isTappingSuggestion to true');
+    isTappingSuggestion.current = true;
+  };
+
+  const handleSuggestionPressOut = () => {
+    console.log('🔍 [DEBUG] handleSuggestionPressOut: Resetting isTappingSuggestion after delay');
+    // Reset after a short delay to allow onPress to complete
+    setTimeout(() => {
+      isTappingSuggestion.current = false;
+    }, 100);
+  };
+
+  const handleSearchInputBlur = () => {
+    console.log('🔍 [DEBUG] handleSearchInputBlur: onBlur triggered, isTappingSuggestion:', isTappingSuggestion.current);
+    
+    // Only hide suggestions if we're not currently tapping a suggestion
+    if (!isTappingSuggestion.current) {
+      setTimeout(() => {
+        console.log('🔍 [DEBUG] handleSearchInputBlur: Hiding suggestions after delay');
+        setShowSuggestions(false);
+      }, 200);
+    }
+  };
+
+  const handleSearchInputFocus = () => {
+    console.log('🔍 [DEBUG] handleSearchInputFocus: onFocus triggered');
+    setShowSuggestions(true);
+  };
+
+  const handleSearchQueryChange = (text: string) => {
+    console.log('🔍 [DEBUG] handleSearchQueryChange: Search query changed to:', text);
+    setSearchQuery(text);
+  };
+
+  const navigateToKevarim = () => {
+    router.push(`/chapter/${subcategory.chapterId}?subcategoryId=${subcategory.id}`);
   };
 
   const navigateToKevarim = () => {
@@ -92,6 +146,7 @@ export default function HomeScreen() {
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
         >
             {/* Header */}
             <View style={styles.header}>
@@ -114,12 +169,9 @@ export default function HomeScreen() {
                   placeholder="Chercher une prière"
                   placeholderTextColor={Colors.text.muted}
                   value={searchQuery}
-                  onChangeText={setSearchQuery}
-                  onFocus={() => setShowSuggestions(true)}
-                  onBlur={() => {
-                    // Délai pour permettre le clic sur les suggestions
-                    setTimeout(() => setShowSuggestions(false), 200);
-                  }}
+                  onChangeText={handleSearchQueryChange}
+                  onFocus={handleSearchInputFocus}
+                  onBlur={handleSearchInputBlur}
                 />
               </View>
             </View>
@@ -131,7 +183,10 @@ export default function HomeScreen() {
                   <TouchableOpacity
                     key={subcategory.id}
                     style={styles.suggestionItem}
+                    onPressIn={handleSuggestionPressIn}
+                    onPressOut={handleSuggestionPressOut}
                     onPress={() => handleSelectSuggestion(subcategory)}
+                    activeOpacity={0.7}
                   >
                     <Search size={16} color={Colors.text.muted} />
                     <Text style={styles.suggestionText}>{subcategory.title}</Text>
