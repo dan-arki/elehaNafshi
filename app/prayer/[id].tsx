@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams, router } from 'expo-router';
+import { useLocalSearchParams, router, useGlobalSearchParams } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
-import { getFavoritePrayerByDocId } from '../../services/firestore';
-import { Prayer } from '../../types';
 
 export default function PrayerDetailScreen() {
-  const { id } = useLocalSearchParams();
+  const params = useGlobalSearchParams();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    loadAndRedirectPrayer();
-  }, [id, user]);
+    redirectToPrayer();
+  }, [params, user]);
 
-  const loadAndRedirectPrayer = async () => {
-    if (!id || !user) {
+  const redirectToPrayer = async () => {
+    if (!params.id || !user) {
       setError('Paramètres manquants');
       setLoading(false);
       return;
@@ -28,49 +26,47 @@ export default function PrayerDetailScreen() {
       setLoading(true);
       setError(null);
       
-      console.log('🔍 [PrayerDetailScreen] Loading favorite prayer with ID:', id);
-      const favoritePrayer = await getFavoritePrayerByDocId(id as string);
+      console.log('🔍 [PrayerDetailScreen] Redirecting with params:', params);
       
-      if (!favoritePrayer) {
-        setError('Prière favorite non trouvée');
+      // Extract navigation parameters from URL params
+      const category = params.category as string;
+      const originalId = params.originalId as string;
+      const chapterId = params.chapterId as string;
+      const title = params.title as string;
+      
+      if (!category || !originalId) {
+        setError('Paramètres de navigation manquants');
         setLoading(false);
         return;
       }
 
-      // Vérifier que la prière appartient à l'utilisateur
-      if (favoritePrayer.userId && favoritePrayer.userId !== user.uid) {
-        setError('Accès non autorisé à cette prière');
-        setLoading(false);
-        return;
-      }
-
-      console.log('✅ [PrayerDetailScreen] Favorite prayer loaded:', {
-        title: favoritePrayer.title,
-        category: favoritePrayer.category,
-        originalId: favoritePrayer.originalId,
-        chapterId: favoritePrayer.chapterId
+      console.log('✅ [PrayerDetailScreen] Redirecting with data:', {
+        title,
+        category,
+        originalId,
+        chapterId
       });
 
       // Redirection basée sur la catégorie
-      switch (favoritePrayer.category) {
+      switch (category) {
         case 'kever':
-          console.log('🔄 [PrayerDetailScreen] Redirecting to kever:', favoritePrayer.originalId || favoritePrayer.id);
-          router.replace(`/kever/${favoritePrayer.originalId || favoritePrayer.id}`);
+          console.log('🔄 [PrayerDetailScreen] Redirecting to kever:', originalId);
+          router.replace(`/kever/${originalId}`);
           break;
           
         case 'custom':
-          console.log('🔄 [PrayerDetailScreen] Redirecting to custom prayer:', favoritePrayer.originalId || favoritePrayer.id);
-          router.replace(`/custom-prayer/${favoritePrayer.originalId || favoritePrayer.id}`);
+          console.log('🔄 [PrayerDetailScreen] Redirecting to custom prayer:', originalId);
+          router.replace(`/custom-prayer/${originalId}`);
           break;
           
         default:
           // Pour les prières du Siddour (chaharit, minha, arvit, etc.)
-          if (favoritePrayer.chapterId) {
+          if (chapterId) {
             console.log('🔄 [PrayerDetailScreen] Redirecting to chapter:', {
-              chapterId: favoritePrayer.chapterId,
-              subcategoryId: favoritePrayer.originalId || favoritePrayer.id
+              chapterId: chapterId,
+              subcategoryId: originalId
             });
-            router.replace(`/chapter/${favoritePrayer.chapterId}?subcategoryId=${favoritePrayer.originalId || favoritePrayer.id}`);
+            router.replace(`/chapter/${chapterId}?subcategoryId=${originalId}`);
           } else {
             console.error('❌ [PrayerDetailScreen] Missing chapterId for Siddour prayer');
             setError('Impossible de localiser cette prière dans le Siddour');
@@ -79,7 +75,7 @@ export default function PrayerDetailScreen() {
           break;
       }
     } catch (error: any) {
-      console.error('❌ [PrayerDetailScreen] Error loading favorite prayer:', error);
+      console.error('❌ [PrayerDetailScreen] Error redirecting to prayer:', error);
       setError('Erreur lors du chargement de la prière');
       setLoading(false);
     }
