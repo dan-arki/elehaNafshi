@@ -2,14 +2,23 @@
   "expo": {
     "name": "ElehaNafshi",
     "slug": "eleha-nafshi",
-    "version": "1.0.0",
+    "version": "1.0.7",
     "orientation": "portrait",
     "icon": "./assets/images/iconApp.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mycompany.elehanafchi",
+      "buildNumber": "4",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Cette application n'utilise pas la caméra.",
+        "NSPhotoLibraryUsageDescription": "Cette application n'accède pas à vos photos.",
+        "NSLocationWhenInUseUsageDescription": "Cette application utilise votre localisation pour afficher les Kivrei Tsadikim les plus proches.",
+        "NSMicrophoneUsageDescription": "Cette application n'utilise pas le microphone."
+      }
     },
     "web": {
       "bundler": "metro",
@@ -19,6 +28,12 @@
     "plugins": ["expo-router", "expo-font", "expo-web-browser"],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c01ddb79-6c37-4cfd-9a4c-dfa1baeedb8d"
+      }
     }
   }
 }
