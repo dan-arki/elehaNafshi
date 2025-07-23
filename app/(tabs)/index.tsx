@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronRight, Heart, Search } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
-import { getAllSiddourSubcategoriesForSearch } from '../../services/firestore';
+import { getAllSiddourSubcategoriesForSearch, getBanners } from '../../services/firestore';
+import { Banner } from '../../types';
 import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
 
 export default function HomeScreen() {
@@ -19,11 +20,14 @@ export default function HomeScreen() {
   const [allSubcategories, setAllSubcategories] = useState<{id: string; title: string; chapterId: string; parentChapterName: string}[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const isTappingSuggestion = useRef(false);
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [loadingBanners, setLoadingBanners] = useState(true);
 
   useEffect(() => {
     console.log('[index.tsx] Chargement des sous-catégories et de la date hébraïque');
     loadSubcategoriesForSearch();
     loadHebrewDate();
+    loadBanners();
   }, []);
 
   const loadHebrewDate = async () => {
@@ -57,6 +61,19 @@ export default function HomeScreen() {
       setAllSubcategories(subcategories);
     } catch (error) {
       console.error('Erreur lors du chargement des sous-catégories pour la recherche:', error);
+    }
+  };
+
+  const loadBanners = async () => {
+    try {
+      setLoadingBanners(true);
+      const bannersData = await getBanners();
+      setBanners(bannersData);
+    } catch (error) {
+      console.error('Erreur lors du chargement des bannières:', error);
+      setBanners([]);
+    } finally {
+      setLoadingBanners(false);
     }
   };
 
@@ -129,6 +146,20 @@ export default function HomeScreen() {
     setSearchQuery(text);
   };
 
+  const handleBannerPress = async (banner: Banner) => {
+    triggerMediumHaptic();
+    try {
+      const canOpen = await Linking.canOpenURL(banner.url);
+      if (canOpen) {
+        await Linking.openURL(banner.url);
+      } else {
+        Alert.alert('Erreur', 'Impossible d\'ouvrir ce lien');
+      }
+    } catch (error) {
+      console.error('Erreur lors de l\'ouverture du lien:', error);
+      Alert.alert('Erreur', 'Impossible d\'ouvrir ce lien');
+    }
+  };
 
   const navigateToKevarim = () => {
     triggerMediumHaptic();
@@ -224,22 +255,66 @@ export default function HomeScreen() {
               </View>
             )}
 
+            {/* Bannières Section */}
+            {!loadingBanners && banners.length > 0 && (
+              <>
+                <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
+                  <Text style={styles.kevarimTitle}>Actualités</Text>
+                  <ChevronRight size={20} color={Colors.text.primary} />
+                </TouchableOpacity>
+
+                {/* Bannières Carousel */}
+                <ScrollView 
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.bannersContainer}
+                  contentContainerStyle={styles.bannersContent}
+                >
+                  {banners.map((banner, index) => (
+                    <TouchableOpacity
+                      key={banner.id}
+                      style={[styles.bannerCard, index === banners.length - 1 && styles.lastBannerCard]}
+                      onPress={() => handleBannerPress(banner)}
+                    >
+                      <Image
+                        source={{ uri: banner.image }}
+                        style={styles.bannerImage}
+                        resizeMode="cover"
+                      />
+                      <View style={styles.bannerOverlay}>
+                        <Text style={styles.bannerTitle} numberOfLines={2}>
+                          {banner.title}
+                        </Text>
+                        {banner.description && (
+                          <Text style={styles.bannerDescription} numberOfLines={2}>
+                            {banner.description}
+                          </Text>
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </>
+            )}
+
             {/* Kevarim Section */}
             <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
               <Text style={styles.kevarimTitle}>Les kivrei tsadikim</Text>
               <ChevronRight size={20} color={Colors.text.primary} />
             </TouchableOpacity>
 
-            {/* Kevarim Image Card */}
-            <View style={styles.kevarimCard}>
-              <Image
-                source={{ uri: 'https://images.pexels.com/photos/8919544/pexels-photo-8919544.jpeg?auto=compress&cs=tinysrgb&w=800' }}
-                style={styles.kevarimImage}
-              />
-              <View style={styles.kevarimOverlay}>
-                <Text style={styles.kevarimCardTitle}>Test 2</Text>
+            {/* Kevarim Image Card - Fallback si pas de bannières */}
+            {(loadingBanners || banners.length === 0) && (
+              <View style={styles.kevarimCard}>
+                <Image
+                  source={{ uri: 'https://images.pexels.com/photos/8919544/pexels-photo-8919544.jpeg?auto=compress&cs=tinysrgb&w=800' }}
+                  style={styles.kevarimImage}
+                />
+                <View style={styles.kevarimOverlay}>
+                  <Text style={styles.kevarimCardTitle}>Les kivrei tsadikim</Text>
+                </View>
               </View>
-            </View>
+            )}
 
             {/* Mes Essentiels */}
             <Text style={styles.sectionTitle}>Mes essentiels</Text>
@@ -463,6 +538,52 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: Colors.white,
+  },
+  bannersContainer: {
+    marginBottom: 32,
+  },
+  bannersContent: {
+    paddingHorizontal: 20,
+  },
+  bannerCard: {
+    width: 280,
+    height: 200,
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginRight: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  lastBannerCard: {
+    marginRight: 20,
+  },
+  bannerImage: {
+    width: '100%',
+    height: '100%',
+  },
+  bannerOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    padding: 16,
+  },
+  bannerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
+    marginBottom: 4,
+    lineHeight: 20,
+  },
+  bannerDescription: {
+    fontSize: 14,
+    color: Colors.white,
+    opacity: 0.9,
+    lineHeight: 18,
   },
   sectionTitle: {
     fontSize: 18,

@@ -15,7 +15,7 @@ import {
 import { User } from 'firebase/auth';
 import { db } from '../config/firebase';
 import { auth } from '../config/firebase';
-import { Prayer, PrayerChapter, SiddourSubcategory, SiddourBlockData } from '../types';
+import { Prayer, PrayerChapter, SiddourSubcategory, SiddourBlockData, Banner } from '../types';
 
 // Custom Prayers CRUD
 export const getCustomPrayers = async (userId: string): Promise<Prayer[]> => {
@@ -761,6 +761,49 @@ export const getSiddourSubcategoriesWithPosition = async (): Promise<{id: string
     });
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les kevarim');
+      return [];
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour de données vides');
+      return [];
+    }
+    throw error;
+  }
+};
+
+// Banners
+export const getBanners = async (): Promise<Banner[]> => {
+  try {
+    console.log('🔍 [DEBUG] getBanners: Fetching banners...');
+    const bannersRef = collection(db, 'banners');
+    const q = query(bannersRef, orderBy('order', 'asc'));
+    const querySnapshot = await getDocs(q);
+    
+    const banners = querySnapshot.docs
+      .map(doc => ({
+        id: doc.id,
+        title: doc.data().title || '',
+        description: doc.data().description || '',
+        image: doc.data().image || '',
+        url: doc.data().url || '',
+        order: doc.data().order || 0,
+        isActive: doc.data().isActive !== false, // Default to true if not specified
+        createdAt: doc.data().createdAt?.toDate() || new Date(),
+      }))
+      .filter(banner => banner.isActive && banner.image && banner.url); // Only show active banners with image and url
+    
+    console.log('✅ [DEBUG] getBanners: Successfully fetched banners:', banners);
+    console.log('📊 [DEBUG] getBanners: Number of banners found:', banners.length);
+    
+    return banners;
+  } catch (error: any) {
+    console.error('❌ [DEBUG] getBanners: Error fetching banners:', error);
+    console.error('❌ [DEBUG] getBanners: Error details:', {
+      code: error.code,
+      message: error.message
+    });
+    if (error.code === 'permission-denied') {
+      console.warn('Permissions Firestore non configurées pour les bannières');
       return [];
     }
     if (error.code === 'unavailable') {
