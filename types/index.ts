@@ -97,7 +97,7 @@ export interface Banner {
   title: string;
   description: string;
   image: string;
-  url: string;
+  link: string;
   order?: number;
   isActive?: boolean;
   createdAt?: Date;
