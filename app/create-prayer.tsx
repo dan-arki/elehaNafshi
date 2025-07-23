@@ -125,7 +125,7 @@ export default function CreatePrayerScreen() {
     <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={handleCancel}>
+          <TouchableOpacity onPress={handleCancel} style={styles.backButton}>
             <ChevronLeft size={24} color={Colors.text.primary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Ma prière</Text>
@@ -349,6 +349,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: Colors.text.primary,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 8,
   },
   modeEmploi: {
     fontSize: 14,
