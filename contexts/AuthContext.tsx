@@ -25,7 +25,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('[AuthContext] Setting up auth state listener...');
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log('[AuthContext] Auth state changed:', user ? 'User logged in' : 'User logged out');
       setUser(user);
       setLoading(false);
     });
@@ -34,14 +36,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    console.log('[AuthContext] Signing in user...');
     await signInWithEmailAndPassword(auth, email, password);
   };
 
   const signUp = async (email: string, password: string) => {
+    console.log('[AuthContext] Signing up user...');
     await createUserWithEmailAndPassword(auth, email, password);
   };
 
   const logout = async () => {
+    console.log('[AuthContext] Logging out user...');
     await signOut(auth);
   };
 
