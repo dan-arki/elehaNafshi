@@ -785,12 +785,12 @@ export const getBanners = async (): Promise<Banner[]> => {
         title: doc.data().title || '',
         description: doc.data().description || '',
         image: doc.data().image || '',
-        url: doc.data().url || '',
+        link: doc.data().link || '',
         order: doc.data().order || 0,
         isActive: doc.data().isActive !== false, // Default to true if not specified
         createdAt: doc.data().createdAt?.toDate() || new Date(),
       }))
-      .filter(banner => banner.isActive && banner.image && banner.url); // Only show active banners with image and url
+      .filter(banner => banner.isActive && banner.image && banner.link); // Only show active banners with image and link
     
     console.log('✅ [DEBUG] getBanners: Successfully fetched banners:', banners);
     console.log('📊 [DEBUG] getBanners: Number of banners found:', banners.length);

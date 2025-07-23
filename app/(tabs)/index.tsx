@@ -149,9 +149,9 @@ export default function HomeScreen() {
   const handleBannerPress = async (banner: Banner) => {
     triggerMediumHaptic();
     try {
-      const canOpen = await Linking.canOpenURL(banner.url);
+      const canOpen = await Linking.canOpenURL(banner.link);
       if (canOpen) {
-        await Linking.openURL(banner.url);
+        await Linking.openURL(banner.link);
       } else {
         Alert.alert('Erreur', 'Impossible d\'ouvrir ce lien');
       }
@@ -258,10 +258,7 @@ export default function HomeScreen() {
             {/* Bannières Section */}
             {!loadingBanners && banners.length > 0 && (
               <>
-                <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
-                  <Text style={styles.kevarimTitle}>Actualités</Text>
-                  <ChevronRight size={20} color={Colors.text.primary} />
-                </TouchableOpacity>
+                <Text style={styles.sectionTitle}>Actualités</Text>
 
                 {/* Bannières Carousel */}
                 <ScrollView 
