@@ -187,6 +187,7 @@ export default function HomeScreen() {
           keyboardShouldPersistTaps="handled"
         >
             <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
+              <>
               {/* Header */}
               <View style={styles.header}>
                 <View style={styles.profileContainer}>
@@ -212,7 +213,6 @@ export default function HomeScreen() {
                 </View>
 
               </View>
-            </View>
 
             {/* Enhanced Search Bar */}
             <View style={styles.searchContainer}>
@@ -259,6 +259,7 @@ export default function HomeScreen() {
                 </ScrollView>
               </View>
             )}
+            </>
             </AnimatedScreenWrapper>
 
             {/* Bannières Section */}
