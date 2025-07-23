@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { createCustomPrayer, updateCustomPrayer } from '../services/firestore';
 import { router, useLocalSearchParams } from 'expo-router';
 import PrayerInstructionsBottomSheet from '../components/PrayerInstructionsBottomSheet';
+import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../utils/haptics';
 
 export default function CreatePrayerScreen() {
   const { edit } = useLocalSearchParams();
@@ -44,14 +45,18 @@ export default function CreatePrayerScreen() {
 
   const handleSave = async () => {
     if (!user) {
+      triggerErrorHaptic();
       Alert.alert('Erreur', 'Vous devez être connecté pour créer une prière');
       return;
     }
     
     if (!prayerName.trim()) {
+      triggerErrorHaptic();
       Alert.alert('Erreur', 'Le nom de votre prière est obligatoire');
       return;
     }
+
+    triggerMediumHaptic();
 
     try {
       const prayerData = {
@@ -82,6 +87,7 @@ export default function CreatePrayerScreen() {
         await createCustomPrayer(user.uid, prayerData);
       }
 
+      triggerSuccessHaptic();
       Alert.alert(
         'Succès',
         isEditing ? 'Prière modifiée avec succès' : 'Prière créée avec succès',
@@ -94,12 +100,14 @@ export default function CreatePrayerScreen() {
       );
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
+      triggerErrorHaptic();
       const errorMessage = error instanceof Error ? error.message : 'Impossible de sauvegarder la prière';
       Alert.alert('Erreur', errorMessage);
     }
   };
 
   const handleCancel = () => {
+    triggerLightHaptic();
     if (prayerName || description || gratitudeText || refouahNames || personalImprovement || dreamsDesires || personalPrayer) {
       Alert.alert(
         'Annuler',

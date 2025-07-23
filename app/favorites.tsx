@@ -7,6 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getFavoritePrayers } from '../services/firestore';
 import { Prayer } from '../types';
 import { router } from 'expo-router';
+import { triggerLightHaptic, triggerMediumHaptic } from '../utils/haptics';
 
 import { getCategoryDisplayName, getEffectivePrayerCategory } from '../utils/categoryUtils';
 
@@ -74,6 +75,7 @@ export default function FavoritesScreen() {
   }, [favoritePrayers, selectedCategory, searchQuery]);
 
   const navigateToPrayer = (prayer: Prayer) => {
+    triggerMediumHaptic();
     router.push({
       pathname: `/prayer/${prayer.id}`,
       params: {

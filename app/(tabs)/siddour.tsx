@@ -8,6 +8,7 @@ import { getChapters, getAllSiddourSubcategoriesForSearch } from '../../services
 import { PrayerChapter } from '../../types';
 import PrayerInfoBottomSheet from '../../components/PrayerInfoBottomSheet';
 import { router } from 'expo-router';
+import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
 
 export default function SiddourScreen() {
   const [showPrayerInfo, setShowPrayerInfo] = useState(false);
@@ -58,6 +59,9 @@ export default function SiddourScreen() {
 
   const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string; parentChapterName: string}) => {
     console.log('🔍 [DEBUG] handleSelectSuggestion: Starting navigation to:', subcategory);
+    
+    // Haptic feedback for selection
+    triggerLightHaptic();
     
     // Hide keyboard immediately
     Keyboard.dismiss();
@@ -112,6 +116,7 @@ export default function SiddourScreen() {
   };
 
   const navigateToChapter = (chapterId: string) => {
+    triggerMediumHaptic();
     router.push(`/chapter/${chapterId}`);
   };
 

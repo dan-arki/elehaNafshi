@@ -13,6 +13,7 @@ import { DisplaySettings } from '../../types';
 import { useDisplaySettings } from '../../contexts/DisplaySettingsContext';
 import { HomeIcon } from '../(tabs)/_layout';
 import { getFilterCategoryFromChapterTitle } from '../../utils/categoryUtils';
+import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../../utils/haptics';
 
 export default function ChapterScreen() {
   const { id, subcategoryId } = useLocalSearchParams();
@@ -194,6 +195,7 @@ export default function ChapterScreen() {
   const handleSubcategorySelect = async (index: number) => {
     console.log('👆 [DEBUG] handleSubcategorySelect: Selected subcategory index:', index);
     console.log('👆 [DEBUG] handleSubcategorySelect: Selected subcategory:', subcategories[index]);
+    triggerLightHaptic();
     setSelectedSubcategoryIndex(index);
     if (subcategories[index]) {
       await loadBlocksForSubcategory(subcategories[index].id);
@@ -210,6 +212,8 @@ export default function ChapterScreen() {
 
   const toggleFavorite = async () => {
     if (!user || subcategories.length === 0 || selectedSubcategoryIndex < 0) return;
+    
+    triggerMediumHaptic();
     
     const currentSubcategory = subcategories[selectedSubcategoryIndex];
     if (!currentSubcategory || !chapter) return;
@@ -237,12 +241,15 @@ export default function ChapterScreen() {
       if (isFavorite) {
         await removeFromFavorites(user.uid, currentSubcategory.id);
         setIsFavorite(false);
+        triggerSuccessHaptic();
       } else {
         await addToFavorites(user.uid, subcategoryAsPrayer);
         setIsFavorite(true);
+        triggerSuccessHaptic();
       }
     } catch (error) {
       console.error('Erreur lors de la mise à jour des favoris:', error);
+      triggerErrorHaptic();
       // Show user-friendly error message
       if (error.code === 'permission-denied') {
         console.warn('Permissions Firestore non configurées pour les favoris');
@@ -251,25 +258,30 @@ export default function ChapterScreen() {
   };
 
   const navigateToHome = () => {
+    triggerMediumHaptic();
     router.push('/(tabs)');
   };
 
   const navigateToSiddour = () => {
+    triggerMediumHaptic();
     router.push('/(tabs)/siddour');
   };
 
   const navigateToProfile = () => {
+    triggerMediumHaptic();
     router.push('/(tabs)/profile');
   };
 
   const handlePreviousSubcategory = async () => {
     if (selectedSubcategoryIndex > 0) {
+      triggerLightHaptic();
       await handleSubcategorySelect(selectedSubcategoryIndex - 1);
     }
   };
 
   const handleNextSubcategory = async () => {
     if (selectedSubcategoryIndex < subcategories.length - 1) {
+      triggerLightHaptic();
       await handleSubcategorySelect(selectedSubcategoryIndex + 1);
     }
   };

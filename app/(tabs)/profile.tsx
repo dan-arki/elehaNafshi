@@ -5,6 +5,7 @@ import { Settings, Heart, BookOpen, MapPin, MessageCircle, Share2 } from 'lucide
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
+import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -13,38 +14,46 @@ export default function ProfileScreen() {
   const userEmail = user?.email || "";
 
   const handleWhatsAppContact = () => {
+    triggerMediumHaptic();
     const whatsappUrl = 'https://wa.me/972537080475';
     Linking.openURL(whatsappUrl);
   };
 
   const handleDonation = () => {
+    triggerMediumHaptic();
     const donationUrl = 'https://linktr.ee/elehanafchi';
     Linking.openURL(donationUrl);
   };
 
   const handleShareApp = () => {
+    triggerMediumHaptic();
     const shareUrl = 'https://linktr.ee/elehanafchi';
     Linking.openURL(shareUrl);
   };
 
   const handleIlnovationClick = () => {
+    triggerLightHaptic();
     const ilnovationUrl = 'https://ilnovation.com/';
     Linking.openURL(ilnovationUrl);
   };
 
   const navigateToFavorites = () => {
+    triggerMediumHaptic();
     router.push('/favorites');
   };
 
   const navigateToKevarim = () => {
+    triggerMediumHaptic();
     router.push('/kevarim');
   };
 
   const navigateToCreatePrayer = () => {
+    triggerMediumHaptic();
     router.push('/create-prayer');
   };
 
   const navigateToAccountSettings = () => {
+    triggerLightHaptic();
     router.push('/account-settings');
   };
 

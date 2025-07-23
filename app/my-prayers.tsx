@@ -8,6 +8,7 @@ import { getCustomPrayers, deleteCustomPrayer } from '../services/firestore';
 import { Prayer } from '../types';
 import { router } from 'expo-router';
 import PrayerInstructionsBottomSheet from '../components/PrayerInstructionsBottomSheet';
+import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../utils/haptics';
 
 export default function MyPrayersScreen() {
   const { user } = useAuth();
@@ -37,14 +38,17 @@ export default function MyPrayersScreen() {
   };
 
   const handleCreatePrayer = () => {
+    triggerMediumHaptic();
     router.push('/create-prayer');
   };
 
   const handleEditPrayer = (prayerId: string) => {
+    triggerLightHaptic();
     router.push(`/create-prayer?edit=${prayerId}`);
   };
 
   const handleDeletePrayer = (prayerId: string, prayerTitle: string) => {
+    triggerMediumHaptic();
     Alert.alert(
       'Supprimer la prière',
       `Êtes-vous sûr de vouloir supprimer "${prayerTitle}" ?`,
@@ -59,10 +63,13 @@ export default function MyPrayersScreen() {
           onPress: async () => {
             if (!user) return;
             try {
+              triggerMediumHaptic();
               await deleteCustomPrayer(user.uid, prayerId);
               setCustomPrayers(prev => prev.filter(prayer => prayer.id !== prayerId));
+              triggerSuccessHaptic();
             } catch (error) {
               console.error('Erreur lors de la suppression:', error);
+              triggerErrorHaptic();
               Alert.alert('Erreur', 'Impossible de supprimer la prière');
             }
           },
@@ -72,6 +79,7 @@ export default function MyPrayersScreen() {
   };
 
   const handleViewPrayer = (prayerId: string) => {
+    triggerMediumHaptic();
     router.push(`/custom-prayer/${prayerId}`);
   };
 

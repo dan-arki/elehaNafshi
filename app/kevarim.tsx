@@ -9,6 +9,7 @@ import * as Location from 'expo-location';
 import { getSiddourSubcategoriesWithPosition, addToFavorites, removeFromFavorites, getFavoritePrayers } from '../services/firestore';
 import { Prayer } from '../types';
 import MapSelectionBottomSheet from '../components/MapSelectionBottomSheet';
+import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../utils/haptics';
 
 interface KeverLocation {
   id: string;
@@ -67,6 +68,7 @@ export default function KevarimScreen() {
       return;
     }
 
+    triggerMediumHaptic();
     const isFavorite = favoriteKeverIds.has(kever.id);
     
     try {
@@ -77,6 +79,7 @@ export default function KevarimScreen() {
           newSet.delete(kever.id);
           return newSet;
         });
+        triggerSuccessHaptic();
         Alert.alert('Succès', 'Kever retiré des favoris');
       } else {
         // Create a Prayer object from the kever data
@@ -98,10 +101,12 @@ export default function KevarimScreen() {
         
         await addToFavorites(user.uid, keverAsPrayer);
         setFavoriteKeverIds(prev => new Set(prev).add(kever.id));
+        triggerSuccessHaptic();
         Alert.alert('Succès', 'Kever ajouté aux favoris');
       }
     } catch (error) {
       console.error('Erreur lors de la mise à jour des favoris:', error);
+      triggerErrorHaptic();
       Alert.alert('Erreur', 'Impossible de mettre à jour les favoris');
     }
   };
@@ -207,11 +212,13 @@ export default function KevarimScreen() {
   };
 
   const handleOpenMaps = (kever: KeverLocation) => {
+    triggerLightHaptic();
     setSelectedKeverForMap(kever);
     setShowMapSelection(true);
   };
 
   const navigateToKever = (keverId: string) => {
+    triggerMediumHaptic();
     router.push(`/kever/${keverId}`);
   };
 

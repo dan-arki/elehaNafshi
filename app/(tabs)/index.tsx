@@ -6,6 +6,7 @@ import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
 import { getAllSiddourSubcategoriesForSearch } from '../../services/firestore';
+import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
 
 export default function HomeScreen() {
   console.log('[index.tsx] Début du rendu de l\'écran d\'accueil');
@@ -73,6 +74,9 @@ export default function HomeScreen() {
   const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string; parentChapterName: string}) => {
     console.log('🔍 [DEBUG] handleSelectSuggestion: Starting navigation to:', subcategory);
     
+    // Haptic feedback for selection
+    triggerLightHaptic();
+    
     // Hide keyboard immediately
     Keyboard.dismiss();
     
@@ -127,14 +131,17 @@ export default function HomeScreen() {
 
 
   const navigateToKevarim = () => {
+    triggerMediumHaptic();
     router.push('/kevarim');
   };
 
   const navigateToFavorites = () => {
+    triggerMediumHaptic();
     router.push('/favorites');
   };
 
   const navigateToSiddour = () => {
+    triggerMediumHaptic();
     router.push('/(tabs)/siddour');
   };
 
