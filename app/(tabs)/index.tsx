@@ -294,35 +294,6 @@ export default function HomeScreen() {
               </>
             )}
 
-            {/* Bannières dynamiques */}
-            {!loadingBanners && banners.length > 0 && (
-              <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-                style={styles.bannersMainContainer}
-                contentContainerStyle={styles.bannersMainContent}
-              >
-                {banners.map((banner, index) => (
-                  <TouchableOpacity
-                    key={banner.id}
-                    style={[styles.bannerMainCard, index === banners.length - 1 && styles.lastBannerMainCard]}
-                    onPress={() => handleBannerPress(banner)}
-                  >
-                    <Image
-                      source={{ uri: banner.image }}
-                      style={styles.bannerMainImage}
-                      resizeMode="cover"
-                    />
-                    <View style={styles.bannerMainOverlay}>
-                      <Text style={styles.bannerMainTitle}>
-                        {banner.title}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            )}
-
             {/* Fallback - Section Kevarim si pas de bannières */}
             {(loadingBanners || banners.length === 0) && (
               <>
@@ -611,44 +582,6 @@ const styles = StyleSheet.create({
     color: Colors.white,
     opacity: 0.9,
     lineHeight: 18,
-  },
-  bannersMainContainer: {
-    marginBottom: 32,
-  },
-  bannersMainContent: {
-    paddingRight: 20,
-  },
-  bannerMainCard: {
-    width: 350,
-    height: 200,
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginRight: 16,
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  lastBannerMainCard: {
-    marginRight: 0,
-  },
-  bannerMainImage: {
-    width: '100%',
-    height: '100%',
-  },
-  bannerMainOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    padding: 16,
-  },
-  bannerMainTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: Colors.white,
   },
   sectionTitle: {
     fontSize: 18,
