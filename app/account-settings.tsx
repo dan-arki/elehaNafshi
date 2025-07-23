@@ -5,11 +5,13 @@ import { ChevronLeft, LogOut, Trash2 } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
 import { router } from 'expo-router';
+import { triggerLightHaptic, triggerMediumHaptic, triggerErrorHaptic } from '../utils/haptics';
 
 export default function AccountSettingsScreen() {
   const { logout } = useAuth();
 
   const handleLogout = async () => {
+    triggerMediumHaptic();
     Alert.alert(
       'Déconnexion',
       'Êtes-vous sûr de vouloir vous déconnecter ?',
@@ -23,11 +25,13 @@ export default function AccountSettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
+              triggerMediumHaptic();
               await logout();
               // Rediriger immédiatement vers la page de connexion après déconnexion
               router.replace('/login');
             } catch (error) {
               console.error('Erreur lors de la déconnexion:', error);
+              triggerErrorHaptic();
               Alert.alert('Erreur', 'Impossible de se déconnecter');
             }
           },
@@ -37,6 +41,7 @@ export default function AccountSettingsScreen() {
   };
 
   const handleDeleteAccount = () => {
+    triggerMediumHaptic();
     Alert.alert(
       'Supprimer le compte',
       'Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible et toutes vos données seront perdues.',
@@ -49,6 +54,7 @@ export default function AccountSettingsScreen() {
           text: 'Supprimer',
           style: 'destructive',
           onPress: async () => {
+            triggerMediumHaptic();
             // Ici vous pourrez ajouter la logique de suppression du compte
             Alert.alert('Information', 'La suppression de compte sera bientôt disponible.');
           },
@@ -62,7 +68,10 @@ export default function AccountSettingsScreen() {
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => {
+            triggerLightHaptic();
+            router.back();
+          }}>
             <ChevronLeft size={24} color={Colors.text.primary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Paramètres du compte</Text>

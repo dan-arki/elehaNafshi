@@ -12,6 +12,7 @@ import SymbolsInfoBottomSheet from '../../components/SymbolsInfoBottomSheet';
 import MapSelectionBottomSheet from '../../components/MapSelectionBottomSheet';
 import { DisplaySettings } from '../../types';
 import { useDisplaySettings } from '../../contexts/DisplaySettingsContext';
+import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../../utils/haptics';
 
 import { getCategoryDisplayName } from '../../utils/categoryUtils';
 
@@ -123,6 +124,7 @@ export default function KeverScreen() {
   };
 
   const toggleBlockSection = (blockId: string, section: 'kavana' | 'comments') => {
+    triggerLightHaptic();
     setExpandedBlockSections(prev => ({
       ...prev,
       [blockId]: {
@@ -134,6 +136,8 @@ export default function KeverScreen() {
 
   const toggleFavorite = async () => {
     if (!user || !subcategory) return;
+    
+    triggerMediumHaptic();
     
     // Create a Prayer object representing the subcategory
     const subcategoryAsPrayer: Prayer = {
@@ -157,6 +161,7 @@ export default function KeverScreen() {
       if (isFavorite) {
         await removeFromFavorites(user.uid, subcategory.id);
         setIsFavorite(false);
+        triggerSuccessHaptic();
         // Show success feedback
         setTimeout(() => {
           // You could add a toast notification here if available
@@ -164,6 +169,7 @@ export default function KeverScreen() {
       } else {
         await addToFavorites(user.uid, subcategoryAsPrayer);
         setIsFavorite(true);
+        triggerSuccessHaptic();
         // Show success feedback
         setTimeout(() => {
           // You could add a toast notification here if available
@@ -171,12 +177,14 @@ export default function KeverScreen() {
       }
     } catch (error) {
       console.error('Erreur lors de la mise à jour des favoris:', error);
+      triggerErrorHaptic();
       // Show user-friendly error message
       console.warn('Impossible de mettre à jour les favoris');
     }
   };
 
   const openInMaps = () => {
+    triggerLightHaptic();
     setShowMapSelection(true);
   };
 
@@ -208,7 +216,10 @@ export default function KeverScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => {
+          triggerLightHaptic();
+          router.back();
+        }}>
           <ChevronLeft size={24} color={Colors.text.primary} />
         </TouchableOpacity>
         
@@ -217,7 +228,10 @@ export default function KeverScreen() {
         </View>
         
         <View style={styles.headerRight}>
-          <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
+          <TouchableOpacity onPress={() => {
+            triggerLightHaptic();
+            setShowSettings(true);
+          }} style={styles.headerIcon}>
             <Settings size={24} color={Colors.text.primary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
@@ -249,7 +263,10 @@ export default function KeverScreen() {
                 styles.displayModeButton,
                 displayMode === button.key && styles.displayModeButtonActive
               ]}
-              onPress={() => setDisplayMode(button.key as any)}
+              onPress={() => {
+                triggerLightHaptic();
+                setDisplayMode(button.key as any);
+              }}
             >
               <Text style={[
                 styles.displayModeText,

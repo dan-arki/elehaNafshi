@@ -8,6 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getCustomPrayerById } from '../../services/firestore';
 import { Prayer } from '../../types';
 import { HomeIcon } from '../(tabs)/_layout';
+import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
 
 export default function CustomPrayerDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -36,19 +37,23 @@ export default function CustomPrayerDetailScreen() {
   };
 
   const togglePlayPause = () => {
+    triggerLightHaptic();
     setIsPlaying(!isPlaying);
     // Ici vous pourrez ajouter la logique pour jouer/arrêter la musique
   };
 
   const navigateToHome = () => {
+    triggerMediumHaptic();
     router.push('/(tabs)');
   };
 
   const navigateToSiddour = () => {
+    triggerMediumHaptic();
     router.push('/(tabs)/siddour');
   };
 
   const navigateToProfile = () => {
+    triggerMediumHaptic();
     router.push('/(tabs)/profile');
   };
 
@@ -102,7 +107,10 @@ export default function CustomPrayerDetailScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => {
+          triggerLightHaptic();
+          router.back();
+        }}>
           <ChevronLeft size={24} color={Colors.text.primary} />
         </TouchableOpacity>
         

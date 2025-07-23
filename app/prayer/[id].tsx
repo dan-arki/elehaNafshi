@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, useGlobalSearchParams } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
+import { triggerLightHaptic } from '../../utils/haptics';
 
 export default function PrayerDetailScreen() {
   const params = useGlobalSearchParams();
@@ -82,6 +83,7 @@ export default function PrayerDetailScreen() {
   };
 
   const handleGoBack = () => {
+    triggerLightHaptic();
     router.back();
   };
 

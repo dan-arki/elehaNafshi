@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'rea
 import { X, Plus, Minus, RotateCcw } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useDisplaySettings } from '../contexts/DisplaySettingsContext';
+import { triggerLightHaptic } from '../utils/haptics';
 
 interface SettingsBottomSheetProps {
   visible: boolean;
@@ -23,21 +24,25 @@ export default function SettingsBottomSheet({
 
   const increaseFontSize = () => {
     if (fontSizeAdjustment < maxAdjustment) {
+      triggerLightHaptic();
       onFontSizeChange(fontSizeAdjustment + 2);
     }
   };
 
   const decreaseFontSize = () => {
     if (fontSizeAdjustment > minAdjustment) {
+      triggerLightHaptic();
       onFontSizeChange(fontSizeAdjustment - 2);
     }
   };
 
   const resetFontSize = () => {
+    triggerLightHaptic();
     onFontSizeChange(0);
   };
 
   const resetHebrewFont = () => {
+    triggerLightHaptic();
     setHebrewFont('FrankRuhlLibre-Regular');
   };
 
@@ -63,7 +68,10 @@ export default function SettingsBottomSheet({
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Paramètres</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <TouchableOpacity onPress={() => {
+              triggerLightHaptic();
+              onClose();
+            }} style={styles.closeButton}>
               <X size={24} color={Colors.text.primary} />
             </TouchableOpacity>
           </View>
@@ -125,7 +133,10 @@ export default function SettingsBottomSheet({
                       styles.fontOption,
                       hebrewFont === option.key && styles.fontOptionActive
                     ]}
-                    onPress={() => setHebrewFont(option.key)}
+                    onPress={() => {
+                      triggerLightHaptic();
+                      setHebrewFont(option.key);
+                    }}
                   >
                     <Text style={[
                       styles.fontOptionText,

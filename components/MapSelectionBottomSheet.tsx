@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView, Alert, Linking, Image } from 'react-native';
 import { X, Navigation, MapPin } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
+import { triggerLightHaptic, triggerMediumHaptic, triggerErrorHaptic } from '../utils/haptics';
 
 interface MapSelectionBottomSheetProps {
   visible: boolean;
@@ -48,6 +49,7 @@ export default function MapSelectionBottomSheet({
   ];
 
   const handleMapSelection = async (mapApp: MapApp) => {
+    triggerMediumHaptic();
     try {
       // First, try to open the native app
       const canOpen = await Linking.canOpenURL(mapApp.url);
@@ -69,6 +71,7 @@ export default function MapSelectionBottomSheet({
       onClose();
     } catch (error) {
       console.error('Error opening map application:', error);
+      triggerErrorHaptic();
       Alert.alert(
         'Erreur',
         `Impossible d'ouvrir ${mapApp.name}. Vérifiez que l'application est installée sur votre appareil.`,
@@ -90,7 +93,10 @@ export default function MapSelectionBottomSheet({
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Choisir une application de navigation</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <TouchableOpacity onPress={() => {
+              triggerLightHaptic();
+              onClose();
+            }} style={styles.closeButton}>
               <X size={24} color={Colors.text.primary} />
             </TouchableOpacity>
           </View>
