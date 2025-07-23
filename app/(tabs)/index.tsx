@@ -8,6 +8,7 @@ import { router } from 'expo-router';
 import { getAllSiddourSubcategoriesForSearch, getBanners } from '../../services/firestore';
 import { Banner } from '../../types';
 import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
+import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 
 export default function HomeScreen() {
   console.log('[index.tsx] Début du rendu de l\'écran d\'accueil');
@@ -185,10 +186,11 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-            {/* Header */}
-            <View style={styles.header}>
-              <View style={styles.profileContainer}>
-                <Image
+            <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
+              {/* Header */}
+              <View style={styles.header}>
+                <View style={styles.profileContainer}>
+                  <Image
                   source={{ uri: 'https://cdn.vectorstock.com/i/preview-1x/52/71/default-placeholder-profile-icon-vector-14065271.jpg' }}
                   style={styles.profileImage}
                 />
@@ -197,16 +199,18 @@ export default function HomeScreen() {
                   <Text style={styles.username}>{String(userGreeting)}</Text>
                 </View>
               </View>
-              
-              {/* Hebrew Date in Header */}
-              <View style={styles.hebrewDateContainer}>
-                <View style={styles.hebrewDateIcon}>
-                  <Text style={styles.hebrewDateIconText}>📅</Text>
+                
+                {/* Hebrew Date in Header */}
+                <View style={styles.hebrewDateContainer}>
+                  <View style={styles.hebrewDateIcon}>
+                    <Text style={styles.hebrewDateIconText}>📅</Text>
+                  </View>
+                  <View style={styles.hebrewDateTextContainer}>
+                    <Text style={styles.hebrewDateLabel}>Date hébraïque</Text>
+                    <Text style={styles.hebrewDateText}>{hebrewDate}</Text>
+                  </View>
                 </View>
-                <View style={styles.hebrewDateTextContainer}>
-                  <Text style={styles.hebrewDateLabel}>Date hébraïque</Text>
-                  <Text style={styles.hebrewDateText}>{hebrewDate}</Text>
-                </View>
+
               </View>
             </View>
 
@@ -223,6 +227,7 @@ export default function HomeScreen() {
                   onFocus={handleSearchInputFocus}
                   onBlur={handleSearchInputBlur}
                 />
+
               </View>
             </View>
 
@@ -254,6 +259,7 @@ export default function HomeScreen() {
                 </ScrollView>
               </View>
             )}
+            </AnimatedScreenWrapper>
 
             {/* Bannières Section */}
             {!loadingBanners && banners.length > 0 && (
@@ -262,33 +268,34 @@ export default function HomeScreen() {
 
                 {/* Bannières Carousel */}
                 <ScrollView 
-                  horizontal 
+                  horizontal
                   showsHorizontalScrollIndicator={false}
                   style={styles.bannersContainer}
                   contentContainerStyle={styles.bannersContent}
                 >
                   {banners.map((banner, index) => (
-                    <TouchableOpacity
-                      key={banner.id}
-                      style={[styles.bannerCard, index === banners.length - 1 && styles.lastBannerCard]}
-                      onPress={() => handleBannerPress(banner)}
-                    >
-                      <Image
-                        source={{ uri: banner.image }}
-                        style={styles.bannerImage}
-                        resizeMode="cover"
-                      />
-                      <View style={styles.bannerOverlay}>
-                        <Text style={styles.bannerTitle} numberOfLines={2}>
-                          {banner.title}
-                        </Text>
-                        {banner.description && (
-                          <Text style={styles.bannerDescription} numberOfLines={2}>
-                            {banner.description}
+                    <AnimatedScreenWrapper key={banner.id} animationType="slideUp" duration={400} delay={index * 50 + 100}>
+                      <TouchableOpacity
+                        style={[styles.bannerCard, index === banners.length - 1 && styles.lastBannerCard]}
+                        onPress={() => handleBannerPress(banner)}
+                      >
+                        <Image
+                          source={{ uri: banner.image }}
+                          style={styles.bannerImage}
+                          resizeMode="cover"
+                        />
+                        <View style={styles.bannerOverlay}>
+                          <Text style={styles.bannerTitle} numberOfLines={2}>
+                            {banner.title}
                           </Text>
-                        )}
-                      </View>
-                    </TouchableOpacity>
+                          {banner.description && (
+                            <Text style={styles.bannerDescription} numberOfLines={2}>
+                              {banner.description}
+                            </Text>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    </AnimatedScreenWrapper>
                   ))}
                 </ScrollView>
               </>
@@ -296,52 +303,58 @@ export default function HomeScreen() {
 
             {/* Fallback - Section Kevarim si pas de bannières */}
             {(loadingBanners || banners.length === 0) && (
-              <>
-                <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
-                  <Text style={styles.kevarimTitle}>Les kivrei tsadikim</Text>
-                  <ChevronRight size={20} color={Colors.text.primary} />
-                </TouchableOpacity>
-                
-                <View style={styles.kevarimCard}>
-                  <Image
-                    source={{ uri: 'https://images.pexels.com/photos/8919544/pexels-photo-8919544.jpeg?auto=compress&cs=tinysrgb&w=800' }}
-                    style={styles.kevarimImage}
-                  />
-                  <View style={styles.kevarimOverlay}>
-                    <Text style={styles.kevarimCardTitle}>Les kivrei tsadikim</Text>
+              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={100}>
+                <>
+                  <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
+                    <Text style={styles.kevarimTitle}>Les kivrei tsadikim</Text>
+                    <ChevronRight size={20} color={Colors.text.primary} />
+                  </TouchableOpacity>
+                  
+                  <View style={styles.kevarimCard}>
+                    <Image
+                      source={{ uri: 'https://images.pexels.com/photos/8919544/pexels-photo-8919544.jpeg?auto=compress&cs=tinysrgb&w=800' }}
+                      style={styles.kevarimImage}
+                    />
+                    <View style={styles.kevarimOverlay}>
+                      <Text style={styles.kevarimCardTitle}>Les kivrei tsadikim</Text>
+                    </View>
                   </View>
-                </View>
-              </>
+                </>
+              </AnimatedScreenWrapper>
             )}
 
             {/* Mes Essentiels */}
-            <Text style={styles.sectionTitle}>Mes essentiels</Text>
-            <View style={styles.essentialsContainer}>
-              <TouchableOpacity style={styles.essentialCard} onPress={navigateToSiddour}>
-                <Image
-                  source={require('../../assets/images/siddourIllu.jpg')}
-                  style={styles.essentialImage}
-                />
-              </TouchableOpacity>
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={200}>
+              <Text style={styles.sectionTitle}>Mes essentiels</Text>
+              <View style={styles.essentialsContainer}>
+                <TouchableOpacity style={styles.essentialCard} onPress={navigateToSiddour}>
+                  <Image
+                    source={require('../../assets/images/siddourIllu.jpg')}
+                    style={styles.essentialImage}
+                  />
+                </TouchableOpacity>
 
-              <TouchableOpacity style={styles.essentialCard} onPress={() => router.push('/my-prayers')}>
-                <Image
-                  source={require('../../assets/images/myPriere.jpg')}
-                  style={styles.essentialImage}
-                />
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity style={styles.essentialCard} onPress={() => router.push('/my-prayers')}>
+                  <Image
+                    source={require('../../assets/images/myPriere.jpg')}
+                    style={styles.essentialImage}
+                  />
+                </TouchableOpacity>
+              </View>
+            </AnimatedScreenWrapper>
 
             {/* Autres Section */}
             <Text style={styles.sectionTitle}>Autres</Text>
-            <TouchableOpacity style={styles.favoriteSection} onPress={navigateToFavorites}>
-              <Heart size={20} color={Colors.primary} />
-              <View style={styles.favoriteContent}>
-                <Text style={styles.favoriteTitle}>Mes prières favorites</Text>
-                <Text style={styles.favoriteSubtitle}>Consulter</Text>
-              </View>
-              <ChevronRight size={20} color={Colors.text.muted} />
-            </TouchableOpacity>
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={300}>
+              <TouchableOpacity style={styles.favoriteSection} onPress={navigateToFavorites}>
+                <Heart size={20} color={Colors.primary} />
+                <View style={styles.favoriteContent}>
+                  <Text style={styles.favoriteTitle}>Mes prières favorites</Text>
+                  <Text style={styles.favoriteSubtitle}>Consulter</Text>
+                </View>
+                <ChevronRight size={20} color={Colors.text.muted} />
+              </TouchableOpacity>
+            </AnimatedScreenWrapper>
         </ScrollView>
       </SafeAreaView>
     </View>
