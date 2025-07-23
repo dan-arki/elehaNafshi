@@ -91,3 +91,14 @@ export interface DisplaySettings {
   showFrench: boolean;
   showPhonetic: boolean;
 }
+
+export interface Banner {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  url: string;
+  order?: number;
+  isActive?: boolean;
+  createdAt?: Date;
+}
