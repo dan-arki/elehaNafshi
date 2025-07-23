@@ -212,7 +212,6 @@ export default function HomeScreen() {
                 </View>
 
               </View>
-            </View>
 
             {/* Enhanced Search Bar */}
             <View style={styles.searchContainer}>
