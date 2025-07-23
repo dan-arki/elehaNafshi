@@ -5,6 +5,7 @@ import { EyeOff, Eye } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
 import { router } from 'expo-router';
+import { triggerLightHaptic, triggerMediumHaptic, triggerErrorHaptic, triggerSuccessHaptic } from '../utils/haptics';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -14,7 +15,9 @@ export default function LoginScreen() {
   const { signIn, signUp } = useAuth();
 
   const handleLogin = async () => {
+    triggerMediumHaptic();
     if (!email || !password) {
+      triggerErrorHaptic();
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
       return;
     }
@@ -22,8 +25,10 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await signIn(email, password);
+      triggerSuccessHaptic();
       router.replace('/(tabs)');
     } catch (error: any) {
+      triggerErrorHaptic();
       Alert.alert('Erreur de connexion', error.message);
     } finally {
       setLoading(false);
@@ -31,10 +36,12 @@ export default function LoginScreen() {
   };
 
   const handleForgotPassword = () => {
+    triggerLightHaptic();
     Alert.alert('Mot de passe oublié', 'Un email de récupération sera envoyé à votre adresse.');
   };
 
   const handleSignUp = async () => {
+    triggerMediumHaptic();
     router.push('/register');
   };
 
@@ -88,7 +95,10 @@ export default function LoginScreen() {
                   />
                   <TouchableOpacity
                     style={styles.eyeIcon}
-                    onPress={() => setShowPassword(!showPassword)}
+                    onPress={() => {
+                      triggerLightHaptic();
+                      setShowPassword(!showPassword);
+                    }}
                   >
                     {showPassword ? (
                       <Eye size={20} color={Colors.text.muted} />
@@ -102,7 +112,11 @@ export default function LoginScreen() {
                   <Text style={styles.forgotPassword}>Mot de passe oublié ?</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+                <TouchableOpacity 
+                  style={styles.loginButton} 
+                  onPress={handleLogin}
+                  disabled={loading}
+                >
                   <Text style={styles.loginButtonText}>
                     {loading ? 'Connexion...' : 'Se connecter'}
                   </Text>

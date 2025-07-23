@@ -5,6 +5,7 @@ import { EyeOff, Eye, ChevronLeft } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
 import { router } from 'expo-router';
+import { triggerLightHaptic, triggerMediumHaptic, triggerErrorHaptic, triggerSuccessHaptic } from '../utils/haptics';
 
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
@@ -16,17 +17,21 @@ export default function RegisterScreen() {
   const { signUp } = useAuth();
 
   const handleRegister = async () => {
+    triggerMediumHaptic();
     if (!email || !password || !confirmPassword) {
+      triggerErrorHaptic();
       Alert.alert('Erreur', 'Veuillez remplir tous les champs');
       return;
     }
 
     if (password !== confirmPassword) {
+      triggerErrorHaptic();
       Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
 
     if (password.length < 6) {
+      triggerErrorHaptic();
       Alert.alert('Erreur', 'Le mot de passe doit contenir au moins 6 caractères');
       return;
     }
@@ -34,8 +39,10 @@ export default function RegisterScreen() {
     setLoading(true);
     try {
       await signUp(email, password);
+      triggerSuccessHaptic();
       router.replace('/(tabs)');
     } catch (error: any) {
+      triggerErrorHaptic();
       Alert.alert('Erreur d\'inscription', error.message);
     } finally {
       setLoading(false);
@@ -43,6 +50,7 @@ export default function RegisterScreen() {
   };
 
   const handleBackToLogin = () => {
+    triggerLightHaptic();
     router.back();
   };
 
@@ -62,7 +70,10 @@ export default function RegisterScreen() {
               keyboardShouldPersistTaps="handled"
             >
               {/* Back Button */}
-              <TouchableOpacity style={styles.backButton} onPress={handleBackToLogin}>
+              <TouchableOpacity 
+                style={styles.backButton} 
+                onPress={handleBackToLogin}
+              >
                 <ChevronLeft size={24} color={Colors.white} />
               </TouchableOpacity>
 
@@ -101,7 +112,10 @@ export default function RegisterScreen() {
                   />
                   <TouchableOpacity
                     style={styles.eyeIcon}
-                    onPress={() => setShowPassword(!showPassword)}
+                    onPress={() => {
+                      triggerLightHaptic();
+                      setShowPassword(!showPassword);
+                    }}
                   >
                     {showPassword ? (
                       <Eye size={20} color={Colors.text.muted} />
@@ -122,7 +136,10 @@ export default function RegisterScreen() {
                   />
                   <TouchableOpacity
                     style={styles.eyeIcon}
-                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                    onPress={() => {
+                      triggerLightHaptic();
+                      setShowConfirmPassword(!showConfirmPassword);
+                    }}
                   >
                     {showConfirmPassword ? (
                       <Eye size={20} color={Colors.text.muted} />
@@ -132,7 +149,11 @@ export default function RegisterScreen() {
                   </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+                <TouchableOpacity 
+                  style={styles.registerButton} 
+                  onPress={handleRegister}
+                  disabled={loading}
+                >
                   <Text style={styles.registerButtonText}>
                     {loading ? 'Création...' : 'Créer le compte'}
                   </Text>
