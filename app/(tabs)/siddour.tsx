@@ -230,32 +230,14 @@ export default function SiddourScreen() {
                   delay={300 + (chapters.indexOf(chapter) * 100)}
                 >
                   <TouchableOpacity
-                    style={styles.chapterCardTouchable}
+                    style={styles.chapterItem}
                     onPress={() => navigateToChapter(chapter.id)}
                   >
-                    {chapter.banner ? (
-                      <ImageBackground
-                        source={{ uri: chapter.banner }}
-                        style={styles.chapterBackgroundImage}
-                        imageStyle={styles.chapterImageStyle}
-                      >
-                        <BlurView intensity={30} tint="light" style={styles.chapterOverlay}>
-                          <View style={styles.chapterContent}>
-                            <Text style={styles.chapterTitle}>{chapter.title}</Text>
-                            <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
-                          </View>
-                          <ChevronRight size={20} color={Colors.text.primary} />
-                        </BlurView>
-                      </ImageBackground>
-                    ) : (
-                      <View style={styles.chapterItem}>
-                        <View style={styles.chapterContent}>
-                          <Text style={styles.chapterTitle}>{chapter.title}</Text>
-                          <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
-                        </View>
-                        <ChevronRight size={20} color={Colors.text.primary} />
-                      </View>
-                    )}
+                    <View style={styles.chapterContent}>
+                      <Text style={styles.chapterTitle}>{chapter.title}</Text>
+                      <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
+                    </View>
+                    <ChevronRight size={20} color={Colors.text.primary} />
                   </TouchableOpacity>
                 </AnimatedScreenWrapper>
                 ))
@@ -421,7 +403,13 @@ const styles = StyleSheet.create({
   chapterList: {
     paddingBottom: 20,
   },
-  chapterCardTouchable: {
+  chapterItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.white,
+    padding: 20,
+    height: 120,
     marginBottom: 12,
     borderRadius: 12,
     overflow: 'hidden',
@@ -430,28 +418,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-  },
-  chapterBackgroundImage: {
-    width: '100%',
-    height: 120,
-  },
-  chapterImageStyle: {
-    borderRadius: 12,
-  },
-  chapterOverlay: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-  },
-  chapterItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: Colors.white,
-    padding: 20,
-    height: 120,
   },
   chapterContent: {
     flex: 1,
