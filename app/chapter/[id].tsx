@@ -377,7 +377,7 @@ export default function ChapterScreen() {
         )}
       </View>
       {/* Scrollable Content */}
-      <View style={{flex: 1}}>
+      <View style={styles.mainContentWrapper}>
         <ScrollView 
           ref={scrollRef}
           style={styles.scrollView} 
@@ -572,9 +572,89 @@ export default function ChapterScreen() {
             );
           }).filter(Boolean)}
 
-          {/* Bottom spacing for navigation */}
-          <View style={styles.bottomSpacing} />
         </ScrollView>
+
+        
+        <TouchableOpacity 
+          style={styles.floatingFavoriteButton}
+          onPress={toggleFavorite}
+        >
+          <Heart 
+            size={24} 
+            color={Colors.white}
+            fill={isFavorite ? Colors.white : 'transparent'}
+          />
+        </TouchableOpacity>
+
+        {/* Subcategory Navigation */}
+        {subcategories.length > 1 && (
+          <View style={styles.subcategoryNavigation}>
+            <TouchableOpacity 
+              style={[
+                styles.navButton,
+                selectedSubcategoryIndex === 0 && styles.navButtonDisabled
+              ]}
+              onPress={handlePreviousSubcategory}
+              disabled={selectedSubcategoryIndex === 0}
+            >
+              <ChevronLeft 
+                size={20} 
+                color={selectedSubcategoryIndex === 0 ? Colors.text.muted : Colors.white} 
+              />
+              <Text style={[
+                styles.navButtonText,
+                selectedSubcategoryIndex === 0 && styles.navButtonTextDisabled
+              ]}>
+                Précédent
+              </Text>
+            </TouchableOpacity>
+            
+            <View style={styles.navIndicator}>
+              <Text style={styles.navIndicatorText}>
+                {selectedSubcategoryIndex + 1} / {subcategories.length}
+              </Text>
+            </View>
+            
+            <TouchableOpacity 
+              style={[
+                styles.navButton,
+                selectedSubcategoryIndex === subcategories.length - 1 && styles.navButtonDisabled
+              ]}
+              onPress={handleNextSubcategory}
+              disabled={selectedSubcategoryIndex === subcategories.length - 1}
+            >
+              <Text style={[
+                styles.navButtonText,
+                selectedSubcategoryIndex === subcategories.length - 1 && styles.navButtonTextDisabled
+              ]}>
+                Suivant
+              </Text>
+              <ChevronRight 
+                size={20} 
+                color={selectedSubcategoryIndex === subcategories.length - 1 ? Colors.text.muted : Colors.white} 
+              />
+            </TouchableOpacity>
+          </View>
+        )}
+
+        <View style={styles.bottomNavigation}>
+          <TouchableOpacity style={styles.navItem} onPress={navigateToHome}>
+            <HomeIcon size={24} color={Colors.text.muted} />
+            <Text style={styles.navText}>Accueil</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={navigateToSiddour}>
+            <View style={styles.activeNavBackground}>
+              <BookOpen size={24} color={Colors.white} fill={Colors.white} />
+            </View>
+            <Text style={[styles.navText, styles.activeNavText]}>Siddour</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.navItem} onPress={navigateToProfile}>
+            <User size={24} color={Colors.text.muted} />
+            <Text style={styles.navText}>Profil</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <SettingsBottomSheet
@@ -588,87 +668,6 @@ export default function ChapterScreen() {
         visible={showSymbolsInfo}
         onClose={() => setShowSymbolsInfo(false)}
       />
-
-      <TouchableOpacity 
-        style={styles.floatingFavoriteButton}
-        onPress={toggleFavorite}
-      >
-        <Heart 
-          size={24} 
-          color={Colors.white}
-          fill={isFavorite ? Colors.white : 'transparent'}
-        />
-      </TouchableOpacity>
-
-      {/* Subcategory Navigation */}
-      {subcategories.length > 1 && (
-        <View style={styles.subcategoryNavigation}>
-          <TouchableOpacity 
-            style={[
-              styles.navButton,
-              selectedSubcategoryIndex === 0 && styles.navButtonDisabled
-            ]}
-            onPress={handlePreviousSubcategory}
-            disabled={selectedSubcategoryIndex === 0}
-          >
-            <ChevronLeft 
-              size={20} 
-              color={selectedSubcategoryIndex === 0 ? Colors.text.muted : Colors.white} 
-            />
-            <Text style={[
-              styles.navButtonText,
-              selectedSubcategoryIndex === 0 && styles.navButtonTextDisabled
-            ]}>
-              Précédent
-            </Text>
-          </TouchableOpacity>
-          
-          <View style={styles.navIndicator}>
-            <Text style={styles.navIndicatorText}>
-              {selectedSubcategoryIndex + 1} / {subcategories.length}
-            </Text>
-          </View>
-          
-          <TouchableOpacity 
-            style={[
-              styles.navButton,
-              selectedSubcategoryIndex === subcategories.length - 1 && styles.navButtonDisabled
-            ]}
-            onPress={handleNextSubcategory}
-            disabled={selectedSubcategoryIndex === subcategories.length - 1}
-          >
-            <Text style={[
-              styles.navButtonText,
-              selectedSubcategoryIndex === subcategories.length - 1 && styles.navButtonTextDisabled
-            ]}>
-              Suivant
-            </Text>
-            <ChevronRight 
-              size={20} 
-              color={selectedSubcategoryIndex === subcategories.length - 1 ? Colors.text.muted : Colors.white} 
-            />
-          </TouchableOpacity>
-        </View>
-      )}
-
-      <View style={styles.bottomNavigation}>
-        <TouchableOpacity style={styles.navItem} onPress={navigateToHome}>
-          <HomeIcon size={24} color={Colors.text.muted} />
-          <Text style={styles.navText}>Accueil</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={navigateToSiddour}>
-          <View style={styles.activeNavBackground}>
-            <BookOpen size={24} color={Colors.white} fill={Colors.white} />
-          </View>
-          <Text style={[styles.navText, styles.activeNavText]}>Siddour</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navItem} onPress={navigateToProfile}>
-          <User size={24} color={Colors.text.muted} />
-          <Text style={styles.navText}>Profil</Text>
-        </TouchableOpacity>
-      </View>
     </SafeAreaView>
   );
 }
@@ -727,6 +726,10 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
+    paddingBottom: 140,
+  },
+  mainContentWrapper: {
+    flex: 1,
   },
   displayModeContainer: {
     marginVertical: 16,
@@ -903,7 +906,7 @@ const styles = StyleSheet.create({
   },
   floatingFavoriteButton: {
     position: 'absolute',
-    bottom: 160,
+    bottom: 140,
     left: 20,
     backgroundColor: Colors.primary,
     borderRadius: 30,
@@ -916,9 +919,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-  },
-  bottomSpacing: {
-    height: 160, // Espace pour la navigation du bas + navigation sous-catégories
   },
   subcategoryNavigation: {
     flexDirection: 'row',
