@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ChevronLeft, ChevronRight, List, Settings, Heart, Gift, CircleAlert as AlertCircle, ChevronDown, ChevronUp, BookOpen, User } from 'lucide-react-native';
-import { BlurView } from 'expo-blur';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { getChapterById, getSiddourSubcategories, getSiddourBlocks, addToFavorites, removeFromFavorites, checkIfFavorite } from '../../services/firestore';
@@ -15,11 +14,6 @@ import { useDisplaySettings } from '../../contexts/DisplaySettingsContext';
 import { HomeIcon } from '../(tabs)/_layout';
 import { getFilterCategoryFromChapterTitle } from '../../utils/categoryUtils';
 import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../../utils/haptics';
-import AnimatedPrayerText from '../../components/AnimatedPrayerText';
-import AnimatedPrayerBlock from '../../components/AnimatedPrayerBlock';
-import AnimatedDisplayModeSelector from '../../components/AnimatedDisplayModeSelector';
-import AnimatedSubcategoryNavigation from '../../components/AnimatedSubcategoryNavigation';
-import AnimatedNavigationButton from '../../components/AnimatedNavigationButton';
 
 export default function ChapterScreen() {
   const { id, subcategoryId } = useLocalSearchParams();
@@ -342,117 +336,103 @@ export default function ChapterScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header with Dynamic Banner Background */}
-      {chapter.banner ? (
-        <ImageBackground
-          source={{ uri: chapter.banner }}
-          style={styles.headerBackground}
-          imageStyle={styles.headerBackgroundImage}
-        >
-          <BlurView intensity={40} tint="light" style={styles.headerBlur}>
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <ChevronLeft size={24} color={Colors.text.primary} />
-              </TouchableOpacity>
-              
-              <View style={styles.headerCenter}>
-                <AnimatedPrayerText 
-                  style={styles.headerTitle}
-                  animationType="fadeIn"
-                  duration={600}
-                >
-                  {chapter.title}
-                </AnimatedPrayerText>
-                <AnimatedPrayerText 
-                  style={styles.headerSubtitle}
-                  animationType="fadeIn"
-                  delay={200}
-                  duration={500}
-                >
-                  {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
-                </AnimatedPrayerText>
-              </View>
-              
-              <View style={styles.headerRight}>
-                <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
-                  <Settings size={24} color={Colors.text.primary} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
-                  <Heart 
-                    size={24} 
-                    color={isFavorite ? Colors.error : Colors.text.primary}
-                    fill={isFavorite ? Colors.error : 'transparent'}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
-                  <List size={24} color={Colors.text.primary} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </BlurView>
-        </ImageBackground>
-      ) : (
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <ChevronLeft size={24} color={Colors.text.primary} />
-          </TouchableOpacity>
-          
-          <View style={styles.headerCenter}>
-            <AnimatedPrayerText 
-              style={styles.headerTitle}
-              animationType="fadeIn"
-              duration={600}
-            >
-              {chapter.title}
-            </AnimatedPrayerText>
-            <AnimatedPrayerText 
-              style={styles.headerSubtitle}
-              animationType="fadeIn"
-              delay={200}
-              duration={500}
-            >
-              {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
-            </AnimatedPrayerText>
-          </View>
-          
-          <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
-              <Settings size={24} color={Colors.text.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
-              <Heart 
-                size={24} 
-                color={isFavorite ? Colors.error : Colors.text.primary}
-                fill={isFavorite ? Colors.error : 'transparent'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
-              <List size={24} color={Colors.text.primary} />
-            </TouchableOpacity>
-          </View>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <ChevronLeft size={24} color={Colors.text.primary} />
+        </TouchableOpacity>
+        
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>{chapter.title}</Text>
+          <Text style={styles.headerSubtitle}>
+            {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
+          </Text>
         </View>
-      )}
+        
+        <View style={styles.headerRight}>
+          <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
+            <Settings size={24} color={Colors.text.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
+            <Heart 
+              size={24} 
+              color={isFavorite ? Colors.error : Colors.text.primary}
+              fill={isFavorite ? Colors.error : 'transparent'}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
+            <List size={24} color={Colors.text.primary} />
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* Sticky Navigation Section */}
       <View style={styles.stickySection}>
-        {/* Animated Display Mode Buttons */}
-        <AnimatedDisplayModeSelector
-          options={displayModeButtons}
-          selectedMode={displayMode}
-          onModeChange={(mode) => setDisplayMode(mode as any)}
-          delay={300}
-        />
+        {/* Display Mode Buttons */}
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          style={styles.displayModeContainer}
+          contentContainerStyle={styles.displayModeContent}
+        >
+          {displayModeButtons.map((button) => (
+            <TouchableOpacity
+              key={button.key}
+              style={[
+                styles.displayModeButton,
+                displayMode === button.key && styles.displayModeButtonActive
+              ]}
+              onPress={() => setDisplayMode(button.key as any)}
+            >
+              <Text style={[
+                styles.displayModeText,
+                displayMode === button.key && styles.displayModeTextActive
+              ]}>
+                {button.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-        {/* Animated Prayer Navigation */}
+        {/* Prayer Navigation */}
         {subcategories.length > 0 && (
-          <AnimatedSubcategoryNavigation
-            subcategories={subcategories}
-            selectedIndex={selectedSubcategoryIndex}
-            onSubcategorySelect={handleSubcategorySelect}
-            scrollViewWidth={scrollViewWidth}
-            contentWidth={contentWidth}
-            delay={400}
-          />
+          <ScrollView 
+            ref={subcategoryScrollRef}
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            style={styles.prayerNavContainer}
+            contentContainerStyle={styles.prayerNavContent}
+            onLayout={(event) => {
+              const { width } = event.nativeEvent.layout;
+              setScrollViewWidth(width);
+              console.log('📐 [DEBUG] ScrollView layout - width:', width);
+            }}
+            onContentSizeChange={(contentWidth, contentHeight) => {
+              setContentWidth(contentWidth);
+              console.log('📐 [DEBUG] ScrollView content size - width:', contentWidth);
+            }}
+          >
+            {subcategories.map((subcategory, index) => (
+              <TouchableOpacity
+                key={subcategory.id}
+                ref={(ref) => {
+                  subcategoryRefs.current[index] = ref;
+                }}
+                style={[
+                  styles.prayerNavButton,
+                  selectedSubcategoryIndex === index && styles.prayerNavButtonActive
+                ]}
+                onPress={() => handleSubcategorySelect(index)}
+              >
+                <Text style={[
+                  styles.prayerNavText,
+                  selectedSubcategoryIndex === index && styles.prayerNavTextActive
+                ]}>
+                  {subcategory.title}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         )}
       </View>
       {/* Scrollable Content */}
@@ -504,13 +484,7 @@ export default function ChapterScreen() {
             console.log('DEBUG Image:', block.image);
             
             return (
-            <AnimatedPrayerBlock 
-              key={block.id} 
-              style={[styles.blockContainer, index === 0 && styles.firstBlockContainer]}
-              index={index}
-              delay={600}
-              animationType="reverent"
-            >
+            <View key={block.id} style={[styles.blockContainer, index === 0 && styles.firstBlockContainer]}>
               {/* Full-width image at the top of each block */}
               {hasImage && (
                 <View style={styles.fullWidthImageContainer}>
@@ -608,14 +582,9 @@ export default function ChapterScreen() {
                   {/* Hebrew text */}
                   {hasHebrewContent && (displayMode === 'hebrew' || displayMode === 'hebrewTrad' || displayMode === 'hebrewPhonetic') && (
                     <View style={block.is_alternative ? styles.alternativeContainer : null}>
-                      <AnimatedPrayerText 
-                        style={[styles.hebrewText, { fontSize: 18 + fontSizeAdjustment, fontFamily: hebrewFont }]}
-                        animationType="reverent"
-                        delay={700 + (index * 100)}
-                        duration={1000}
-                      >
+                      <Text style={[styles.hebrewText, { fontSize: 18 + fontSizeAdjustment, fontFamily: hebrewFont }]}>
                         {block.content.hebrew}
-                      </AnimatedPrayerText>
+                      </Text>
                     </View>
                   )}
 
@@ -627,14 +596,9 @@ export default function ChapterScreen() {
                         style={styles.translateIcon}
                         resizeMode="contain"
                       />
-                      <AnimatedPrayerText 
-                        style={[styles.frenchText, { fontSize: 16 + fontSizeAdjustment }]}
-                        animationType="fadeIn"
-                        delay={800 + (index * 100)}
-                        duration={600}
-                      >
+                      <Text style={[styles.frenchText, { fontSize: 16 + fontSizeAdjustment }]}>
                         {block.content.french}
-                      </AnimatedPrayerText>
+                      </Text>
                     </View>
                   )}
 
@@ -651,14 +615,9 @@ export default function ChapterScreen() {
                           />
                         </View>
                       )}
-                      <AnimatedPrayerText 
-                        style={[styles.phoneticText, { fontSize: 16 + fontSizeAdjustment }]}
-                        animationType="fadeIn"
-                        delay={800 + (index * 100)}
-                        duration={600}
-                      >
+                      <Text style={[styles.phoneticText, { fontSize: 16 + fontSizeAdjustment }]}>
                         {block.content.phonetic}
-                      </AnimatedPrayerText>
+                      </Text>
                     </>
                   )}
                 </View>
@@ -668,7 +627,7 @@ export default function ChapterScreen() {
               {index < currentPrayerBlocks.length - 1 && (
                 <View style={styles.blockSeparator} />
               )}
-            </AnimatedPrayerBlock>
+            </View>
             );
           }).filter(Boolean)}
 
@@ -677,14 +636,13 @@ export default function ChapterScreen() {
         {/* Subcategory Navigation */}
         {subcategories.length > 1 && (
           <View style={styles.subcategoryNavigation}>
-            <AnimatedNavigationButton
-              onPress={handlePreviousSubcategory}
-              disabled={selectedSubcategoryIndex === 0}
+            <TouchableOpacity 
               style={[
                 styles.navButton,
                 selectedSubcategoryIndex === 0 && styles.navButtonDisabled
               ]}
-              delay={500}
+              onPress={handlePreviousSubcategory}
+              disabled={selectedSubcategoryIndex === 0}
             >
               <ChevronLeft 
                 size={20} 
@@ -696,31 +654,21 @@ export default function ChapterScreen() {
               ]}>
                 Précédent
               </Text>
-            </AnimatedNavigationButton>
+            </TouchableOpacity>
             
-            <AnimatedNavigationButton
-              onPress={() => {}}
-              style={styles.navIndicator}
-              delay={600}
-            >
-              <AnimatedPrayerText 
-                style={styles.navIndicatorText}
-                animationType="fadeIn"
-                delay={700}
-                duration={400}
-              >
+            <View style={styles.navIndicator}>
+              <Text style={styles.navIndicatorText}>
                 {selectedSubcategoryIndex + 1} / {subcategories.length}
-              </AnimatedPrayerText>
-            </AnimatedNavigationButton>
+              </Text>
+            </View>
             
-            <AnimatedNavigationButton
-              onPress={handleNextSubcategory}
-              disabled={selectedSubcategoryIndex === subcategories.length - 1}
+            <TouchableOpacity 
               style={[
                 styles.navButton,
                 selectedSubcategoryIndex === subcategories.length - 1 && styles.navButtonDisabled
               ]}
-              delay={500}
+              onPress={handleNextSubcategory}
+              disabled={selectedSubcategoryIndex === subcategories.length - 1}
             >
               <Text style={[
                 styles.navButtonText,
@@ -732,7 +680,7 @@ export default function ChapterScreen() {
                 size={20} 
                 color={selectedSubcategoryIndex === subcategories.length - 1 ? Colors.text.muted : Colors.text.primary} 
               />
-            </AnimatedNavigationButton>
+            </TouchableOpacity>
           </View>
         )}
 
@@ -807,19 +755,10 @@ const styles = StyleSheet.create({
   headerIcon: {
     marginLeft: 16,
   },
-  headerBackground: {
-    minHeight: 120,
-  },
-  headerBackgroundImage: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
-  headerBlur: {
-    flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-  },
   stickySection: {
     backgroundColor: 'transparent',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.background,
   },
   contentWrapper: {
     flex: 1,
@@ -1023,25 +962,23 @@ const styles = StyleSheet.create({
   navButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 25,
     minWidth: 100,
     justifyContent: 'center',
-    elevation: 6,
+    elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
     borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderColor: 'rgba(139, 92, 246, 0.2)',
   },
   navButtonDisabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    opacity: 0.6,
-    elevation: 3,
-    shadowOpacity: 0.1,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    opacity: 0.7,
   },
   navButtonText: {
     fontSize: 14,
@@ -1053,17 +990,17 @@ const styles = StyleSheet.create({
     color: Colors.text.muted,
   },
   navIndicator: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 25,
-    elevation: 6,
+    elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
     borderWidth: 1,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderColor: 'rgba(139, 92, 246, 0.2)',
   },
   navIndicatorText: {
     fontSize: 14,
