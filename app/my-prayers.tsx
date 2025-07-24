@@ -315,19 +315,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     overflow: 'hidden',
   },
-  prayerContent: {
-    flex: 1,
-    padding: 16,
   },
-  prayerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 8,
   },
   prayerTitle: {
     fontSize: 16,
     fontWeight: '600',
+    flex: 1,
+    marginRight: 8,
+                        </Text>
     color: Colors.text.primary,
     flex: 1,
     marginRight: 8,
