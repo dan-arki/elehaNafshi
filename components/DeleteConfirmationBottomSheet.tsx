@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity } from 'react-native';
-import { X, Trash2, AlertTriangle } from 'lucide-react-native';
+import { X, Trash2, TriangleAlert as AlertTriangle } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { triggerLightHaptic, triggerMediumHaptic } from '../utils/haptics';
 
