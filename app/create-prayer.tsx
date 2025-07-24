@@ -26,6 +26,7 @@ export default function CreatePrayerScreen() {
   const [currentSound, setCurrentSound] = useState<Audio.Sound | null>(null);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const [playingMusicUrl, setPlayingMusicUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const [showInstructions, setShowInstructions] = useState(false);
 
@@ -72,13 +73,38 @@ export default function CreatePrayerScreen() {
 
   useEffect(() => {
     if (isEditing) {
-      // Ici vous chargeriez les données de la prière à éditer
-      setPrayerName('Ma prière du matin');
-      setDescription('Prière personnelle');
-      setSelectedMusicUrl(musicOptions[0].url);
-      setGratitudeText('Merci HACHEM pour chaque moment de vie...');
+      loadPrayerForEdit();
     }
-  }, [isEditing]);
+
+  const loadPrayerForEdit = async () => {
+    if (!edit || !user) return;
+    
+    try {
+      setLoading(true);
+      const { getCustomPrayerById } = await import('../services/firestore');
+      const prayerData = await getCustomPrayerById(user.uid, edit as string);
+      
+      if (prayerData) {
+        setPrayerName(prayerData.title || '');
+        setDescription(prayerData.subtitle || '');
+        setSelectedMusicUrl(prayerData.musicUrl || null);
+        
+        // Load sections data if available
+        if (prayerData.sections) {
+          setGratitudeText(prayerData.sections.gratitude || '');
+          setRefouahNames(prayerData.sections.refouah || '');
+          setPersonalImprovement(prayerData.sections.improvement || '');
+          setDreamsDesires(prayerData.sections.dreams || '');
+          setPersonalPrayer(prayerData.sections.personal || '');
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de la prière:', error);
+      Alert.alert('Erreur', 'Impossible de charger les données de la prière');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleMusicSelection = async (musicUrl: string) => {
     triggerLightHaptic();
@@ -174,8 +200,10 @@ export default function CreatePrayerScreen() {
       };
 
       if (isEditing && edit) {
+        const { updateCustomPrayer } = await import('../services/firestore');
         await updateCustomPrayer(user.uid, edit as string, prayerData);
       } else {
+        const { createCustomPrayer } = await import('../services/firestore');
         await createCustomPrayer(user.uid, prayerData);
       }
 
@@ -234,6 +262,12 @@ export default function CreatePrayerScreen() {
             <Text style={styles.modeEmploi}>Mode d'emploi</Text>
           </TouchableOpacity>
         </View>
+
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Chargement...</Text>
+          </View>
+        )}
 
         <View style={{flex: 1}}>
           <ScrollView 
@@ -591,5 +625,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.white,
     marginLeft: 8,
+  },
+  loadingContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.text.secondary,
   },
 });
