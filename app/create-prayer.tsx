@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Save, X, Info } from 'lucide-react-native';
+import { ChevronLeft, Save, X, Info, Play, Pause } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
 import { createCustomPrayer, updateCustomPrayer } from '../services/firestore';
 import { router, useLocalSearchParams } from 'expo-router';
 import PrayerInstructionsBottomSheet from '../components/PrayerInstructionsBottomSheet';
 import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../utils/haptics';
+import { Audio } from 'expo-av';
 
 export default function CreatePrayerScreen() {
   const { edit } = useLocalSearchParams();
@@ -16,32 +17,120 @@ export default function CreatePrayerScreen() {
   
   const [prayerName, setPrayerName] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedMusic, setSelectedMusic] = useState<string | null>(null);
+  const [selectedMusicUrl, setSelectedMusicUrl] = useState<string | null>(null);
   const [gratitudeText, setGratitudeText] = useState('');
   const [refouahNames, setRefouahNames] = useState('');
   const [personalImprovement, setPersonalImprovement] = useState('');
   const [dreamsDesires, setDreamsDesires] = useState('');
   const [personalPrayer, setPersonalPrayer] = useState('');
+  const [currentSound, setCurrentSound] = useState<Audio.Sound | null>(null);
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [playingMusicUrl, setPlayingMusicUrl] = useState<string | null>(null);
 
   const [showInstructions, setShowInstructions] = useState(false);
 
   const musicOptions = [
-    'Musique 1',
-    'Musique 2', 
-    'Musique 3',
-    'Musique 4',
-    'Musique 5'
+    {
+      name: 'Musique 1',
+      url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audio.mp3?alt=media&token=44d213bc-13cd-4f3f-af9c-3e6636fccefa'
+    },
+    {
+      name: 'Musique 2',
+      url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audioEleha2.mp3?alt=media&token=1c910bc0-88d1-4a85-8b98-f8046a3d4217'
+    },
+    {
+      name: 'Musique 3',
+      url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audioEleha3.mp3?alt=media&token=607c6315-04b8-45b5-8b60-a4b541dc674f'
+    },
+    {
+      name: 'Musique 4',
+      url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audioEleha4.mp3?alt=media&token=e14f3fc3-e92f-4723-8d61-76e64244ab46'
+    },
+    {
+      name: 'Musique 5',
+      url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audioEleha5.mp3?alt=media&token=70deb202-ef94-428b-9680-d10b69c794cf'
+    }
   ];
+
+  useEffect(() => {
+    // Configure audio mode for playback
+    Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      staysActiveInBackground: false,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      playThroughEarpieceAndroid: false,
+    });
+
+    // Cleanup function
+    return () => {
+      if (currentSound) {
+        currentSound.unloadAsync();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (isEditing) {
       // Ici vous chargeriez les données de la prière à éditer
       setPrayerName('Ma prière du matin');
       setDescription('Prière personnelle');
-      setSelectedMusic('Musique 1');
+      setSelectedMusicUrl(musicOptions[0].url);
       setGratitudeText('Merci HACHEM pour chaque moment de vie...');
     }
   }, [isEditing]);
+
+  const handleMusicSelection = async (musicUrl: string) => {
+    triggerLightHaptic();
+    
+    try {
+      // Stop current music if playing
+      if (currentSound) {
+        await currentSound.unloadAsync();
+        setCurrentSound(null);
+        setIsPlayingMusic(false);
+        setPlayingMusicUrl(null);
+      }
+
+      // If clicking the same music that was playing, just stop it
+      if (playingMusicUrl === musicUrl && isPlayingMusic) {
+        setSelectedMusicUrl(musicUrl);
+        return;
+      }
+
+      // Load and play new music
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: musicUrl },
+        { shouldPlay: true, isLooping: true, volume: 0.5 }
+      );
+      
+      setCurrentSound(sound);
+      setIsPlayingMusic(true);
+      setPlayingMusicUrl(musicUrl);
+      setSelectedMusicUrl(musicUrl);
+
+      // Set up playback status update
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded && !status.isPlaying && !status.didJustFinish) {
+          setIsPlayingMusic(false);
+        }
+      });
+
+    } catch (error) {
+      console.error('Error playing music:', error);
+      triggerErrorHaptic();
+      Alert.alert('Erreur', 'Impossible de lire cette musique');
+    }
+  };
+
+  const stopCurrentMusic = async () => {
+    if (currentSound) {
+      await currentSound.unloadAsync();
+      setCurrentSound(null);
+      setIsPlayingMusic(false);
+      setPlayingMusicUrl(null);
+    }
+  };
 
   const handleSave = async () => {
     if (!user) {
@@ -57,6 +146,9 @@ export default function CreatePrayerScreen() {
     }
 
     triggerMediumHaptic();
+    
+    // Stop music before saving
+    await stopCurrentMusic();
 
     try {
       const prayerData = {
@@ -71,7 +163,7 @@ export default function CreatePrayerScreen() {
         isFavorite: false,
         isCustom: true,
         createdAt: new Date(),
-        musicSelection: selectedMusic,
+        musicUrl: selectedMusicUrl,
         sections: {
           gratitude: gratitudeText,
           refouah: refouahNames,
@@ -108,6 +200,7 @@ export default function CreatePrayerScreen() {
 
   const handleCancel = () => {
     triggerLightHaptic();
+    stopCurrentMusic(); // Stop music when canceling
     if (prayerName || description || gratitudeText || refouahNames || personalImprovement || dreamsDesires || personalPrayer) {
       Alert.alert(
         'Annuler',
@@ -183,23 +276,35 @@ export default function CreatePrayerScreen() {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Votre musique de fond</Text>
               <View style={styles.musicGrid}>
-                {musicOptions.map((music, index) => (
+                {musicOptions.map((music, index) => {
+                  const isSelected = selectedMusicUrl === music.url;
+                  const isCurrentlyPlaying = playingMusicUrl === music.url && isPlayingMusic;
+                  
+                  return (
                   <TouchableOpacity
                     key={index}
                     style={[
                       styles.musicButton,
-                      selectedMusic === music && styles.musicButtonSelected
+                      isSelected && styles.musicButtonSelected
                     ]}
-                    onPress={() => setSelectedMusic(music)}
+                    onPress={() => handleMusicSelection(music.url)}
                   >
+                    <View style={styles.musicButtonContent}>
+                      {isCurrentlyPlaying ? (
+                        <Pause size={16} color={isSelected ? Colors.white : Colors.primary} />
+                      ) : (
+                        <Play size={16} color={isSelected ? Colors.white : Colors.primary} />
+                      )}
                     <Text style={[
                       styles.musicButtonText,
-                      selectedMusic === music && styles.musicButtonTextSelected
+                      isSelected && styles.musicButtonTextSelected
                     ]}>
-                      {music}
+                        {music.name}
                     </Text>
+                    </View>
                   </TouchableOpacity>
-                ))}
+                  );
+                })}
               </View>
             </View>
 
@@ -434,18 +539,25 @@ const styles = StyleSheet.create({
   },
   musicButton: {
     backgroundColor: Colors.background,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 20,
     marginBottom: 8,
+    minWidth: '45%',
   },
   musicButtonSelected: {
     backgroundColor: Colors.primary,
+  },
+  musicButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   musicButtonText: {
     fontSize: 14,
     color: Colors.text.primary,
     fontWeight: '500',
+    marginLeft: 8,
   },
   musicButtonTextSelected: {
     color: Colors.white,

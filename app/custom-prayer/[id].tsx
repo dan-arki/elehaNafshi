@@ -9,6 +9,7 @@ import { getCustomPrayerById } from '../../services/firestore';
 import { Prayer } from '../../types';
 import { HomeIcon } from '../(tabs)/_layout';
 import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
+import { Audio } from 'expo-av';
 
 export default function CustomPrayerDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -17,10 +18,43 @@ export default function CustomPrayerDetailScreen() {
   const [prayer, setPrayer] = useState<Prayer | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [soundObject, setSoundObject] = useState<Audio.Sound | null>(null);
 
   useEffect(() => {
+    // Configure audio mode
+    Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      staysActiveInBackground: true,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      playThroughEarpieceAndroid: false,
+    });
+
     loadPrayer();
+
+    // Cleanup function
+    return () => {
+      if (soundObject) {
+        soundObject.unloadAsync();
+      }
+    };
   }, [id]);
+
+  useEffect(() => {
+    // Load and play music when prayer is loaded
+    if (prayer && prayer.musicUrl) {
+      loadAndPlayMusic(prayer.musicUrl);
+    }
+
+    // Cleanup previous sound when prayer changes
+    return () => {
+      if (soundObject) {
+        soundObject.unloadAsync();
+        setSoundObject(null);
+        setIsPlaying(false);
+      }
+    };
+  }, [prayer]);
 
   const loadPrayer = async () => {
     if (!id || !user) return;
@@ -36,10 +70,60 @@ export default function CustomPrayerDetailScreen() {
     }
   };
 
+  const loadAndPlayMusic = async (musicUrl: string) => {
+    try {
+      // Unload previous sound if exists
+      if (soundObject) {
+        await soundObject.unloadAsync();
+      }
+
+      // Load new sound
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: musicUrl },
+        { shouldPlay: true, isLooping: true, volume: 0.3 }
+      );
+      
+      setSoundObject(sound);
+      setIsPlaying(true);
+
+      // Set up playback status update
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded) {
+          setIsPlaying(status.isPlaying);
+        }
+      });
+
+    } catch (error) {
+      console.error('Error loading music:', error);
+      // Don't show error to user, just continue without music
+    }
+  };
+
   const togglePlayPause = () => {
     triggerLightHaptic();
-    setIsPlaying(!isPlaying);
-    // Ici vous pourrez ajouter la logique pour jouer/arrêter la musique
+    
+    if (!soundObject) {
+      // If no sound object and we have a music URL, try to load it
+      if (prayer?.musicUrl) {
+        await loadAndPlayMusic(prayer.musicUrl);
+      }
+      return;
+    }
+
+    try {
+      const status = await soundObject.getStatusAsync();
+      if (status.isLoaded) {
+        if (status.isPlaying) {
+          await soundObject.pauseAsync();
+          setIsPlaying(false);
+        } else {
+          await soundObject.playAsync();
+          setIsPlaying(true);
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling playback:', error);
+    }
   };
 
   const navigateToHome = () => {
@@ -116,11 +200,15 @@ export default function CustomPrayerDetailScreen() {
         
         <Text style={styles.headerTitle}>{prayer.title}</Text>
         
-        <TouchableOpacity onPress={togglePlayPause}>
+        <TouchableOpacity 
+          onPress={togglePlayPause}
+          style={[styles.playButton, !prayer.musicUrl && styles.playButtonDisabled]}
+          disabled={!prayer.musicUrl}
+        >
           {isPlaying ? (
-            <Pause size={24} color={Colors.text.primary} />
+            <Pause size={24} color={prayer.musicUrl ? Colors.text.primary : Colors.text.muted} />
           ) : (
-            <Play size={24} color={Colors.text.primary} />
+            <Play size={24} color={prayer.musicUrl ? Colors.text.primary : Colors.text.muted} />
           )}
         </TouchableOpacity>
       </View>
@@ -225,6 +313,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: Colors.text.primary,
+  },
+  playButton: {
+    padding: 4,
+  },
+  playButtonDisabled: {
+    opacity: 0.5,
   },
   scrollView: {
     flex: 1,

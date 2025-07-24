@@ -21,7 +21,7 @@ export interface Prayer {
   originalId?: string; // For favorites
   chapterId?: string; // For chapter prayers
   order?: number; // For ordering
-  musicSelection?: string; // For custom prayers
+  musicUrl?: string; // For custom prayers - stores the actual URL
   sub_category_id?: string; // For siddour blocks subcategory
   information?: string; // For siddour blocks
   kavana?: string; // For siddour blocks
