@@ -276,7 +276,6 @@ export const getChapters = async (): Promise<PrayerChapter[]> => {
       title: doc.data().name,
       subtitle: doc.data().description,
       order: doc.data().order,
-      banner: doc.data().banner, // Add banner field for background image
       prayers: [], // Sera rempli par getPrayersByChapter si nécessaire
     })) as PrayerChapter[];
     
@@ -338,7 +337,6 @@ export const getChapterById = async (chapterId: string): Promise<PrayerChapter |
         title: data.name,
         subtitle: data.description,
         order: data.order,
-        banner: data.banner, // Add banner field for background image
         prayers: [], // Sera rempli par getPrayersByChapter si nécessaire
       } as PrayerChapter;
       

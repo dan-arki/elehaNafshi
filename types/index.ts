@@ -47,7 +47,6 @@ export interface PrayerChapter {
   subtitle: string;
   prayers: Prayer[];
   order: number;
-  banner?: string; // Optional banner image URL
 }
 
 export interface SiddourSubcategory {
