@@ -764,25 +764,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
-  headerBackground: {
-    paddingVertical: 16,
-  },
-  headerOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    paddingHorizontal: 20,
-  },
-  headerTitleWithBackground: {
-    color: Colors.white,
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerSubtitleWithBackground: {
-    color: Colors.white,
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1098,9 +1079,9 @@ const styles = StyleSheet.create({
   },
   activeNavBackground: {
     backgroundColor: Colors.primary,
+    borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 6,
-    borderRadius: 25,
     alignItems: 'center',
     elevation: 6,
     marginBottom: 4,
@@ -1141,5 +1122,24 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
     textAlign: 'center',
     marginTop: 50,
+  },
+  headerBackground: {
+    minHeight: 120,
+  },
+  headerOverlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    minHeight: 120,
+  },
+  headerTitleWithBackground: {
+    color: Colors.white,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+  },
+  headerSubtitleWithBackground: {
+    color: Colors.white,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
   },
 });
