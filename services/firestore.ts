@@ -800,6 +800,7 @@ export const getBanners = async (): Promise<Banner[]> => {
           order: data.order || 0,
           isActive: data.isActive !== false, // Default to true if not specified
           createdAt: data.createdAt?.toDate() || new Date(),
+        };
         console.log('📄 [DEBUG] getBanners: Mapped banner:', {
           id: doc.id,
           title: data.title || '',
