@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronLeft, Info, ChevronRight, Search } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { getChapters, getAllSiddourSubcategoriesForSearch } from '../../services/firestore';
@@ -216,29 +216,17 @@ export default function SiddourScreen() {
                   </View>
                 ) :
                 chapters.map((chapter) => (
-                  <TouchableOpacity
-                    key={chapter.id}
-                    style={styles.chapterCardTouchable}
-                    onPress={() => navigateToChapter(chapter.id)}
-                  >
-                    <ImageBackground
-                      source={
-                        chapter.banner 
-                          ? { uri: chapter.banner }
-                          : require('../../assets/images/siddourIllu.jpg')
-                      }
-                      style={styles.chapterBackgroundImage}
-                      imageStyle={styles.chapterImageStyle}
-                    >
-                      <BlurView intensity={30} tint="light" style={styles.chapterOverlay}>
-                        <View style={styles.chapterContent}>
-                          <Text style={styles.chapterTitle}>{chapter.title}</Text>
-                          <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
-                        </View>
-                        <ChevronRight size={20} color={Colors.text.primary} />
-                      </BlurView>
-                    </ImageBackground>
-                  </TouchableOpacity>
+                <TouchableOpacity
+                  key={chapter.id}
+                  style={styles.chapterItem}
+                  onPress={() => navigateToChapter(chapter.id)}
+                >
+                  <View style={styles.chapterContent}>
+                    <Text style={styles.chapterTitle}>{chapter.title}</Text>
+                    <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
+                  </View>
+                  <ChevronRight size={20} color={Colors.text.muted} />
+                </TouchableOpacity>
                 ))
               )}
             </View>
@@ -402,29 +390,19 @@ const styles = StyleSheet.create({
   chapterList: {
     paddingBottom: 20,
   },
-  chapterCardTouchable: {
-    marginBottom: 12,
+  chapterItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.white,
+    padding: 20,
     borderRadius: 12,
-    overflow: 'hidden',
+    marginBottom: 12,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-  },
-  chapterBackgroundImage: {
-    width: '100%',
-    height: 120,
-  },
-  chapterImageStyle: {
-    borderRadius: 12,
-  },
-  chapterOverlay: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
   },
   chapterContent: {
     flex: 1,

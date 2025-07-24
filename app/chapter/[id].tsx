@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ChevronLeft, ChevronRight, List, Settings, Heart, Gift, CircleAlert as AlertCircle, ChevronDown, ChevronUp, BookOpen, User } from 'lucide-react-native';
@@ -60,7 +60,6 @@ export default function ChapterScreen() {
   useEffect(() => {
     subcategoryRefs.current = subcategoryRefs.current.slice(0, subcategories.length);
   }, [subcategories.length]);
-  
   const loadChapterData = async () => {
     if (!id) return;
     
@@ -337,74 +336,35 @@ export default function ChapterScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header with dynamic background */}
-      {chapter.banner ? (
-        <ImageBackground
-          source={{ uri: chapter.banner }}
-          style={styles.headerBackground}
-          resizeMode="cover"
-        >
-          <View style={styles.headerOverlay}>
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <ChevronLeft size={24} color={Colors.white} />
-              </TouchableOpacity>
-              
-              <View style={styles.headerCenter}>
-                <Text style={[styles.headerTitle, styles.headerTitleWithBackground]}>{chapter.title}</Text>
-                <Text style={[styles.headerSubtitle, styles.headerSubtitleWithBackground]}>
-                  {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
-                </Text>
-              </View>
-              
-              <View style={styles.headerRight}>
-                <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
-                  <Settings size={24} color={Colors.white} />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
-                  <Heart 
-                    size={24} 
-                    color={isFavorite ? Colors.error : Colors.white}
-                    fill={isFavorite ? Colors.error : 'transparent'}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
-                  <List size={24} color={Colors.white} />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </ImageBackground>
-      ) : (
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <ChevronLeft size={24} color={Colors.text.primary} />
-          </TouchableOpacity>
-          
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>{chapter.title}</Text>
-            <Text style={styles.headerSubtitle}>
-              {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
-            </Text>
-          </View>
-          
-          <View style={styles.headerRight}>
-            <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
-              <Settings size={24} color={Colors.text.primary} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
-              <Heart 
-                size={24} 
-                color={isFavorite ? Colors.error : Colors.text.primary}
-                fill={isFavorite ? Colors.error : 'transparent'}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
-              <List size={24} color={Colors.text.primary} />
-            </TouchableOpacity>
-          </View>
+      {/* Header */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <ChevronLeft size={24} color={Colors.text.primary} />
+        </TouchableOpacity>
+        
+        <View style={styles.headerCenter}>
+          <Text style={styles.headerTitle}>{chapter.title}</Text>
+          <Text style={styles.headerSubtitle}>
+            {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
+          </Text>
         </View>
-      )}
+        
+        <View style={styles.headerRight}>
+          <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
+            <Settings size={24} color={Colors.text.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
+            <Heart 
+              size={24} 
+              color={isFavorite ? Colors.error : Colors.text.primary}
+              fill={isFavorite ? Colors.error : 'transparent'}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
+            <List size={24} color={Colors.text.primary} />
+          </TouchableOpacity>
+        </View>
+      </View>
 
       {/* Sticky Navigation Section */}
       <View style={styles.stickySection}>
@@ -764,25 +724,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.white,
   },
-  headerBackground: {
-    paddingVertical: 16,
-  },
-  headerOverlay: {
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    paddingHorizontal: 20,
-  },
-  headerTitleWithBackground: {
-    color: Colors.white,
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerSubtitleWithBackground: {
-    color: Colors.white,
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1036,7 +977,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(139, 92, 246, 0.2)',
   },
   navButtonDisabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
     opacity: 0.7,
   },
   navButtonText: {
@@ -1053,13 +994,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 25,
-    elevation: 6,
+    elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    opacity: 0.6,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.2)',
   },
   navIndicatorText: {
     fontSize: 14,
@@ -1093,23 +1034,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  navText: {
-    color: '#9CA3AF',
-  },
   activeNavBackground: {
     backgroundColor: Colors.primary,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 6,
     alignItems: 'center',
-    elevation: 6,
+    justifyContent: 'center',
     marginBottom: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    borderWidth: 0.5,
-    borderColor: 'rgba(139, 92, 246, 0.3)',
+  },
+  navText: {
+    fontSize: 11,
+    color: Colors.text.muted,
+    marginTop: 2,
+    fontWeight: '500',
   },
   activeNavText: {
     color: Colors.primary,
