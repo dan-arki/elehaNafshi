@@ -46,33 +46,25 @@ export default function KeverScreen() {
     if (!id) return;
     
     try {
-      console.log('🚀 [DEBUG] loadKeverData: Starting to load kever data for ID:', id);
       setLoading(true);
       const subcategoryData = await getSiddourSubcategoryById(id as string);
-      console.log('📖 [DEBUG] loadKeverData: Subcategory data received:', subcategoryData);
       
       setSubcategory(subcategoryData);
       
       // Charger les blocs de cette sous-catégorie
       if (subcategoryData) {
-        console.log('🎯 [DEBUG] loadKeverData: Loading blocks for subcategory:', subcategoryData);
         await loadBlocksForSubcategory(subcategoryData.id);
-      } else {
-        console.warn('⚠️ [DEBUG] loadKeverData: No subcategory found for ID:', id);
       }
     } catch (error) {
-      console.error('❌ [DEBUG] loadKeverData: Error loading kever data:', error);
+      console.error('Error loading kever data:', error);
     } finally {
       setLoading(false);
-      console.log('✅ [DEBUG] loadKeverData: Loading completed');
     }
   };
 
   const loadBlocksForSubcategory = async (subcategoryId: string) => {
     try {
-      console.log('🔄 [DEBUG] loadBlocksForSubcategory: Loading blocks for subcategory ID:', subcategoryId);
       const blocksData = await getSiddourBlocks(subcategoryId);
-      console.log('📄 [DEBUG] loadBlocksForSubcategory: Blocks data received:', blocksData);
       
       // Mapper les blocs en objets Prayer
       const mappedPrayers: Prayer[] = blocksData.map((block: SiddourBlockData) => ({
@@ -102,12 +94,9 @@ export default function KeverScreen() {
         ...(typeof block.is_alternative === 'boolean' && { is_alternative: block.is_alternative }),
       }));
       
-      console.log('🔄 [DEBUG] loadBlocksForSubcategory: Mapped prayers:', mappedPrayers);
-      console.log('📊 [DEBUG] loadBlocksForSubcategory: Number of mapped prayers:', mappedPrayers.length);
-      
       setCurrentPrayerBlocks(mappedPrayers);
     } catch (error) {
-      console.error('❌ [DEBUG] loadBlocksForSubcategory: Error loading blocks:', error);
+      console.error('Error loading blocks:', error);
       setCurrentPrayerBlocks([]);
     }
   };

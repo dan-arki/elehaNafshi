@@ -43,7 +43,6 @@ function RootLayoutNav() {
     'FrankRuhlLibre-Medium': FrankRuhlLibre_500Medium,
     'FrankRuhlLibre-Bold': FrankRuhlLibre_700Bold,
     'Lato-Regular': Lato_400Regular,
-    'Rubik-Regular': Rubik_400Regular,
     'Alef-Regular': Alef_400Regular,
     'Assistant-Regular': Assistant_400Regular,
     'NotoSansHebrew-Regular': NotoSansHebrew_400Regular,
@@ -51,15 +50,12 @@ function RootLayoutNav() {
 
   // Hide splash screen once fonts are loaded
   useEffect(() => {
-    console.log('[_layout.tsx] Vérification du chargement des polices');
     if (fontsLoaded || fontError) {
-      console.log('[_layout.tsx] Fonts chargées ou erreur de font');
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
 
   useEffect(() => {
-    console.log('[_layout.tsx] Vérification de l\'authentification et de la navigation');
     if (loading || !fontsLoaded) return;
 
     const inAuthGroup = segments[0] === '(tabs)';
@@ -74,7 +70,6 @@ function RootLayoutNav() {
   }, [user, segments, loading, fontsLoaded]);
 
   // Return null to keep splash screen visible while fonts load
-  console.log('[_layout.tsx] Vérification de l\'état de chargement pour le rendu');
   if (!fontsLoaded && !fontError || loading) {
     return null;
   }

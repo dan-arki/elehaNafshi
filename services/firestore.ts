@@ -20,7 +20,6 @@ import { Prayer, PrayerChapter, SiddourSubcategory, SiddourBlockData, Banner } f
 // Custom Prayers CRUD
 export const getCustomPrayers = async (userId: string): Promise<Prayer[]> => {
   try {
-    console.log('🔍 [firestore] getCustomPrayers: Starting for userId:', userId);
     const customPrayersRef = collection(db, 'my_prieres');
     const q = query(customPrayersRef, where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
@@ -33,10 +32,9 @@ export const getCustomPrayers = async (userId: string): Promise<Prayer[]> => {
     
     // Trier côté client pour éviter l'index composite
     const sortedPrayers = prayers.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-    console.log('✅ [firestore] getCustomPrayers: Success, found', sortedPrayers.length, 'prayers');
     return sortedPrayers;
   } catch (error: any) {
-    console.error('❌ [firestore] getCustomPrayers: Error:', error);
+    console.error('Error getting custom prayers:', error);
     // Si erreur de permissions ou d'index, retourner un tableau vide
     if (error.code === 'permission-denied' || error.code === 'failed-precondition') {
       console.warn('Permissions Firestore non configurées pour les prières personnalisées');
@@ -52,17 +50,15 @@ export const getCustomPrayers = async (userId: string): Promise<Prayer[]> => {
 
 export const createCustomPrayer = async (userId: string, prayer: Omit<Prayer, 'id'>): Promise<string> => {
   try {
-    console.log('🔍 [firestore] createCustomPrayer: Starting for userId:', userId);
     const customPrayersRef = collection(db, 'my_prieres');
     const docRef = await addDoc(customPrayersRef, {
       ...prayer,
       userId: userId,
       createdAt: Timestamp.now(),
     });
-    console.log('✅ [firestore] createCustomPrayer: Success, created prayer with ID:', docRef.id);
     return docRef.id;
   } catch (error: any) {
-    console.error('❌ [firestore] createCustomPrayer: Error:', error);
+    console.error('Error creating custom prayer:', error);
     if (error.code === 'permission-denied') {
       throw new Error('Les permissions Firestore ne sont pas configurées. Veuillez configurer les règles de sécurité dans la console Firebase.');
     }
@@ -75,12 +71,10 @@ export const createCustomPrayer = async (userId: string, prayer: Omit<Prayer, 'i
 
 export const updateCustomPrayer = async (userId: string, prayerId: string, prayer: Partial<Prayer>): Promise<void> => {
   try {
-    console.log('🔍 [firestore] updateCustomPrayer: Starting for prayerId:', prayerId);
     const prayerRef = doc(db, 'my_prieres', prayerId);
     await updateDoc(prayerRef, prayer);
-    console.log('✅ [firestore] updateCustomPrayer: Success');
   } catch (error: any) {
-    console.error('❌ [firestore] updateCustomPrayer: Error:', error);
+    console.error('Error updating custom prayer:', error);
     if (error.code === 'permission-denied') {
       throw new Error('Les permissions Firestore ne sont pas configurées. Veuillez configurer les règles de sécurité dans la console Firebase.');
     }
@@ -93,12 +87,10 @@ export const updateCustomPrayer = async (userId: string, prayerId: string, praye
 
 export const deleteCustomPrayer = async (userId: string, prayerId: string): Promise<void> => {
   try {
-    console.log('🔍 [firestore] deleteCustomPrayer: Starting for prayerId:', prayerId);
     const prayerRef = doc(db, 'my_prieres', prayerId);
     await deleteDoc(prayerRef);
-    console.log('✅ [firestore] deleteCustomPrayer: Success');
   } catch (error: any) {
-    console.error('❌ [firestore] deleteCustomPrayer: Error:', error);
+    console.error('Error deleting custom prayer:', error);
     if (error.code === 'permission-denied') {
       throw new Error('Les permissions Firestore ne sont pas configurées. Veuillez configurer les règles de sécurité dans la console Firebase.');
     }
@@ -112,7 +104,6 @@ export const deleteCustomPrayer = async (userId: string, prayerId: string): Prom
 // Favorites CRUD
 export const getFavoritePrayers = async (userId: string): Promise<Prayer[]> => {
   try {
-    console.log('🔍 [firestore] getFavoritePrayers: Starting for userId:', userId);
     const favoritesRef = collection(db, 'fav_siddour_sub_categories');
     const q = query(favoritesRef, where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
@@ -123,10 +114,9 @@ export const getFavoritePrayers = async (userId: string): Promise<Prayer[]> => {
       isFavorite: true,
       createdAt: doc.data().addedAt?.toDate() || new Date(),
     })) as Prayer[];
-    console.log('✅ [firestore] getFavoritePrayers: Success, found', favorites.length, 'favorites');
     return favorites;
   } catch (error: any) {
-    console.error('❌ [firestore] getFavoritePrayers: Error:', error);
+    console.error('Error getting favorite prayers:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les favoris');
       return [];
@@ -141,16 +131,14 @@ export const getFavoritePrayers = async (userId: string): Promise<Prayer[]> => {
 
 export const addToFavorites = async (userId: string, prayer: Prayer): Promise<void> => {
   try {
-    console.log('🔍 [firestore] addToFavorites: Starting for prayer:', prayer.title);
     const favoritesRef = collection(db, 'fav_siddour_sub_categories');
     await addDoc(favoritesRef, {
       ...prayer,
       userId: userId,
       addedAt: Timestamp.now(),
     });
-    console.log('✅ [firestore] addToFavorites: Success');
   } catch (error: any) {
-    console.error('❌ [firestore] addToFavorites: Error:', error);
+    console.error('Error adding to favorites:', error);
     if (error.code === 'permission-denied') {
       throw new Error('Les permissions Firestore ne sont pas configurées pour les favoris. Veuillez configurer les règles de sécurité dans la console Firebase.');
     }
@@ -163,7 +151,6 @@ export const addToFavorites = async (userId: string, prayer: Prayer): Promise<vo
 
 export const removeFromFavorites = async (userId: string, prayerId: string): Promise<void> => {
   try {
-    console.log('🔍 [firestore] removeFromFavorites: Starting for prayerId:', prayerId);
     const favoritesRef = collection(db, 'fav_siddour_sub_categories');
     const q = query(favoritesRef, where('userId', '==', userId), where('originalId', '==', prayerId));
     const querySnapshot = await getDocs(q);
@@ -171,9 +158,8 @@ export const removeFromFavorites = async (userId: string, prayerId: string): Pro
     querySnapshot.docs.forEach(async (docSnapshot) => {
       await deleteDoc(docSnapshot.ref);
     });
-    console.log('✅ [firestore] removeFromFavorites: Success, removed', querySnapshot.docs.length, 'documents');
   } catch (error: any) {
-    console.error('❌ [firestore] removeFromFavorites: Error:', error);
+    console.error('Error removing from favorites:', error);
     if (error.code === 'permission-denied') {
       throw new Error('Les permissions Firestore ne sont pas configurées pour les favoris. Veuillez configurer les règles de sécurité dans la console Firebase.');
     }
@@ -186,16 +172,14 @@ export const removeFromFavorites = async (userId: string, prayerId: string): Pro
 
 export const checkIfFavorite = async (userId: string, prayerId: string): Promise<boolean> => {
   try {
-    console.log('🔍 [firestore] checkIfFavorite: Starting for prayerId:', prayerId);
     const favoritesRef = collection(db, 'fav_siddour_sub_categories');
     const q = query(favoritesRef, where('userId', '==', userId), where('originalId', '==', prayerId));
     const querySnapshot = await getDocs(q);
   
     const isFavorite = !querySnapshot.empty;
-    console.log('✅ [firestore] checkIfFavorite: Success, isFavorite:', isFavorite);
     return isFavorite;
   } catch (error: any) {
-    console.error('❌ [firestore] checkIfFavorite: Error:', error);
+    console.error('Error checking if favorite:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les favoris');
       return false;
@@ -211,13 +195,10 @@ export const checkIfFavorite = async (userId: string, prayerId: string): Promise
 // Get favorite prayer by document ID
 export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | null> => {
   try {
-    console.log('🔍 [firestore] getFavoritePrayerByDocId: Starting for docId:', docId);
-    
     // Vérifier que l'utilisateur est authentifié avant de faire la requête
     const user = auth.currentUser;
     
     if (!user) {
-      console.warn('⚠️ [firestore] getFavoritePrayerByDocId: User not authenticated');
       return null;
     }
     
@@ -229,7 +210,6 @@ export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | 
       
       // Vérifier que la prière appartient à l'utilisateur connecté
       if (data.userId && data.userId !== user.uid) {
-        console.warn('⚠️ [firestore] getFavoritePrayerByDocId: Prayer belongs to different user');
         return null;
       }
       
@@ -239,14 +219,12 @@ export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | 
         isFavorite: true,
         createdAt: data.addedAt?.toDate() || new Date(),
       } as Prayer;
-      console.log('✅ [firestore] getFavoritePrayerByDocId: Success, found prayer:', favoritePrayer.title);
       return favoritePrayer;
     }
     
-    console.warn('⚠️ [firestore] getFavoritePrayerByDocId: Prayer not found for docId:', docId);
     return null;
   } catch (error: any) {
-    console.error('❌ [firestore] getFavoritePrayerByDocId: Error:', error);
+    console.error('Error getting favorite prayer by doc ID:', error);
     if (error.code === 'permission-denied' || error.message?.includes('Missing or insufficient permissions') || error.code === 'unauthenticated') {
       console.warn('Permissions Firestore non configurées pour getFavoritePrayerByDocId');
       console.warn('Vérifiez vos règles de sécurité Firestore pour la collection fav_siddour_sub_categories');
@@ -258,7 +236,6 @@ export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | 
       return null;
     }
     // For any other errors, return null silently to prevent app crash
-    console.warn(`⚠️ [firestore] getFavoritePrayerByDocId: Returning null due to error for docId ${docId}`);
     return null;
   }
 };
@@ -266,7 +243,6 @@ export const getFavoritePrayerByDocId = async (docId: string): Promise<Prayer | 
 // Chapters and Prayers (read-only for now)
 export const getChapters = async (): Promise<PrayerChapter[]> => {
   try {
-    console.log('🔍 [DEBUG] getChapters: Starting to fetch chapters...');
     const chaptersRef = collection(db, 'siddour_categories');
     const q = query(chaptersRef, orderBy('order'));
     const querySnapshot = await getDocs(q);
@@ -280,16 +256,9 @@ export const getChapters = async (): Promise<PrayerChapter[]> => {
       prayers: [], // Sera rempli par getPrayersByChapter si nécessaire
     })) as PrayerChapter[];
     
-    console.log('✅ [DEBUG] getChapters: Successfully fetched chapters:', chapters);
-    console.log('📊 [DEBUG] getChapters: Number of chapters found:', chapters.length);
     return chapters;
   } catch (error: any) {
-    console.error('❌ [DEBUG] getChapters: Error fetching chapters:', error);
-    console.error('❌ [DEBUG] getChapters: Error details:', {
-      code: error.code,
-      message: error.message,
-      stack: error.stack
-    });
+    console.error('Error fetching chapters:', error);
     // Si erreur de permissions, retourner des données par défaut
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées, utilisation de données par défaut');
@@ -327,7 +296,6 @@ export const getChapters = async (): Promise<PrayerChapter[]> => {
 
 export const getChapterById = async (chapterId: string): Promise<PrayerChapter | null> => {
   try {
-    console.log('🔍 [DEBUG] getChapterById: Fetching chapter with ID:', chapterId);
     const chapterRef = doc(db, 'siddour_categories', chapterId);
     const docSnapshot = await getDoc(chapterRef);
     
@@ -341,19 +309,12 @@ export const getChapterById = async (chapterId: string): Promise<PrayerChapter |
         prayers: [], // Sera rempli par getPrayersByChapter si nécessaire
       } as PrayerChapter;
       
-      console.log('✅ [DEBUG] getChapterById: Successfully fetched chapter:', chapter);
       return chapter;
     }
     
-    console.warn('⚠️ [DEBUG] getChapterById: Chapter not found for ID:', chapterId);
     return null;
   } catch (error: any) {
-    console.error('❌ [DEBUG] getChapterById: Error fetching chapter:', error);
-    console.error('❌ [DEBUG] getChapterById: Error details:', {
-      code: error.code,
-      message: error.message,
-      chapterId: chapterId
-    });
+    console.error('Error fetching chapter:', error);
     // Si erreur de permissions, retourner des données par défaut
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées, utilisation de données par défaut');
@@ -392,7 +353,6 @@ export const getChapterById = async (chapterId: string): Promise<PrayerChapter |
 
 export const getPrayersByChapter = async (chapterId: string): Promise<Prayer[]> => {
   try {
-    console.log('🔍 [firestore] getPrayersByChapter: Starting for chapterId:', chapterId);
     const prayersRef = collection(db, 'prayers');
     const q = query(prayersRef, where('chapterId', '==', chapterId), orderBy('order'));
     const querySnapshot = await getDocs(q);
@@ -401,10 +361,9 @@ export const getPrayersByChapter = async (chapterId: string): Promise<Prayer[]> 
       id: doc.id,
       ...doc.data(),
     })) as Prayer[];
-    console.log('✅ [firestore] getPrayersByChapter: Success, found', prayers.length, 'prayers');
     return prayers;
   } catch (error: any) {
-    console.error('❌ [firestore] getPrayersByChapter: Error:', error);
+    console.error('Error getting prayers by chapter:', error);
     // Si erreur de permissions, retourner des données par défaut
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées, utilisation de données par défaut');
@@ -435,7 +394,6 @@ export const getPrayersByChapter = async (chapterId: string): Promise<Prayer[]> 
 
 export const getPrayerById = async (prayerId: string): Promise<Prayer | null> => {
   try {
-    console.log('🔍 [firestore] getPrayerById: Starting for prayerId:', prayerId);
     const prayerRef = doc(db, 'prayers', prayerId);
     const docSnapshot = await getDoc(prayerRef);
     
@@ -444,14 +402,12 @@ export const getPrayerById = async (prayerId: string): Promise<Prayer | null> =>
         id: docSnapshot.id,
         ...docSnapshot.data(),
       } as Prayer;
-      console.log('✅ [firestore] getPrayerById: Success, found prayer:', prayer.title);
       return prayer;
     }
     
-    console.warn('⚠️ [firestore] getPrayerById: Prayer not found for ID:', prayerId);
     return null;
   } catch (error: any) {
-    console.error('❌ [firestore] getPrayerById: Error:', error);
+    console.error('Error getting prayer by ID:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour getPrayerById');
       return null;
@@ -467,15 +423,11 @@ export const getPrayerById = async (prayerId: string): Promise<Prayer | null> =>
 // Siddour Subcategories
 export const getSiddourSubcategories = async (chapterId: string): Promise<SiddourSubcategory[]> => {
   try {
-    console.log('🔍 [DEBUG] getSiddourSubcategories: Fetching subcategories for chapter ID:', chapterId);
-    
     // Create a DocumentReference for the category
     const categoryRef = doc(db, 'siddour_categories', chapterId);
-    console.log('🔍 [DEBUG] getSiddourSubcategories: Using category reference:', categoryRef.path);
     
     const subcategoriesRef = collection(db, 'siddour_sub_categories');
     const q = query(subcategoriesRef, where('category_id', '==', categoryRef), orderBy('order'));
-    console.log('🔍 [DEBUG] getSiddourSubcategories: Query created, executing...');
     const querySnapshot = await getDocs(q);
     
     const subcategories = querySnapshot.docs.map(doc => ({
@@ -485,27 +437,9 @@ export const getSiddourSubcategories = async (chapterId: string): Promise<Siddou
       order: doc.data().order || 0,
     })) as SiddourSubcategory[];
     
-    console.log('✅ [DEBUG] getSiddourSubcategories: Successfully fetched subcategories:', subcategories);
-    console.log('📊 [DEBUG] getSiddourSubcategories: Number of subcategories found:', subcategories.length);
-    
-    // Log each subcategory for detailed inspection
-    subcategories.forEach((subcat, index) => {
-      console.log(`📋 [DEBUG] getSiddourSubcategories: Subcategory ${index + 1}:`, {
-        id: subcat.id,
-        title: subcat.title,
-        category_id: subcat.category_id,
-        order: subcat.order
-      });
-    });
-    
     return subcategories;
   } catch (error: any) {
-    console.error('❌ [DEBUG] getSiddourSubcategories: Error fetching subcategories:', error);
-    console.error('❌ [DEBUG] getSiddourSubcategories: Error details:', {
-      code: error.code,
-      message: error.message,
-      chapterId: chapterId
-    });
+    console.error('Error fetching subcategories:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les sous-catégories');
       return [];
@@ -521,15 +455,11 @@ export const getSiddourSubcategories = async (chapterId: string): Promise<Siddou
 // Siddour Blocks
 export const getSiddourBlocks = async (subcategoryId: string): Promise<SiddourBlockData[]> => {
   try {
-    console.log('🔍 [DEBUG] getSiddourBlocks: Fetching blocks for subcategory ID:', subcategoryId);
-    
     // Create a DocumentReference for the subcategory
     const subcategoryRef = doc(db, 'siddour_sub_categories', subcategoryId);
-    console.log('🔍 [DEBUG] getSiddourBlocks: Using subcategory reference:', subcategoryRef.path);
     
     const blocksRef = collection(db, 'siddour_blocks');
     const q = query(blocksRef, where('sub_category_id', '==', subcategoryRef), orderBy('order'));
-    console.log('🔍 [DEBUG] getSiddourBlocks: Query created, executing...');
     const querySnapshot = await getDocs(q);
     
     const blocks = querySnapshot.docs.map(doc => ({
@@ -550,32 +480,9 @@ export const getSiddourBlocks = async (subcategoryId: string): Promise<SiddourBl
       is_alternative: doc.data().is_alternative || false,
     })) as SiddourBlockData[];
     
-    console.log('✅ [DEBUG] getSiddourBlocks: Successfully fetched blocks:', blocks);
-    console.log('📊 [DEBUG] getSiddourBlocks: Number of blocks found:', blocks.length);
-    
-    // Log each block for detailed inspection
-    blocks.forEach((block, index) => {
-      console.log(`📄 [DEBUG] getSiddourBlocks: Block ${index + 1}:`, {
-        id: block.id,
-        information: block.information,
-        text_fr: block.text_fr,
-        sub_category_id: block.sub_category_id,
-        is_alternative: block.is_alternative,
-        order: block.order,
-        content_hebrew_length: block.content_hebrew.length,
-        content_fr_length: block.content_fr.length,
-        content_phonetic_length: block.content_phonetic.length
-      });
-    });
-    
     return blocks;
   } catch (error: any) {
-    console.error('❌ [DEBUG] getSiddourBlocks: Error fetching blocks:', error);
-    console.error('❌ [DEBUG] getSiddourBlocks: Error details:', {
-      code: error.code,
-      message: error.message,
-      subcategoryId: subcategoryId
-    });
+    console.error('Error fetching blocks:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les blocs');
       return [];
@@ -590,7 +497,6 @@ export const getSiddourBlocks = async (subcategoryId: string): Promise<SiddourBl
 
 export const getCustomPrayerById = async (userId: string, prayerId: string): Promise<Prayer | null> => {
   try {
-    console.log('🔍 [firestore] getCustomPrayerById: Starting for prayerId:', prayerId);
     const prayerRef = doc(db, 'my_prieres', prayerId);
     const docSnapshot = await getDoc(prayerRef);
     
@@ -603,16 +509,13 @@ export const getCustomPrayerById = async (userId: string, prayerId: string): Pro
           ...data,
           createdAt: data.createdAt?.toDate() || new Date(),
         } as Prayer;
-        console.log('✅ [firestore] getCustomPrayerById: Success, found prayer:', prayer.title);
         return prayer;
       }
-      console.warn('⚠️ [firestore] getCustomPrayerById: Prayer belongs to different user');
     }
     
-    console.warn('⚠️ [firestore] getCustomPrayerById: Prayer not found for ID:', prayerId);
     return null;
   } catch (error: any) {
-    console.error('❌ [firestore] getCustomPrayerById: Error:', error);
+    console.error('Error getting custom prayer by ID:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour la prière personnalisée');
       return null;
@@ -628,8 +531,6 @@ export const getCustomPrayerById = async (userId: string, prayerId: string): Pro
 // Search functionality
 export const getAllSiddourSubcategoriesForSearch = async (): Promise<{id: string; title: string; chapterId: string; parentChapterName: string}[]> => {
   try {
-    console.log('🔍 [DEBUG] getAllSiddourSubcategoriesForSearch: Fetching all subcategories for search...');
-    
     // First, load all chapters to get their names
     const chaptersRef = collection(db, 'siddour_categories');
     const chaptersQuery = query(chaptersRef, orderBy('order'));
@@ -640,8 +541,6 @@ export const getAllSiddourSubcategoriesForSearch = async (): Promise<{id: string
     chaptersSnapshot.docs.forEach(doc => {
       chapterNamesMap.set(doc.id, doc.data().name || '');
     });
-    
-    console.log('📚 [DEBUG] getAllSiddourSubcategoriesForSearch: Loaded chapter names:', chapterNamesMap);
     
     // Now load subcategories
     const subcategoriesRef = collection(db, 'siddour_sub_categories');
@@ -660,16 +559,9 @@ export const getAllSiddourSubcategoriesForSearch = async (): Promise<{id: string
       };
     });
     
-    console.log('✅ [DEBUG] getAllSiddourSubcategoriesForSearch: Successfully fetched subcategories:', subcategories);
-    console.log('📊 [DEBUG] getAllSiddourSubcategoriesForSearch: Number of subcategories found:', subcategories.length);
-    
     return subcategories;
   } catch (error: any) {
-    console.error('❌ [DEBUG] getAllSiddourSubcategoriesForSearch: Error fetching subcategories:', error);
-    console.error('❌ [DEBUG] getAllSiddourSubcategoriesForSearch: Error details:', {
-      code: error.code,
-      message: error.message
-    });
+    console.error('Error fetching subcategories for search:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour la recherche');
       return [];
@@ -685,7 +577,6 @@ export const getAllSiddourSubcategoriesForSearch = async (): Promise<{id: string
 // Get single subcategory by ID
 export const getSiddourSubcategoryById = async (subcategoryId: string): Promise<SiddourSubcategory | null> => {
   try {
-    console.log('🔍 [DEBUG] getSiddourSubcategoryById: Fetching subcategory with ID:', subcategoryId);
     const subcategoryRef = doc(db, 'siddour_sub_categories', subcategoryId);
     const docSnapshot = await getDoc(subcategoryRef);
     
@@ -699,19 +590,12 @@ export const getSiddourSubcategoryById = async (subcategoryId: string): Promise<
         position: data.position, // Include position data for kevarim
       } as SiddourSubcategory & { position?: { latitude: number; longitude: number } };
       
-      console.log('✅ [DEBUG] getSiddourSubcategoryById: Successfully fetched subcategory:', subcategory);
       return subcategory;
     }
     
-    console.warn('⚠️ [DEBUG] getSiddourSubcategoryById: Subcategory not found for ID:', subcategoryId);
     return null;
   } catch (error: any) {
-    console.error('❌ [DEBUG] getSiddourSubcategoryById: Error fetching subcategory:', error);
-    console.error('❌ [DEBUG] getSiddourSubcategoryById: Error details:', {
-      code: error.code,
-      message: error.message,
-      subcategoryId: subcategoryId
-    });
+    console.error('Error fetching subcategory by ID:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour la sous-catégorie');
       return null;
@@ -727,15 +611,12 @@ export const getSiddourSubcategoryById = async (subcategoryId: string): Promise<
 // Kevarim with position
 export const getSiddourSubcategoriesWithPosition = async (): Promise<{id: string; name: string; position: {latitude: number; longitude: number}}[]> => {
   try {
-    console.log('🔍 [DEBUG] getSiddourSubcategoriesWithPosition: Fetching subcategories with position...');
-    
     const subcategoriesRef = collection(db, 'siddour_sub_categories');
     const querySnapshot = await getDocs(subcategoriesRef);
     
     const subcategoriesWithPosition = querySnapshot.docs
       .map(doc => {
         const data = doc.data();
-        console.log('🔍 [DEBUG] Document data:', { id: doc.id, name: data.name, position: data.position });
         return {
           id: doc.id,
           name: data.name || '',
@@ -750,16 +631,9 @@ export const getSiddourSubcategoriesWithPosition = async (): Promise<{id: string
         !isNaN(subcat.position.longitude)
       );
     
-    console.log('✅ [DEBUG] getSiddourSubcategoriesWithPosition: Successfully fetched subcategories with position:', subcategoriesWithPosition);
-    console.log('📊 [DEBUG] getSiddourSubcategoriesWithPosition: Number of subcategories with position found:', subcategoriesWithPosition.length);
-    
     return subcategoriesWithPosition;
   } catch (error: any) {
-    console.error('❌ [DEBUG] getSiddourSubcategoriesWithPosition: Error fetching subcategories with position:', error);
-    console.error('❌ [DEBUG] getSiddourSubcategoriesWithPosition: Error details:', {
-      code: error.code,
-      message: error.message
-    });
+    console.error('Error fetching subcategories with position:', error);
     if (error.code === 'permission-denied') {
       console.warn('Permissions Firestore non configurées pour les kevarim');
       return [];

@@ -41,42 +41,29 @@ export default function PrayerDetailScreen() {
         return;
       }
 
-      console.log('✅ [PrayerDetailScreen] Redirecting with data:', {
-        title,
-        category,
-        originalId,
-        chapterId
-      });
 
       // Redirection basée sur la catégorie
       switch (category) {
         case 'kever':
-          console.log('🔄 [PrayerDetailScreen] Redirecting to kever:', originalId);
           router.replace(`/kever/${originalId}`);
           break;
           
         case 'custom':
-          console.log('🔄 [PrayerDetailScreen] Redirecting to custom prayer:', originalId);
           router.replace(`/custom-prayer/${originalId}`);
           break;
           
         default:
           // Pour les prières du Siddour (chaharit, minha, arvit, etc.)
           if (chapterId) {
-            console.log('🔄 [PrayerDetailScreen] Redirecting to chapter:', {
-              chapterId: chapterId,
-              subcategoryId: originalId
-            });
             router.replace(`/chapter/${chapterId}?subcategoryId=${originalId}`);
           } else {
-            console.error('❌ [PrayerDetailScreen] Missing chapterId for Siddour prayer');
             setError('Impossible de localiser cette prière dans le Siddour');
             setLoading(false);
           }
           break;
       }
     } catch (error: any) {
-      console.error('❌ [PrayerDetailScreen] Error redirecting to prayer:', error);
+      console.error('Error redirecting to prayer:', error);
       setError('Erreur lors du chargement de la prière');
       setLoading(false);
     }

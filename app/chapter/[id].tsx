@@ -86,26 +86,21 @@ export default function ChapterScreen() {
         
         setSelectedSubcategoryIndex(initialIndex);
         await loadBlocksForSubcategory(subcategoriesData[initialIndex].id);
-      } else {
-
       }
     } catch (error) {
-      console.error('❌ [DEBUG] loadChapterData: Error loading chapter data:', error);
+      console.error('Error loading chapter data:', error);
     } finally {
       setLoading(false);
-      console.log('✅ [DEBUG] loadChapterData: Loading completed');
     }
   };
 
   const scrollToSelectedSubcategory = () => {
     if (!subcategoryScrollRef.current || subcategories.length === 0 || scrollViewWidth === 0) {
-      console.log('🔄 [DEBUG] scrollToSelectedSubcategory: Cannot scroll - missing refs or dimensions');
       return;
     }
     
     const selectedRef = subcategoryRefs.current[selectedSubcategoryIndex];
     if (!selectedRef) {
-      console.log('🔄 [DEBUG] scrollToSelectedSubcategory: No ref for selected index:', selectedSubcategoryIndex);
       return;
     }
     
@@ -113,8 +108,6 @@ export default function ChapterScreen() {
     selectedRef.measureLayout(
       subcategoryScrollRef.current.getInnerViewNode(),
       (x, y, width, height) => {
-        console.log('📏 [DEBUG] scrollToSelectedSubcategory: Tab measurements:', { x, width, scrollViewWidth, contentWidth });
-        
         // Calculate the center position of the selected tab
         const tabCenter = x + (width / 2);
         
@@ -126,8 +119,6 @@ export default function ChapterScreen() {
         const maxScrollX = Math.max(0, contentWidth - scrollViewWidth);
         const clampedScrollX = Math.max(0, Math.min(targetScrollX, maxScrollX));
         
-        console.log('🎯 [DEBUG] scrollToSelectedSubcategory: Scrolling to position:', clampedScrollX);
-        
         // Perform the scroll animation
         subcategoryScrollRef.current?.scrollTo({
           x: clampedScrollX,
@@ -135,16 +126,14 @@ export default function ChapterScreen() {
         });
       },
       (error) => {
-        console.error('❌ [DEBUG] scrollToSelectedSubcategory: Error measuring tab:', error);
+        console.error('Error measuring tab:', error);
       }
     );
   };
 
   const loadBlocksForSubcategory = async (subcategoryId: string) => {
     try {
-      console.log('🔄 [DEBUG] loadBlocksForSubcategory: Loading blocks for subcategory ID:', subcategoryId);
       const blocksData = await getSiddourBlocks(subcategoryId);
-      console.log('📄 [DEBUG] loadBlocksForSubcategory: Blocks data received:', blocksData);
       
       // Mapper les blocs en objets Prayer
       const mappedPrayers: Prayer[] = blocksData.map((block: SiddourBlockData) => ({
@@ -174,9 +163,6 @@ export default function ChapterScreen() {
         ...(typeof block.is_alternative === 'boolean' && { is_alternative: block.is_alternative }),
       }));
       
-      console.log('🔄 [DEBUG] loadBlocksForSubcategory: Mapped prayers:', mappedPrayers);
-      console.log('📊 [DEBUG] loadBlocksForSubcategory: Number of mapped prayers:', mappedPrayers.length);
-      
       setCurrentPrayerBlocks(mappedPrayers);
       setSelectedBlockIndex(0);
       
@@ -185,7 +171,7 @@ export default function ChapterScreen() {
         scrollRef.current?.scrollTo({ y: 0, animated: true });
       }, 100);
     } catch (error) {
-      console.error('❌ [DEBUG] loadBlocksForSubcategory: Error loading blocks:', error);
+      console.error('Error loading blocks:', error);
       setCurrentPrayerBlocks([]);
     }
   };
@@ -233,8 +219,6 @@ export default function ChapterScreen() {
 
 
   const handleSubcategorySelect = async (index: number) => {
-    console.log('👆 [DEBUG] handleSubcategorySelect: Selected subcategory index:', index);
-    console.log('👆 [DEBUG] handleSubcategorySelect: Selected subcategory:', subcategories[index]);
     triggerLightHaptic();
     setSelectedSubcategoryIndex(index);
     if (subcategories[index]) {
@@ -243,8 +227,6 @@ export default function ChapterScreen() {
   };
 
   const handleBlockSelect = (index: number) => {
-    console.log('📄 [DEBUG] handleBlockSelect: Selected block index:', index);
-    console.log('📄 [DEBUG] handleBlockSelect: Selected block:', currentPrayerBlocks[index]);
     // Scroll to the selected block instead of just changing index
     // You can implement scrolling to specific block here if needed
     // setSelectedBlockIndex(index);

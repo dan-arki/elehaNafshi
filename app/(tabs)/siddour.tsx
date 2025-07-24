@@ -59,8 +59,6 @@ export default function SiddourScreen() {
   }, [searchQuery, allSubcategories]);
 
   const handleSelectSuggestion = (subcategory: {id: string; title: string; chapterId: string; parentChapterName: string}) => {
-    console.log('🔍 [DEBUG] handleSelectSuggestion: Starting navigation to:', subcategory);
-    
     // Haptic feedback for selection
     triggerLightHaptic();
     
@@ -76,18 +74,15 @@ export default function SiddourScreen() {
     
     // Navigate with a small delay to ensure state updates are processed
     setTimeout(() => {
-      console.log('🔍 [DEBUG] handleSelectSuggestion: Executing navigation');
       router.push(`/chapter/${subcategory.chapterId}?subcategoryId=${subcategory.id}`);
     }, 50);
   };
 
   const handleSuggestionPressIn = () => {
-    console.log('🔍 [DEBUG] handleSuggestionPressIn: Setting isTappingSuggestion to true');
     isTappingSuggestion.current = true;
   };
 
   const handleSuggestionPressOut = () => {
-    console.log('🔍 [DEBUG] handleSuggestionPressOut: Resetting isTappingSuggestion after delay');
     // Reset after a short delay to allow onPress to complete
     setTimeout(() => {
       isTappingSuggestion.current = false;
@@ -95,24 +90,19 @@ export default function SiddourScreen() {
   };
 
   const handleSearchInputBlur = () => {
-    console.log('🔍 [DEBUG] handleSearchInputBlur: onBlur triggered, isTappingSuggestion:', isTappingSuggestion.current);
-    
     // Only hide suggestions if we're not currently tapping a suggestion
     if (!isTappingSuggestion.current) {
       setTimeout(() => {
-        console.log('🔍 [DEBUG] handleSearchInputBlur: Hiding suggestions after delay');
         setShowSuggestions(false);
       }, 200);
     }
   };
 
   const handleSearchInputFocus = () => {
-    console.log('🔍 [DEBUG] handleSearchInputFocus: onFocus triggered');
     setShowSuggestions(true);
   };
 
   const handleSearchQueryChange = (text: string) => {
-    console.log('🔍 [DEBUG] handleSearchQueryChange: Search query changed to:', text);
     setSearchQuery(text);
   };
 
