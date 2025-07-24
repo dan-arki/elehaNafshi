@@ -112,36 +112,35 @@ export default function SiddourScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ImageBackground
-          source={require('../../assets/images/bannerNuages.jpg')}
-          style={styles.backgroundImage}
-          resizeMode="cover"
-        >
-          <LinearGradient
-            colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
-            locations={[0, 0.3, 0.7, 1]}
-            style={styles.gradientOverlay}
-          >
-            {/* Header */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={() => router.back()}>
-                <ChevronLeft size={24} color={Colors.text.primary} />
-              </TouchableOpacity>
-              <Text style={styles.headerTitle}>Siddour Eleh'a Nafchi</Text>
-              <TouchableOpacity onPress={() => setShowPrayerInfo(true)}>
-                <Info size={24} color={Colors.primary} />
-              </TouchableOpacity>
-            </View>
+    <ImageBackground
+      source={require('../../assets/images/bannerNuages.jpg')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <LinearGradient
+        colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
+        locations={[0, 0.3, 0.7, 1]}
+        style={styles.gradientOverlay}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <ChevronLeft size={24} color={Colors.text.primary} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Siddour Eleh'a Nafchi</Text>
+            <TouchableOpacity onPress={() => setShowPrayerInfo(true)}>
+              <Info size={24} color={Colors.primary} />
+            </TouchableOpacity>
+          </View>
 
-            <View style={{flex: 1}}>
-              <ScrollView 
-                style={styles.scrollView} 
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-              >
+          <View style={{flex: 1}}>
+            <ScrollView 
+              style={styles.scrollView} 
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
                 <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
                   {/* Search Bar */}
                   <View style={styles.searchContainer}>
@@ -243,31 +242,27 @@ export default function SiddourScreen() {
                     ))
                   )}
                 </View>
-              </ScrollView>
-            </View>
-          </LinearGradient>
-        </ImageBackground>
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
+    </ImageBackground>
         
-        <PrayerInfoBottomSheet 
-          visible={showPrayerInfo}
-          onClose={() => setShowPrayerInfo(false)}
-        />
-      </SafeAreaView>
-    </View>
+    <PrayerInfoBottomSheet 
+      visible={showPrayerInfo}
+      onClose={() => setShowPrayerInfo(false)}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
   backgroundImage: {
     flex: 1,
   },
   gradientOverlay: {
+    flex: 1,
+  },
+  safeArea: {
     flex: 1,
   },
   flex: {
