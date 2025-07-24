@@ -780,21 +780,37 @@ export const getBanners = async (): Promise<Banner[]> => {
     const q = query(bannersRef, orderBy('order', 'asc'));
     const querySnapshot = await getDocs(q);
     
+    // NOUVEAUX LOGS DÉTAILLÉS
+    console.log('📄 [DEBUG] getBanners: querySnapshot.empty:', querySnapshot.empty);
+    console.log('📄 [DEBUG] getBanners: querySnapshot.size:', querySnapshot.size);
+    console.log('📄 [DEBUG] getBanners: querySnapshot.docs (raw):', querySnapshot.docs);
+    
     const banners = querySnapshot.docs
       .map(doc => ({
-        id: doc.id,
-        title: doc.data().title || '',
-        description: doc.data().description || '',
-        image: doc.data().image || '',
-        link: doc.data().link || '',
-        order: doc.data().order || 0,
-        isActive: doc.data().isActive !== false, // Default to true if not specified
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
+        const data = doc.data();
+        console.log('📄 [DEBUG] getBanners: Processing document ID:', doc.id);
+        console.log('📄 [DEBUG] getBanners: Processing document data:', data);
+        
+        const mappedBanner = {
+          id: doc.id,
+          title: data.title || '',
+          description: data.description || '',
+          image: data.image || '',
+          link: data.link || '',
+          order: data.order || 0,
+          isActive: data.isActive !== false, // Default to true if not specified
+          createdAt: data.createdAt?.toDate() || new Date(),
+        };
+        
       }))
-      .filter(banner => banner.isActive && banner.image && banner.link); // Only show active banners with image and link
+      .filter(banner => {
+        const passesFilter = banner.isActive && banner.image && banner.link;
+        console.log(`📄 [DEBUG] getBanners: Banner ${banner.id} - title: "${banner.title}", isActive: ${banner.isActive}, image: "${banner.image}", link: "${banner.link}", passesFilter: ${passesFilter}`);
+        return passesFilter;
+      });
     
-    console.log('✅ [DEBUG] getBanners: Successfully fetched banners:', banners);
-    console.log('📊 [DEBUG] getBanners: Number of banners found:', banners.length);
+    console.log('✅ [DEBUG] getBanners: Successfully fetched banners (after filter):', banners);
+    console.log('📊 [DEBUG] getBanners: Number of banners found (after filter):', banners.length);
     
     return banners;
   } catch (error: any) {
