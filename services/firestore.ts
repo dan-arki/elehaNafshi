@@ -786,12 +786,12 @@ export const getBanners = async (): Promise<Banner[]> => {
     console.log('📄 [DEBUG] getBanners: querySnapshot.docs (raw):', querySnapshot.docs);
     
     const banners = querySnapshot.docs
-      .map(doc => ({
+      .map(doc => {
         const data = doc.data();
         console.log('📄 [DEBUG] getBanners: Processing document ID:', doc.id);
         console.log('📄 [DEBUG] getBanners: Processing document data:', data);
         
-        const mappedBanner = {
+        return {
           id: doc.id,
           title: data.title || '',
           description: data.description || '',
@@ -800,9 +800,16 @@ export const getBanners = async (): Promise<Banner[]> => {
           order: data.order || 0,
           isActive: data.isActive !== false, // Default to true if not specified
           createdAt: data.createdAt?.toDate() || new Date(),
-        };
-        
-      }))
+        console.log('📄 [DEBUG] getBanners: Mapped banner:', {
+          id: doc.id,
+          title: data.title || '',
+          description: data.description || '',
+          image: data.image || '',
+          link: data.link || '',
+          order: data.order || 0,
+          isActive: data.isActive !== false,
+        });
+      })
       .filter(banner => {
         const passesFilter = banner.isActive && banner.image && banner.link;
         console.log(`📄 [DEBUG] getBanners: Banner ${banner.id} - title: "${banner.title}", isActive: ${banner.isActive}, image: "${banner.image}", link: "${banner.link}", passesFilter: ${passesFilter}`);
