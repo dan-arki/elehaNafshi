@@ -194,7 +194,7 @@ export default function CustomPrayerDetailScreen() {
       <ImageBackground 
         source={require('../../assets/images/bannerMypriere.jpg')} 
         style={styles.headerBackgroundImage}
-        resizeMode="cover"
+        resizeMode="contain"
       >
         <LinearGradient
           colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.3)', 'rgba(255,255,255,0.8)']}
