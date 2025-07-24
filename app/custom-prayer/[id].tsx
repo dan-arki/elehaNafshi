@@ -99,7 +99,7 @@ export default function CustomPrayerDetailScreen() {
     }
   };
 
-  const togglePlayPause = () => {
+  const togglePlayPause = async () => {
     triggerLightHaptic();
     
     if (!soundObject) {
