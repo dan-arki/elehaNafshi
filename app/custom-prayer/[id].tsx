@@ -189,80 +189,117 @@ export default function CustomPrayerDetailScreen() {
   };
 
   return (
-          
-          {prayer.sections?.gratitude && (
-            <>
-              <Text style={styles.staticLabel}>Hashem, je veux te remercier pour :</Text>
-              <Text style={styles.subSectionTitle}>Remercier pour tout</Text>
-              <Text style={styles.gratitudeContent}>
-                {prayer.sections.gratitude}
-              </Text>
-            </>
-          )}
-          
-          {prayer.sections?.refouah && (
-            <>
-              <Text style={styles.staticLabel}>Parmis eux, ceux que nous aimons et qui sont précieux pour nous :</Text>
-            </>
-          )}
-          {prayer.sections?.refouah && renderListContent(prayer.sections.refouah)}
-          
-          {prayer.sections?.improvement && (
-            <>
-              <Text style={styles.staticLabel}>Hashem, je Te demande pardon pour mes manquements et erreurs:</Text>
-            </>
-          )}
-          {prayer.sections?.improvement && (
-            <Text style={styles.improvementContent}>
-              {prayer.sections.improvement}
-            </Text>
-          )}
-          
-          {prayer.sections?.dreams && (
-            <>
-              <Text style={styles.staticLabel}>Hashem, je viens à Toi avec tous mes désirs et mes rêves, sachant que Tu m'exauceras uniquement si Tu agréés qu'ils sont le meilleur pour moi :</Text>
-            </>
-          )}
-          {prayer.sections?.dreams && (
-            <Text style={styles.dreamsContent}>
-              {prayer.sections.dreams}
-            </Text>
-          )}
-          
-          {prayer.sections?.personal && (
-            <>
-              <Text style={styles.staticLabel}>Hashem, voici ma prière personnelle pour T'exprimer ma gratitude :</Text>
-            </>
-          )}
-          {prayer.sections?.personal && (
-            <Text style={styles.personalContent}>
-              {prayer.sections.personal}
-            </Text>
-          )}
-          <View style={styles.bottomSpacing} />
-        </ScrollView>
-      </View>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNavigation}>
-        <TouchableOpacity style={styles.navItem} onPress={navigateToHome}>
-          <HomeIcon size={24} color={Colors.text.muted} />
-          <Text style={styles.navText}>Accueil</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={navigateToSiddour}>
-          <View style={styles.activeNavBackground}>
-            <BookOpen size={24} color={Colors.white} fill={Colors.white} />
+    <ImageBackground 
+      source={require('../../assets/images/bannerMypriere.jpg')} 
+      style={styles.backgroundImage}
+    >
+      <LinearGradient
+        colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.8)', 'rgba(255,255,255,1)']}
+        style={styles.gradientOverlay}
+      >
+        <SafeAreaView style={styles.container}>
+          {/* Header */}
+          <View style={styles.header}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <ChevronLeft size={24} color={Colors.text.primary} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>{prayer.title}</Text>
+            <TouchableOpacity 
+              style={[styles.playButton, !prayer.musicUrl && styles.playButtonDisabled]}
+              onPress={togglePlayPause}
+              disabled={!prayer.musicUrl}
+            >
+              {isPlaying ? (
+                <Pause size={24} color={Colors.primary} />
+              ) : (
+                <Play size={24} color={Colors.primary} />
+              )}
+            </TouchableOpacity>
           </View>
-          <Text style={[styles.navText, styles.activeNavText]}>Siddour</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.navItem} onPress={navigateToProfile}>
-          <User size={24} color={Colors.text.muted} />
-          <Text style={styles.navText}>Profil</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+
+          {/* Content */}
+          <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+            {/* Introduction */}
+            <View style={styles.introSection}>
+              <Text style={styles.mainIntro}>
+                Hashem, mon Roi, abballé, mon Tout,
+              </Text>
+            </View>
+
+            {/* Gratitude Section */}
+            {prayer.sections?.gratitude && (
+              <>
+                <Text style={styles.staticLabel}>Hashem, je veux te remercier pour :</Text>
+                <Text style={styles.subSectionTitle}>Remercier pour tout</Text>
+                <Text style={styles.gratitudeContent}>
+                  {prayer.sections.gratitude}
+                </Text>
+              </>
+            )}
+            
+            {/* Refouah Section */}
+            {prayer.sections?.refouah && (
+              <>
+                <Text style={styles.staticLabel}>Parmis eux, ceux que nous aimons et qui sont précieux pour nous :</Text>
+                {renderListContent(prayer.sections.refouah)}
+              </>
+            )}
+            
+            {/* Improvement Section */}
+            {prayer.sections?.improvement && (
+              <>
+                <Text style={styles.staticLabel}>Hashem, je Te demande pardon pour mes manquements et erreurs:</Text>
+                <Text style={styles.improvementContent}>
+                  {prayer.sections.improvement}
+                </Text>
+              </>
+            )}
+            
+            {/* Dreams Section */}
+            {prayer.sections?.dreams && (
+              <>
+                <Text style={styles.staticLabel}>Hashem, je viens à Toi avec tous mes désirs et mes rêves, sachant que Tu m'exauceras uniquement si Tu agréés qu'ils sont le meilleur pour moi :</Text>
+                <Text style={styles.dreamsContent}>
+                  {prayer.sections.dreams}
+                </Text>
+              </>
+            )}
+            
+            {/* Personal Section */}
+            {prayer.sections?.personal && (
+              <>
+                <Text style={styles.staticLabel}>Hashem, voici ma prière personnelle pour T'exprimer ma gratitude :</Text>
+                <Text style={styles.personalContent}>
+                  {prayer.sections.personal}
+                </Text>
+              </>
+            )}
+            
+            <View style={styles.bottomSpacing} />
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
+    </ImageBackground>
+
+    {/* Bottom Navigation */}
+    <View style={styles.bottomNavigation}>
+      <TouchableOpacity style={styles.navItem} onPress={navigateToHome}>
+        <HomeIcon size={24} color={Colors.text.muted} />
+        <Text style={styles.navText}>Accueil</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={navigateToSiddour}>
+        <View style={styles.activeNavBackground}>
+          <BookOpen size={24} color={Colors.white} fill={Colors.white} />
+        </View>
+        <Text style={[styles.navText, styles.activeNavText]}>Siddour</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={styles.navItem} onPress={navigateToProfile}>
+        <User size={24} color={Colors.text.muted} />
+        <Text style={styles.navText}>Profil</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
