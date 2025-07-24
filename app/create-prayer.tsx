@@ -264,6 +264,12 @@ export default function CreatePrayerScreen() {
           </TouchableOpacity>
         </View>
 
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <Text style={styles.loadingText}>Chargement...</Text>
+          </View>
+        )}
+
         <View style={{flex: 1}}>
           <ScrollView 
             style={styles.scrollView} 
@@ -620,5 +626,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.white,
     marginLeft: 8,
+  },
+  loadingContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.text.secondary,
   },
 });
