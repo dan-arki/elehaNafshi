@@ -18,7 +18,7 @@ import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerE
 export default function ChapterScreen() {
   const { id, subcategoryId } = useLocalSearchParams();
   const { user } = useAuth();
-  const { hebrewFont } = useDisplaySettings();
+  const { hebrewFont, fontSizeAdjustment, setFontSizeAdjustment } = useDisplaySettings();
   const scrollRef = useRef<ScrollView>(null);
   const subcategoryScrollRef = useRef<ScrollView>(null);
   const subcategoryRefs = useRef<(TouchableOpacity | null)[]>([]);
@@ -34,7 +34,6 @@ export default function ChapterScreen() {
   const [expandedBlockSections, setExpandedBlockSections] = useState<{[blockId: string]: {kavana: boolean, comments: boolean}}>({});
   const [showSettings, setShowSettings] = useState(false);
   const [showSymbolsInfo, setShowSymbolsInfo] = useState(false);
-  const [fontSizeAdjustment, setFontSizeAdjustment] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   
   // ScrollView dimensions for precise scrolling calculations
@@ -689,8 +688,6 @@ export default function ChapterScreen() {
       <SettingsBottomSheet
         visible={showSettings}
         onClose={() => setShowSettings(false)}
-        fontSizeAdjustment={fontSizeAdjustment}
-        onFontSizeChange={setFontSizeAdjustment}
       />
 
       <SymbolsInfoBottomSheet

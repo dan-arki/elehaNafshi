@@ -8,37 +8,33 @@ import { triggerLightHaptic } from '../utils/haptics';
 interface SettingsBottomSheetProps {
   visible: boolean;
   onClose: () => void;
-  fontSizeAdjustment: number;
-  onFontSizeChange: (adjustment: number) => void;
 }
 
 export default function SettingsBottomSheet({ 
   visible, 
   onClose, 
-  fontSizeAdjustment, 
-  onFontSizeChange 
 }: SettingsBottomSheetProps) {
-  const { hebrewFont, setHebrewFont } = useDisplaySettings();
+  const { hebrewFont, setHebrewFont, fontSizeAdjustment, setFontSizeAdjustment } = useDisplaySettings();
   const minAdjustment = -4;
   const maxAdjustment = 6;
 
   const increaseFontSize = () => {
     if (fontSizeAdjustment < maxAdjustment) {
       triggerLightHaptic();
-      onFontSizeChange(fontSizeAdjustment + 2);
+      setFontSizeAdjustment(fontSizeAdjustment + 2);
     }
   };
 
   const decreaseFontSize = () => {
     if (fontSizeAdjustment > minAdjustment) {
       triggerLightHaptic();
-      onFontSizeChange(fontSizeAdjustment - 2);
+      setFontSizeAdjustment(fontSizeAdjustment - 2);
     }
   };
 
   const resetFontSize = () => {
     triggerLightHaptic();
-    onFontSizeChange(0);
+    setFontSizeAdjustment(0);
   };
 
   const resetHebrewFont = () => {

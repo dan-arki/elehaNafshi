@@ -19,7 +19,7 @@ import { getCategoryDisplayName } from '../../utils/categoryUtils';
 export default function KeverScreen() {
   const { id } = useLocalSearchParams();
   const { user } = useAuth();
-  const { hebrewFont } = useDisplaySettings();
+  const { hebrewFont, fontSizeAdjustment, setFontSizeAdjustment } = useDisplaySettings();
   const scrollRef = useRef<ScrollView>(null);
   
   const [subcategory, setSubcategory] = useState<SiddourSubcategory | null>(null);
@@ -30,7 +30,6 @@ export default function KeverScreen() {
   const [expandedBlockSections, setExpandedBlockSections] = useState<{[blockId: string]: {kavana: boolean, comments: boolean}}>({});
   const [showSettings, setShowSettings] = useState(false);
   const [showSymbolsInfo, setShowSymbolsInfo] = useState(false);
-  const [fontSizeAdjustment, setFontSizeAdjustment] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showMapSelection, setShowMapSelection] = useState(false);
   
@@ -444,8 +443,6 @@ export default function KeverScreen() {
       <SettingsBottomSheet
         visible={showSettings}
         onClose={() => setShowSettings(false)}
-        fontSizeAdjustment={fontSizeAdjustment}
-        onFontSizeChange={setFontSizeAdjustment}
       />
 
       <SymbolsInfoBottomSheet
