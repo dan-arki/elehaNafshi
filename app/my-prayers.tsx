@@ -178,9 +178,9 @@ export default function MyPrayersScreen() {
                       </TouchableOpacity>
                       <TouchableOpacity 
                         style={styles.actionButton}
-                        onPress={() => handleDeletePrayer(prayer.id, prayer.title)}
+                        onPress={() => handleEditPrayer(prayer.id)}
                       >
-                        <Trash2 size={18} color={Colors.error} />
+                        <Edit3 size={18} color={Colors.primary} />
                       </TouchableOpacity>
                     </View>
                   </View>
