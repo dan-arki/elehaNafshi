@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight, Heart, Search, Calendar } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
@@ -168,12 +169,22 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+        <ImageBackground
+          source={require('../../assets/images/bannerNuages.jpg')}
+          style={styles.backgroundImage}
+          resizeMode="cover"
         >
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
+            locations={[0, 0.3, 0.7, 1]}
+            style={styles.gradientOverlay}
+          >
+            <ScrollView 
+              style={styles.scrollView}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
             <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
               {/* Header */}
               <View style={styles.header}>
@@ -343,6 +354,8 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </AnimatedScreenWrapper>
         </ScrollView>
+          </LinearGradient>
+        </ImageBackground>
       </SafeAreaView>
     </View>
   );
@@ -351,9 +364,14 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
   },
   safeArea: {
+    flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+  },
+  gradientOverlay: {
     flex: 1,
   },
   scrollView: {
