@@ -157,16 +157,10 @@ export default function MyPrayersScreen() {
                     >
                       <View style={styles.prayerHeader}>
                         <Text style={styles.prayerTitle}>{prayer.title}</Text>
-                        <Text style={styles.prayerDate}>
-                          Créée le {formatDate(prayer.createdAt)}
-                        </Text>
                       </View>
                       {prayer.subtitle && (
                         <Text style={styles.prayerSubtitle}>{prayer.subtitle}</Text>
                       )}
-                      <Text style={styles.prayerPreview} numberOfLines={2}>
-                        {prayer.content.french}
-                      </Text>
                     </TouchableOpacity>
                     
                     <View style={styles.prayerActions}>
