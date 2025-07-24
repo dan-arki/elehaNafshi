@@ -167,24 +167,23 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ImageBackground
-          source={require('../../assets/images/bannerNuages.jpg')}
-          style={styles.backgroundImage}
-          resizeMode="cover"
-        >
-          <LinearGradient
-            colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
-            locations={[0, 0.3, 0.7, 1]}
-            style={styles.gradientOverlay}
+    <ImageBackground
+      source={require('../../assets/images/bannerNuages.jpg')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <LinearGradient
+        colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
+        locations={[0, 0.3, 0.7, 1]}
+        style={styles.gradientOverlay}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          <ScrollView 
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
           >
-            <ScrollView 
-              style={styles.scrollView}
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-            >
             <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
               {/* Header */}
               <View style={styles.header}>
@@ -353,25 +352,21 @@ export default function HomeScreen() {
                 <ChevronRight size={20} color={Colors.text.muted} />
               </TouchableOpacity>
             </AnimatedScreenWrapper>
-        </ScrollView>
-          </LinearGradient>
-        </ImageBackground>
-      </SafeAreaView>
-    </View>
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-  },
   backgroundImage: {
     flex: 1,
   },
   gradientOverlay: {
+    flex: 1,
+  },
+  safeArea: {
     flex: 1,
   },
   scrollView: {
