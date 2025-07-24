@@ -53,10 +53,6 @@ export default function CreatePrayerScreen() {
     }
   ];
 
-  const loadPrayerForEdit = async () => {
-    // Implementation for loading prayer data when editing
-  };
-
   useEffect(() => {
     // Configure audio mode for playback
     Audio.setAudioModeAsync({
@@ -80,6 +76,36 @@ export default function CreatePrayerScreen() {
       loadPrayerForEdit();
     }
   }, [isEditing]);
+
+  const loadPrayerForEdit = async () => {
+    if (!edit || !user) return;
+    
+    try {
+      setLoading(true);
+      const { getCustomPrayerById } = await import('../services/firestore');
+      const prayerData = await getCustomPrayerById(user.uid, edit as string);
+      
+      if (prayerData) {
+        setPrayerName(prayerData.title || '');
+        setDescription(prayerData.subtitle || '');
+        setSelectedMusicUrl(prayerData.musicUrl || null);
+        
+        // Load sections data if available
+        if (prayerData.sections) {
+          setGratitudeText(prayerData.sections.gratitude || '');
+          setRefouahNames(prayerData.sections.refouah || '');
+          setPersonalImprovement(prayerData.sections.improvement || '');
+          setDreamsDesires(prayerData.sections.dreams || '');
+          setPersonalPrayer(prayerData.sections.personal || '');
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement de la prière:', error);
+      Alert.alert('Erreur', 'Impossible de charger les données de la prière');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleMusicSelection = async (musicUrl: string) => {
     triggerLightHaptic();
