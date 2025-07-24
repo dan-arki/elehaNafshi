@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Image, Alert, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Settings, Heart, BookOpen, MapPin, MessageCircle, Share2 } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
@@ -59,7 +60,16 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ImageBackground
+      source={require('../../assets/images/cielBG.jpg')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <LinearGradient
+        colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
+        locations={[0, 0.3, 0.7, 1]}
+        style={styles.gradientOverlay}
+      >
       <SafeAreaView style={styles.safeArea}>
         <View style={{flex: 1}}>
           <ScrollView 
@@ -153,14 +163,17 @@ export default function ProfileScreen() {
           </ScrollView>
         </View>
       </SafeAreaView>
-    </View>
+      </LinearGradient>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
     flex: 1,
-    backgroundColor: Colors.white,
+  },
+  gradientOverlay: {
+    flex: 1,
   },
   safeArea: {
     flex: 1,
