@@ -180,16 +180,16 @@ export default function CreatePrayerScreen() {
       }
 
       triggerSuccessHaptic();
-      Alert.alert(
-        'Succès',
-        isEditing ? 'Prière modifiée avec succès' : 'Prière créée avec succès',
-        [
-          {
-            text: 'OK',
-            onPress: () => router.push('/my-prayers'),
-          },
-        ]
-      );
+      // Navigate immediately after success
+      router.push('/my-prayers');
+      
+      // Show success message after navigation
+      setTimeout(() => {
+        Alert.alert(
+          'Succès',
+          isEditing ? 'Prière modifiée avec succès' : 'Prière créée avec succès'
+        );
+      }, 100);
     } catch (error) {
       console.error('Erreur lors de la sauvegarde:', error);
       triggerErrorHaptic();
