@@ -801,7 +801,6 @@ export const getBanners = async (): Promise<Banner[]> => {
           isActive: data.isActive !== false, // Default to true if not specified
           createdAt: data.createdAt?.toDate() || new Date(),
         };
-        };
       })
       .filter(banner => {
         const passesFilter = banner.isActive && banner.image && banner.link;
