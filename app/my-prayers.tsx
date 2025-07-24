@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Plus, Edit3, Trash2, ExternalLink } from 'lucide-react-native';
+import { ChevronLeft, Plus, CreditCard as Edit3, Trash2, ExternalLink } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
 import { getCustomPrayers, deleteCustomPrayer } from '../services/firestore';
