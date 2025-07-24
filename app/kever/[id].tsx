@@ -420,9 +420,11 @@ export default function KeverScreen() {
                         />
                       </View>
                     )}
-                    <Text style={[styles.phoneticText, { fontSize: 16 + fontSizeAdjustment }]}>
-                      {block.content.phonetic}
-                    </Text>
+                    <View style={block.is_alternative ? styles.alternativeContainer : null}>
+                      <Text style={[styles.phoneticText, { fontSize: 16 + fontSizeAdjustment }]}>
+                        {block.content.phonetic}
+                      </Text>
+                    </View>
                   </>
                 )}
               </View>
