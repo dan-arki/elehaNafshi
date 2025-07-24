@@ -1019,8 +1019,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 8,
     paddingBottom: 8,
-    alignSelf: 'flex-end', // Aligne le conteneur à droite
-    maxWidth: '100%', // Évite le débordement
+    width: '100%', // Prend toute la largeur disponible
+    alignItems: 'flex-end', // Aligne le contenu à droite
     minHeight: 'auto', // Hauteur minimale automatique
   },
   commentImageContainer: {
