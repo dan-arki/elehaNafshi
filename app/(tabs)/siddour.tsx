@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { ChevronLeft, Info, ChevronRight, Search } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { getChapters, getAllSiddourSubcategoriesForSearch } from '../../services/firestore';
 import { PrayerChapter } from '../../types';
 import PrayerInfoBottomSheet from '../../components/PrayerInfoBottomSheet';
+import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 import { router } from 'expo-router';
 import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
 
@@ -141,21 +142,23 @@ export default function SiddourScreen() {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
-            {/* Search Bar */}
-            <View style={styles.searchContainer}>
-              <View style={styles.searchInputContainer}>
-                <Search size={20} color={Colors.text.muted} style={styles.searchIcon} />
-                <TextInput
-                  style={styles.searchInput}
-                  placeholder="Rechercher une prière..."
-                  placeholderTextColor={Colors.text.muted}
-                  value={searchQuery}
-                  onChangeText={handleSearchQueryChange}
-                  onFocus={handleSearchInputFocus}
-                  onBlur={handleSearchInputBlur}
-                />
+            <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
+              {/* Search Bar */}
+              <View style={styles.searchContainer}>
+                <View style={styles.searchInputContainer}>
+                  <Search size={20} color={Colors.text.muted} style={styles.searchIcon} />
+                  <TextInput
+                    style={styles.searchInput}
+                    placeholder="Rechercher une prière..."
+                    placeholderTextColor={Colors.text.muted}
+                    value={searchQuery}
+                    onChangeText={handleSearchQueryChange}
+                    onFocus={handleSearchInputFocus}
+                    onBlur={handleSearchInputBlur}
+                  />
+                </View>
               </View>
-            </View>
+            </AnimatedScreenWrapper>
 
             {/* Search Suggestions */}
             {showSuggestions && filteredSubcategories.length > 0 && (
@@ -186,19 +189,23 @@ export default function SiddourScreen() {
               </View>
             )}
 
-            {/* Siddour Book Image */}
-            <View style={styles.bookContainer}>
-              <View style={styles.bookCard}>
-                <Image
-                  source={require('../../assets/images/siddourIllu.jpg')}
-                  style={styles.bookImage}
-                  resizeMode="cover"
-                />
+            <AnimatedScreenWrapper animationType="scale" duration={600} delay={100}>
+              {/* Siddour Book Image */}
+              <View style={styles.bookContainer}>
+                <View style={styles.bookCard}>
+                  <Image
+                    source={require('../../assets/images/siddourIllu.jpg')}
+                    style={styles.bookImage}
+                    resizeMode="cover"
+                  />
+                </View>
               </View>
-            </View>
+            </AnimatedScreenWrapper>
 
-            {/* Sommaire */}
-            <Text style={styles.sectionTitle}>Sommaire</Text>
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={200}>
+              {/* Sommaire */}
+              <Text style={styles.sectionTitle}>Sommaire</Text>
+            </AnimatedScreenWrapper>
 
             {/* Chapter List */}
             <View style={styles.chapterList}>
@@ -216,17 +223,41 @@ export default function SiddourScreen() {
                   </View>
                 ) :
                 chapters.map((chapter) => (
-                <TouchableOpacity
-                  key={chapter.id}
-                  style={styles.chapterItem}
-                  onPress={() => navigateToChapter(chapter.id)}
+                <AnimatedScreenWrapper 
+                  key={chapter.id} 
+                  animationType="slideUp" 
+                  duration={400} 
+                  delay={300 + (chapters.indexOf(chapter) * 100)}
                 >
-                  <View style={styles.chapterContent}>
-                    <Text style={styles.chapterTitle}>{chapter.title}</Text>
-                    <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
-                  </View>
-                  <ChevronRight size={20} color={Colors.text.muted} />
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.chapterCardTouchable}
+                    onPress={() => navigateToChapter(chapter.id)}
+                  >
+                    {chapter.banner ? (
+                      <ImageBackground
+                        source={{ uri: chapter.banner }}
+                        style={styles.chapterBackgroundImage}
+                        imageStyle={styles.chapterImageStyle}
+                      >
+                        <BlurView intensity={30} tint="light" style={styles.chapterOverlay}>
+                          <View style={styles.chapterContent}>
+                            <Text style={styles.chapterTitle}>{chapter.title}</Text>
+                            <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
+                          </View>
+                          <ChevronRight size={20} color={Colors.text.primary} />
+                        </BlurView>
+                      </ImageBackground>
+                    ) : (
+                      <View style={styles.chapterItem}>
+                        <View style={styles.chapterContent}>
+                          <Text style={styles.chapterTitle}>{chapter.title}</Text>
+                          <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
+                        </View>
+                        <ChevronRight size={20} color={Colors.text.primary} />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                </AnimatedScreenWrapper>
                 ))
               )}
             </View>
@@ -390,19 +421,37 @@ const styles = StyleSheet.create({
   chapterList: {
     paddingBottom: 20,
   },
+  chapterCardTouchable: {
+    marginBottom: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  chapterBackgroundImage: {
+    width: '100%',
+    height: 120,
+  },
+  chapterImageStyle: {
+    borderRadius: 12,
+  },
+  chapterOverlay: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+  },
   chapterItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: Colors.white,
     padding: 20,
-    borderRadius: 12,
-    marginBottom: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    height: 120,
   },
   chapterContent: {
     flex: 1,
@@ -410,12 +459,12 @@ const styles = StyleSheet.create({
   chapterTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.text.primary,
+    color: Colors.text.primary, // Noir pour la lisibilité
     marginBottom: 4,
   },
   chapterSubtitle: {
     fontSize: 14,
-    color: Colors.primary,
+    color: Colors.primary, // Violet comme demandé
   },
   loadingText: {
     fontSize: 16,
