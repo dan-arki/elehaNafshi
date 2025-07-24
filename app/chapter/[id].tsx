@@ -699,7 +699,6 @@ export default function ChapterScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
-            </View>
           </SafeAreaView>
         </LinearGradient>
       </ImageBackground>
