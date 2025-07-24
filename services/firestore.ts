@@ -276,6 +276,7 @@ export const getChapters = async (): Promise<PrayerChapter[]> => {
       title: doc.data().name,
       subtitle: doc.data().description,
       order: doc.data().order,
+      banner: doc.data().banner,
       prayers: [], // Sera rempli par getPrayersByChapter si nécessaire
     })) as PrayerChapter[];
     
