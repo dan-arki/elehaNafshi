@@ -253,25 +253,13 @@ export default function CreatePrayerScreen() {
             text: 'Annuler',
             style: 'destructive',
             onPress: () => {
-              // Ensure music is stopped before navigation
-              stopCurrentMusic().then(() => {
-                router.push('/my-prayers');
-              }).catch(() => {
-                // If stopping music fails, still navigate
-                router.push('/my-prayers');
-              });
+              router.replace('/my-prayers');
             },
           },
         ]
       );
     } else {
-      // If no changes, navigate directly back to my-prayers
-      stopCurrentMusic().then(() => {
-        router.push('/my-prayers');
-      }).catch(() => {
-        // If stopping music fails, still navigate
-        router.push('/my-prayers');
-      });
+      router.replace('/my-prayers');
     }
   };
 
