@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Search, Heart, ChevronRight } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useAuth } from '../contexts/AuthContext';
-import { getFavoritePrayers } from '../services/firestore';
-import { Prayer } from '../types';
+import { getFavoritePrayers, getChapters } from '../services/firestore';
+import { Prayer, PrayerChapter } from '../types';
 import { router } from 'expo-router';
 import { triggerLightHaptic, triggerMediumHaptic } from '../utils/haptics';
 
@@ -17,6 +17,7 @@ export default function FavoritesScreen() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [favoritePrayers, setFavoritePrayers] = useState<Prayer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [chapterOrderMap, setChapterOrderMap] = useState<Map<string, number>>(new Map());
 
   useEffect(() => {
     loadFavoritePrayers();
@@ -27,6 +28,16 @@ export default function FavoritesScreen() {
     
     try {
       setLoading(true);
+      
+      // Charger les chapitres pour obtenir leur ordre
+      const chapters = await getChapters();
+      const orderMap = new Map<string, number>();
+      chapters.forEach(chapter => {
+        orderMap.set(chapter.id, chapter.order);
+      });
+      setChapterOrderMap(orderMap);
+      
+      // Charger les prières favorites
       const prayers = await getFavoritePrayers(user.uid);
       setFavoritePrayers(prayers);
     } catch (error) {
@@ -71,8 +82,44 @@ export default function FavoritesScreen() {
       );
     }
 
+    // Trier les prières de manière intuitive
+    filtered.sort((a, b) => {
+      // Fonction pour obtenir l'ordre du chapitre parent
+      const getChapterOrder = (prayer: Prayer): number => {
+        if (prayer.chapterId && chapterOrderMap.has(prayer.chapterId)) {
+          return chapterOrderMap.get(prayer.chapterId)!;
+        }
+        // Pour les prières sans chapterId (comme les kevarim), utiliser un ordre élevé
+        return 999;
+      };
+      
+      // Fonction pour obtenir l'ordre de la sous-catégorie
+      const getSubcategoryOrder = (prayer: Prayer): number => {
+        return prayer.order || 999;
+      };
+      
+      const chapterOrderA = getChapterOrder(a);
+      const chapterOrderB = getChapterOrder(b);
+      
+      // 1. Trier d'abord par ordre du chapitre parent
+      if (chapterOrderA !== chapterOrderB) {
+        return chapterOrderA - chapterOrderB;
+      }
+      
+      // 2. Si même chapitre, trier par ordre de la sous-catégorie
+      const subcategoryOrderA = getSubcategoryOrder(a);
+      const subcategoryOrderB = getSubcategoryOrder(b);
+      
+      if (subcategoryOrderA !== subcategoryOrderB) {
+        return subcategoryOrderA - subcategoryOrderB;
+      }
+      
+      // 3. En dernier recours, trier par titre alphabétique
+      return a.title.localeCompare(b.title, 'fr', { sensitivity: 'base' });
+    });
+
     return filtered;
-  }, [favoritePrayers, selectedCategory, searchQuery]);
+  }, [favoritePrayers, selectedCategory, searchQuery, chapterOrderMap]);
 
   const navigateToPrayer = (prayer: Prayer) => {
     triggerMediumHaptic();
