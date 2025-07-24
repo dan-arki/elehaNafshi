@@ -239,8 +239,9 @@ export default function SiddourScreen() {
                       </BlurView>
                     </ImageBackground>
                   </TouchableOpacity>
-                ))}
-                  </View>
+                ))
+              )}
+            </View>
           </ScrollView>
         </View>
         
