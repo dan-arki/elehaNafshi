@@ -226,7 +226,7 @@ export default function CreatePrayerScreen() {
     <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={handleCancel} style={styles.backButton}>
+          <TouchableOpacity onPress={handleCancel}>
             <ChevronLeft size={24} color={Colors.text.primary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Ma prière</Text>
