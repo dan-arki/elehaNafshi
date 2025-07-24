@@ -201,8 +201,10 @@ export default function CreatePrayerScreen() {
       };
 
       if (isEditing && edit) {
+        const { updateCustomPrayer } = await import('../services/firestore');
         await updateCustomPrayer(user.uid, edit as string, prayerData);
       } else {
+        const { createCustomPrayer } = await import('../services/firestore');
         await createCustomPrayer(user.uid, prayerData);
       }
 
