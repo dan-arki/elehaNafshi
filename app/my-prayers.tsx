@@ -8,12 +8,16 @@ import { getCustomPrayers, deleteCustomPrayer } from '../services/firestore';
 import { Prayer } from '../types';
 import { router } from 'expo-router';
 import PrayerInstructionsBottomSheet from '../components/PrayerInstructionsBottomSheet';
+import DeleteConfirmationBottomSheet from '../components/DeleteConfirmationBottomSheet';
 import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../utils/haptics';
 
 export default function MyPrayersScreen() {
   const { user } = useAuth();
   const [customPrayers, setCustomPrayers] = useState<Prayer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [prayerToDelete, setPrayerToDelete] = useState<{id: string, title: string} | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [showInstructions, setShowInstructions] = useState(false);
 
@@ -49,33 +53,33 @@ export default function MyPrayersScreen() {
 
   const handleDeletePrayer = (prayerId: string, prayerTitle: string) => {
     triggerMediumHaptic();
-    Alert.alert(
-      'Supprimer la prière',
-      `Êtes-vous sûr de vouloir supprimer "${prayerTitle}" ?`,
-      [
-        {
-          text: 'Annuler',
-          style: 'cancel',
-        },
-        {
-          text: 'Supprimer',
-          style: 'destructive',
-          onPress: async () => {
-            if (!user) return;
-            try {
-              triggerMediumHaptic();
-              await deleteCustomPrayer(user.uid, prayerId);
-              setCustomPrayers(prev => prev.filter(prayer => prayer.id !== prayerId));
-              triggerSuccessHaptic();
-            } catch (error) {
-              console.error('Erreur lors de la suppression:', error);
-              triggerErrorHaptic();
-              Alert.alert('Erreur', 'Impossible de supprimer la prière');
-            }
-          },
-        },
-      ]
-    );
+    setPrayerToDelete({ id: prayerId, title: prayerTitle });
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!user || !prayerToDelete) return;
+    
+    try {
+      setDeleteLoading(true);
+      await deleteCustomPrayer(user.uid, prayerToDelete.id);
+      setCustomPrayers(prev => prev.filter(prayer => prayer.id !== prayerToDelete.id));
+      setShowDeleteConfirmation(false);
+      setPrayerToDelete(null);
+      triggerSuccessHaptic();
+      Alert.alert('Succès', 'Prière supprimée avec succès');
+    } catch (error) {
+      console.error('Erreur lors de la suppression:', error);
+      triggerErrorHaptic();
+      Alert.alert('Erreur', 'Impossible de supprimer la prière');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmation(false);
+    setPrayerToDelete(null);
   };
 
   const handleViewPrayer = (prayerId: string) => {
@@ -189,6 +193,14 @@ export default function MyPrayersScreen() {
         <PrayerInstructionsBottomSheet
           visible={showInstructions}
           onClose={() => setShowInstructions(false)}
+        />
+
+        <DeleteConfirmationBottomSheet
+          visible={showDeleteConfirmation}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          prayerTitle={prayerToDelete?.title || ''}
+          loading={deleteLoading}
         />
     </SafeAreaView>
   );
