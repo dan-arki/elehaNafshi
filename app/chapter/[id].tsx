@@ -646,7 +646,7 @@ export default function ChapterScreen() {
             >
               <ChevronLeft 
                 size={20} 
-                color={selectedSubcategoryIndex === 0 ? Colors.text.muted : Colors.white} 
+                color={selectedSubcategoryIndex === 0 ? Colors.text.muted : Colors.text.primary} 
               />
               <Text style={[
                 styles.navButtonText,
@@ -678,7 +678,7 @@ export default function ChapterScreen() {
               </Text>
               <ChevronRight 
                 size={20} 
-                color={selectedSubcategoryIndex === subcategories.length - 1 ? Colors.text.muted : Colors.white} 
+                color={selectedSubcategoryIndex === subcategories.length - 1 ? Colors.text.muted : Colors.text.primary} 
               />
             </TouchableOpacity>
           </View>
