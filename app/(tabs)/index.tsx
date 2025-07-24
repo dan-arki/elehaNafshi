@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronRight, Heart, Search } from 'lucide-react-native';
+import { ChevronRight, Heart, Search, Calendar } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
@@ -202,8 +202,8 @@ export default function HomeScreen() {
                 
                 {/* Hebrew Date in Header */}
                 <View style={styles.hebrewDateContainer}>
-                  <View style={styles.hebrewDateIcon}>
-                    <Text style={styles.hebrewDateIconText}>📅</Text>
+                  <View style={styles.hebrewDateIcon}> 
+                    <Calendar size={16} color={Colors.white} />
                   </View>
                   <View style={styles.hebrewDateTextContainer}>
                     <Text style={styles.hebrewDateLabel}>Date hébraïque</Text>
