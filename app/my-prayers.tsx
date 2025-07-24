@@ -155,18 +155,19 @@ export default function MyPrayersScreen() {
                       style={styles.prayerContent}
                       onPress={() => handleViewPrayer(prayer.id)}
                     >
-                      <View style={styles.prayerHeader}>
-                        <Text style={styles.prayerTitle}>{prayer.title}</Text>
-                        <Text style={styles.prayerDate}>
-                          Créée le {formatDate(prayer.createdAt)}
-                        </Text>
+                      <View style={styles.prayerMainContent}>
+                        <View style={styles.prayerLeftContent}>
+                          <Text style={styles.prayerTitle}>{prayer.title}</Text>
+                          {prayer.subtitle && (
+                            <Text style={styles.prayerSubtitle}>{prayer.subtitle}</Text>
+                          )}
+                        </View>
+                        <View style={styles.prayerRightContent}>
+                          <Text style={styles.prayerDate}>
+                            Créée le {formatDate(prayer.createdAt)}
+                          </Text>
+                        </View>
                       </View>
-                      {prayer.subtitle && (
-                        <Text style={styles.prayerSubtitle}>{prayer.subtitle}</Text>
-                      )}
-                      <Text style={styles.prayerPreview} numberOfLines={2}>
-                        {prayer.content.french}
-                      </Text>
                     </TouchableOpacity>
                     
                     <View style={styles.prayerActions}>
@@ -325,18 +326,23 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  prayerHeader: {
+  prayerMainContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 8,
+    justifyContent: 'space-between',
+  },
+  prayerLeftContent: {
+    flex: 1,
+    marginRight: 12,
+  },
+  prayerRightContent: {
+    alignItems: 'flex-end',
   },
   prayerTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: Colors.text.primary,
-    flex: 1,
-    marginRight: 8,
+    marginBottom: 4,
   },
   prayerDate: {
     fontSize: 12,
@@ -345,12 +351,6 @@ const styles = StyleSheet.create({
   prayerSubtitle: {
     fontSize: 14,
     color: Colors.primary,
-    marginBottom: 8,
-  },
-  prayerPreview: {
-    fontSize: 14,
-    color: Colors.text.secondary,
-    lineHeight: 18,
   },
   prayerActions: {
     flexDirection: 'column',
