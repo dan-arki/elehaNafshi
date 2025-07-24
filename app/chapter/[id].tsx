@@ -697,7 +697,8 @@ export default function ChapterScreen() {
         visible={showSymbolsInfo}
         onClose={() => setShowSymbolsInfo(false)}
       />
-    </SafeAreaView>
+    </LinearGradient>
+  </ImageBackground>
   );
 }
 
