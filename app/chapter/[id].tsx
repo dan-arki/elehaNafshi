@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ChevronLeft, ChevronRight, List, Settings, Heart, Gift, CircleAlert as AlertCircle, ChevronDown, ChevronUp, BookOpen, User } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
@@ -317,117 +318,129 @@ export default function ChapterScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <ChevronLeft size={24} color={Colors.text.primary} />
-        </TouchableOpacity>
-        
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{chapter.title}</Text>
-          <Text style={styles.headerSubtitle}>
-            {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
-          </Text>
-        </View>
-        
-        <View style={styles.headerRight}>
-          <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
-            <Settings size={24} color={Colors.text.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
-            <Heart 
-              size={24} 
-              color={isFavorite ? Colors.error : Colors.text.primary}
-              fill={isFavorite ? Colors.error : 'transparent'}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
-            <List size={24} color={Colors.text.primary} />
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Sticky Navigation Section */}
-      <View style={styles.stickySection}>
-        {/* Display Mode Buttons */}
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={styles.displayModeContainer}
-          contentContainerStyle={styles.displayModeContent}
+    <View style={styles.container}>
+      <ImageBackground
+        source={chapter.banner ? { uri: chapter.banner } : require('../../assets/images/bannerNuages.jpg')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
+          locations={[0, 0.3, 0.7, 1]}
+          style={styles.gradientOverlay}
         >
-          {displayModeButtons.map((button) => (
-            <TouchableOpacity
-              key={button.key}
-              style={[
-                styles.displayModeButton,
-                displayMode === button.key && styles.displayModeButtonActive
-              ]}
-              onPress={() => setDisplayMode(button.key as any)}
-            >
-              <Text style={[
-                styles.displayModeText,
-                displayMode === button.key && styles.displayModeTextActive
-              ]}>
-                {button.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-
-        {/* Prayer Navigation */}
-        {subcategories.length > 0 && (
-          <ScrollView 
-            ref={subcategoryScrollRef}
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            style={styles.prayerNavContainer}
-            contentContainerStyle={styles.prayerNavContent}
-            onLayout={(event) => {
-              const { width } = event.nativeEvent.layout;
-              setScrollViewWidth(width);
-              console.log('📐 [DEBUG] ScrollView layout - width:', width);
-            }}
-            onContentSizeChange={(contentWidth, contentHeight) => {
-              setContentWidth(contentWidth);
-              console.log('📐 [DEBUG] ScrollView content size - width:', contentWidth);
-            }}
-          >
-            {subcategories.map((subcategory, index) => (
-              <TouchableOpacity
-                key={subcategory.id}
-                ref={(ref) => {
-                  subcategoryRefs.current[index] = ref;
-                }}
-                style={[
-                  styles.prayerNavButton,
-                  selectedSubcategoryIndex === index && styles.prayerNavButtonActive
-                ]}
-                onPress={() => handleSubcategorySelect(index)}
-              >
-                <Text style={[
-                  styles.prayerNavText,
-                  selectedSubcategoryIndex === index && styles.prayerNavTextActive
-                ]}>
-                  {subcategory.title}
-                </Text>
+          <SafeAreaView style={styles.safeArea}>
+            {/* Header */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => router.back()}>
+                <ChevronLeft size={24} color={Colors.text.primary} />
               </TouchableOpacity>
-            ))}
-          </ScrollView>
-        )}
-      </View>
-      {/* Scrollable Content */}
-      <View style={styles.mainContentWrapper}>
-        <ScrollView 
-          ref={scrollRef}
-          style={styles.scrollView} 
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
+              
+              <View style={styles.headerCenter}>
+                <Text style={styles.headerTitle}>{chapter.title}</Text>
+                <Text style={styles.headerSubtitle}>
+                  {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
+                </Text>
+              </View>
+              
+              <View style={styles.headerRight}>
+                <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
+                  <Settings size={24} color={Colors.text.primary} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
+                  <Heart 
+                    size={24} 
+                    color={isFavorite ? Colors.error : Colors.text.primary}
+                    fill={isFavorite ? Colors.error : 'transparent'}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
+                  <List size={24} color={Colors.text.primary} />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-          {/* Prayer Content - Display all blocks */}
-          {currentPrayerBlocks.map((block, index) => {
+            {/* Sticky Navigation Section */}
+            <View style={styles.stickySection}>
+              {/* Display Mode Buttons */}
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                style={styles.displayModeContainer}
+                contentContainerStyle={styles.displayModeContent}
+              >
+                {displayModeButtons.map((button) => (
+                  <TouchableOpacity
+                    key={button.key}
+                    style={[
+                      styles.displayModeButton,
+                      displayMode === button.key && styles.displayModeButtonActive
+                    ]}
+                    onPress={() => setDisplayMode(button.key as any)}
+                  >
+                    <Text style={[
+                      styles.displayModeText,
+                      displayMode === button.key && styles.displayModeTextActive
+                    ]}>
+                      {button.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Prayer Navigation */}
+              {subcategories.length > 0 && (
+                <ScrollView 
+                  ref={subcategoryScrollRef}
+                  horizontal 
+                  showsHorizontalScrollIndicator={false}
+                  style={styles.prayerNavContainer}
+                  contentContainerStyle={styles.prayerNavContent}
+                  onLayout={(event) => {
+                    const { width } = event.nativeEvent.layout;
+                    setScrollViewWidth(width);
+                    console.log('📐 [DEBUG] ScrollView layout - width:', width);
+                  }}
+                  onContentSizeChange={(contentWidth, contentHeight) => {
+                    setContentWidth(contentWidth);
+                    console.log('📐 [DEBUG] ScrollView content size - width:', contentWidth);
+                  }}
+                >
+                  {subcategories.map((subcategory, index) => (
+                    <TouchableOpacity
+                      key={subcategory.id}
+                      ref={(ref) => {
+                        subcategoryRefs.current[index] = ref;
+                      }}
+                      style={[
+                        styles.prayerNavButton,
+                        selectedSubcategoryIndex === index && styles.prayerNavButtonActive
+                      ]}
+                      onPress={() => handleSubcategorySelect(index)}
+                    >
+                      <Text style={[
+                        styles.prayerNavText,
+                        selectedSubcategoryIndex === index && styles.prayerNavTextActive
+                      ]}>
+                        {subcategory.title}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              )}
+            </View>
+            
+            {/* Scrollable Content */}
+            <View style={styles.mainContentWrapper}>
+              <ScrollView 
+                ref={scrollRef}
+                style={styles.scrollView} 
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+              >
+
+                {/* Prayer Content - Display all blocks */}
+                {currentPrayerBlocks.map((block, index) => {
             // Determine which icon to use: icon_large takes priority over icon
             const iconToUse = (block.icon_large && block.icon_large.trim().length > 0) 
               ? block.icon_large 
@@ -613,78 +626,83 @@ export default function ChapterScreen() {
             );
           }).filter(Boolean)}
 
-        </ScrollView>
+                </ScrollView>
 
-        {/* Subcategory Navigation */}
-        {subcategories.length > 1 && (
-          <View style={styles.subcategoryNavigation}>
-            <TouchableOpacity 
-              style={[
-                styles.navButton,
-                selectedSubcategoryIndex === 0 && styles.navButtonDisabled
-              ]}
-              onPress={handlePreviousSubcategory}
-              disabled={selectedSubcategoryIndex === 0}
-            >
-              <ChevronLeft 
-                size={20} 
-                color={selectedSubcategoryIndex === 0 ? Colors.text.muted : Colors.text.primary} 
-              />
-              <Text style={[
-                styles.navButtonText,
-                selectedSubcategoryIndex === 0 && styles.navButtonTextDisabled
-              ]}>
-                Précédent
-              </Text>
-            </TouchableOpacity>
-            
-            <View style={styles.navIndicator}>
-              <Text style={styles.navIndicatorText}>
-                {selectedSubcategoryIndex + 1} / {subcategories.length}
-              </Text>
-            </View>
-            
-            <TouchableOpacity 
-              style={[
-                styles.navButton,
-                selectedSubcategoryIndex === subcategories.length - 1 && styles.navButtonDisabled
-              ]}
-              onPress={handleNextSubcategory}
-              disabled={selectedSubcategoryIndex === subcategories.length - 1}
-            >
-              <Text style={[
-                styles.navButtonText,
-                selectedSubcategoryIndex === subcategories.length - 1 && styles.navButtonTextDisabled
-              ]}>
-                Suivant
-              </Text>
-              <ChevronRight 
-                size={20} 
-                color={selectedSubcategoryIndex === subcategories.length - 1 ? Colors.text.muted : Colors.text.primary} 
-              />
-            </TouchableOpacity>
-          </View>
-        )}
+                {/* Subcategory Navigation */}
+                {subcategories.length > 1 && (
+                  <View style={styles.subcategoryNavigation}>
+                    <TouchableOpacity 
+                      style={[
+                        styles.navButton,
+                        selectedSubcategoryIndex === 0 && styles.navButtonDisabled
+                      ]}
+                      onPress={handlePreviousSubcategory}
+                      disabled={selectedSubcategoryIndex === 0}
+                    >
+                      <ChevronLeft 
+                        size={20} 
+                        color={selectedSubcategoryIndex === 0 ? Colors.text.muted : Colors.text.primary} 
+                      />
+                      <Text style={[
+                        styles.navButtonText,
+                        selectedSubcategoryIndex === 0 && styles.navButtonTextDisabled
+                      ]}>
+                        Précédent
+                      </Text>
+                    </TouchableOpacity>
+                    
+                    <View style={styles.navIndicator}>
+                      <Text style={styles.navIndicatorText}>
+                        {selectedSubcategoryIndex + 1} / {subcategories.length}
+                      </Text>
+                    </View>
+                    
+                    <TouchableOpacity 
+                      style={[
+                        styles.navButton,
+                        selectedSubcategoryIndex === subcategories.length - 1 && styles.navButtonDisabled
+                      ]}
+                      onPress={handleNextSubcategory}
+                      disabled={selectedSubcategoryIndex === subcategories.length - 1}
+                    >
+                      <Text style={[
+                        styles.navButtonText,
+                        selectedSubcategoryIndex === subcategories.length - 1 && styles.navButtonTextDisabled
+                      ]}>
+                        Suivant
+                      </Text>
+                      <ChevronRight 
+                        size={20} 
+                        color={selectedSubcategoryIndex === subcategories.length - 1 ? Colors.text.muted : Colors.text.primary} 
+                      />
+                    </TouchableOpacity>
+                  </View>
+                )}
 
-        <View style={styles.bottomNavigation}>
-          <TouchableOpacity style={styles.navItem} onPress={navigateToHome}>
-            <HomeIcon size={24} color={Colors.text.muted} />
-            <Text style={styles.navText}>Accueil</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={navigateToSiddour}>
-            <View style={styles.activeNavBackground}>
-              <BookOpen size={24} color={Colors.white} fill={Colors.white} />
+                <View style={styles.bottomNavigation}>
+                  <TouchableOpacity style={styles.navItem} onPress={navigateToHome}>
+                    <HomeIcon size={24} color={Colors.text.muted} />
+                    <Text style={styles.navText}>Accueil</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity style={[styles.navItem, styles.activeNavItem]} onPress={navigateToSiddour}>
+                    <View style={styles.activeNavBackground}>
+                      <BookOpen size={24} color={Colors.white} fill={Colors.white} />
+                    </View>
+                    <Text style={[styles.navText, styles.activeNavText]}>Siddour</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity style={styles.navItem} onPress={navigateToProfile}>
+                    <User size={24} color={Colors.text.muted} />
+                    <Text style={styles.navText}>Profil</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
             </View>
-            <Text style={[styles.navText, styles.activeNavText]}>Siddour</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.navItem} onPress={navigateToProfile}>
-            <User size={24} color={Colors.text.muted} />
-            <Text style={styles.navText}>Profil</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+          </SafeAreaView>
+        </LinearGradient>
+      </ImageBackground>
+    </View>
 
       <SettingsBottomSheet
         visible={showSettings}
@@ -697,15 +715,22 @@ export default function ChapterScreen() {
         visible={showSymbolsInfo}
         onClose={() => setShowSymbolsInfo(false)}
       />
-    </LinearGradient>
-  </ImageBackground>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
+  },
+  backgroundImage: {
+    flex: 1,
+  },
+  gradientOverlay: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
