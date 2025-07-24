@@ -222,47 +222,50 @@ export default function CustomPrayerDetailScreen() {
           <View style={styles.introSection}>
             <Text style={styles.mainIntro}>Hashem, mon Roi, abballé, mon Tout,</Text>
           </View>
-          {prayer.sections?.gratitude && renderSection(
-            "Hashem, je veux te remercier pour :",
-            "",
-            false
-          )}
-          <Text style={styles.subSectionTitle}>Remercier pour tout</Text>
+          
           {prayer.sections?.gratitude && (
-            <Text style={styles.gratitudeContent}>
-              {prayer.sections.gratitude}
-            </Text>
+            <>
+              <Text style={styles.staticLabel}>Hashem, je veux te remercier pour :</Text>
+              <Text style={styles.subSectionTitle}>Remercier pour tout</Text>
+              <Text style={styles.gratitudeContent}>
+                {prayer.sections.gratitude}
+              </Text>
+            </>
           )}
-          {prayer.sections?.refouah && renderSection(
-            "Parmi eux, ceux que nous aimons et qui sont précieux pour nous :",
-            "",
-            false
+          
+          {prayer.sections?.refouah && (
+            <>
+              <Text style={styles.staticLabel}>Parmis eux, ceux que nous aimons et qui sont précieux pour nous :</Text>
+            </>
           )}
           {prayer.sections?.refouah && renderListContent(prayer.sections.refouah)}
-          {prayer.sections?.improvement && renderSection(
-            "Hashem, je Te demande pardon pour mes manquements et erreurs:",
-            "",
-            false
+          
+          {prayer.sections?.improvement && (
+            <>
+              <Text style={styles.staticLabel}>Hashem, je Te demande pardon pour mes manquements et erreurs:</Text>
+            </>
           )}
           {prayer.sections?.improvement && (
             <Text style={styles.improvementContent}>
               {prayer.sections.improvement}
             </Text>
           )}
-          {prayer.sections?.dreams && renderSection(
-            "Hashem, je viens à Toi avec tous mes désirs et mes rêves, sachant que Tu m'exauceras uniquement si Tu agrées qu'ils sont le meilleur pour moi :",
-            "",
-            false
+          
+          {prayer.sections?.dreams && (
+            <>
+              <Text style={styles.staticLabel}>Hashem, je viens à Toi avec tous mes désirs et mes rêves, sachant que Tu m'exauceras uniquement si Tu agréés qu'ils sont le meilleur pour moi :</Text>
+            </>
           )}
           {prayer.sections?.dreams && (
             <Text style={styles.dreamsContent}>
               {prayer.sections.dreams}
             </Text>
           )}
-          {prayer.sections?.personal && renderSection(
-            "Hashem, voici ma prière personnelle pour T'exprimer ma gratitude :",
-            "",
-            false
+          
+          {prayer.sections?.personal && (
+            <>
+              <Text style={styles.staticLabel}>Hashem, voici ma prière personnelle pour T'exprimer ma gratitude :</Text>
+            </>
           )}
           {prayer.sections?.personal && (
             <Text style={styles.personalContent}>
@@ -414,6 +417,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 26,
     marginBottom: 32,
+  },
+  staticLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.primary,
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 22,
   },
   bottomSpacing: {
     height: 40,
