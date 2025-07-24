@@ -761,14 +761,9 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   stickySection: {
-    backgroundColor: Colors.white,
+    backgroundColor: 'transparent',
     borderBottomWidth: 1,
     borderBottomColor: Colors.background,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
   },
   contentWrapper: {
     flex: 1,
@@ -988,7 +983,7 @@ const styles = StyleSheet.create({
   navButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
@@ -996,7 +991,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   navButtonDisabled: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   navButtonText: {
     fontSize: 14,
