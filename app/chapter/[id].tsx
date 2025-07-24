@@ -334,15 +334,15 @@ export default function ChapterScreen() {
           <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
             <Settings size={24} color={Colors.text.primary} />
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
+            <List size={24} color={Colors.text.primary} />
+          </TouchableOpacity>
           <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
             <Heart 
               size={24} 
               color={isFavorite ? Colors.error : Colors.text.primary}
               fill={isFavorite ? Colors.error : 'transparent'}
             />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
-            <List size={24} color={Colors.text.primary} />
           </TouchableOpacity>
         </View>
       </View>
