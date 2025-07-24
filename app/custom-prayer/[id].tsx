@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ChevronLeft, Pause, Play, BookOpen, User } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { getCustomPrayerById } from '../../services/firestore';
@@ -188,40 +189,6 @@ export default function CustomPrayerDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => {
-          triggerLightHaptic();
-          router.back();
-        }}>
-          <ChevronLeft size={24} color={Colors.text.primary} />
-        </TouchableOpacity>
-        
-        <Text style={styles.headerTitle}>{prayer.title}</Text>
-        
-        <TouchableOpacity 
-          onPress={togglePlayPause}
-          style={[styles.playButton, !prayer.musicUrl && styles.playButtonDisabled]}
-          disabled={!prayer.musicUrl}
-        >
-          {isPlaying ? (
-            <Pause size={24} color={prayer.musicUrl ? Colors.text.primary : Colors.text.muted} />
-          ) : (
-            <Play size={24} color={prayer.musicUrl ? Colors.text.primary : Colors.text.muted} />
-          )}
-        </TouchableOpacity>
-      </View>
-
-      <View style={{flex: 1}}>
-        <ScrollView 
-          style={styles.scrollView} 
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.introSection}>
-            <Text style={styles.mainIntro}>Hashem, mon Roi, abballé, mon Tout,</Text>
-          </View>
           
           {prayer.sections?.gratitude && (
             <>
