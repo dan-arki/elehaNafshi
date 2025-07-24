@@ -439,6 +439,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     opacity: 0.9,
+    fontStyle: 'italic',
   },
   loadingText: {
     fontSize: 16,
