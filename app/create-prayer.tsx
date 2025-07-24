@@ -186,7 +186,7 @@ export default function CreatePrayerScreen() {
         [
           {
             text: 'OK',
-            onPress: () => router.back(),
+            onPress: () => router.push('/my-prayers'),
           },
         ]
       );
