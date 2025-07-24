@@ -357,6 +357,7 @@ export default function CreatePrayerScreen() {
 
             {/* Gratitude Section */}
             <View style={styles.inputGroup}>
+              <Text style={styles.staticLabel}>Hashem, je veux te remercier pour :</Text>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Hashem je veux te remercier pour</Text>
                 <Info size={16} color={Colors.primary} />
@@ -380,6 +381,7 @@ export default function CreatePrayerScreen() {
 
             {/* Refouah Section */}
             <View style={styles.inputGroup}>
+              <Text style={styles.staticLabel}>Parmis eux, ceux que nous aimons et qui sont précieux pour nous :</Text>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Noms pour la réfouah chéléma</Text>
                 <Info size={16} color={Colors.primary} />
@@ -403,6 +405,7 @@ export default function CreatePrayerScreen() {
 
             {/* Personal Improvement Section */}
             <View style={styles.inputGroup}>
+              <Text style={styles.staticLabel}>Hashem, je Te demande pardon pour mes manquements et erreurs:</Text>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Ce que vous souhaitez améliorer en vous</Text>
                 <Info size={16} color={Colors.primary} />
@@ -426,6 +429,7 @@ export default function CreatePrayerScreen() {
 
             {/* Dreams and Desires Section */}
             <View style={styles.inputGroup}>
+              <Text style={styles.staticLabel}>Hashem, je viens à Toi avec tous mes désirs et mes rêves, sachant que Tu m'exauceras uniquement si Tu agréés qu'ils sont le meilleur pour moi :</Text>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Énoncer vos rêves et désires</Text>
                 <Info size={16} color={Colors.primary} />
@@ -449,6 +453,7 @@ export default function CreatePrayerScreen() {
 
             {/* Personal Prayer Section */}
             <View style={styles.inputGroup}>
+              <Text style={styles.staticLabel}>Hashem, voici ma prière personnelle pour T'exprimer ma gratitude :</Text>
               <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Ma prière personnelle</Text>
                 <Info size={16} color={Colors.primary} />
@@ -638,6 +643,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.white,
     marginLeft: 8,
+  },
+  staticLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.primary,
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 22,
   },
   loadingContainer: {
     padding: 20,
