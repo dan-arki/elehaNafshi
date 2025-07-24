@@ -318,130 +318,129 @@ export default function ChapterScreen() {
   ];
 
   return (
-    <>
-      <View style={styles.container}>
-        <ImageBackground
-          source={chapter.banner ? { uri: chapter.banner } : require('../../assets/images/bannerNuages.jpg')}
-          style={styles.backgroundImage}
-          resizeMode="cover"
+    <View style={styles.container}>
+      <ImageBackground
+        source={chapter.banner ? { uri: chapter.banner } : require('../../assets/images/bannerNuages.jpg')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
+          locations={[0, 0.3, 0.7, 1]}
+          style={styles.gradientOverlay}
         >
-          <LinearGradient
-            colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
-            locations={[0, 0.3, 0.7, 1]}
-            style={styles.gradientOverlay}
-          >
-            <SafeAreaView style={styles.safeArea}>
-              {/* Header */}
-              <View style={styles.header}>
-                <TouchableOpacity onPress={() => router.back()}>
-                  <ChevronLeft size={24} color={Colors.text.primary} />
-                </TouchableOpacity>
-                
-                <View style={styles.headerCenter}>
-                  <Text style={styles.headerTitle}>{chapter.title}</Text>
-                  <Text style={styles.headerSubtitle}>
-                    {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
-                  </Text>
-                </View>
-                
-                <View style={styles.headerRight}>
-                  <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
-                    <Settings size={24} color={Colors.text.primary} />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
-                    <Heart 
-                      size={24} 
-                      color={isFavorite ? Colors.error : Colors.text.primary}
-                      fill={isFavorite ? Colors.error : 'transparent'}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
-                    <List size={24} color={Colors.text.primary} />
-                  </TouchableOpacity>
-                </View>
+          <SafeAreaView style={styles.safeArea}>
+            {/* Header */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => router.back()}>
+                <ChevronLeft size={24} color={Colors.text.primary} />
+              </TouchableOpacity>
+              
+              <View style={styles.headerCenter}>
+                <Text style={styles.headerTitle}>{chapter.title}</Text>
+                <Text style={styles.headerSubtitle}>
+                  {subcategories[selectedSubcategoryIndex]?.title || 'Chargement...'}
+                </Text>
               </View>
+              
+              <View style={styles.headerRight}>
+                <TouchableOpacity onPress={() => setShowSettings(true)} style={styles.headerIcon}>
+                  <Settings size={24} color={Colors.text.primary} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={toggleFavorite} style={styles.headerIcon}>
+                  <Heart 
+                    size={24} 
+                    color={isFavorite ? Colors.error : Colors.text.primary}
+                    fill={isFavorite ? Colors.error : 'transparent'}
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowSymbolsInfo(true)} style={styles.headerIcon}>
+                  <List size={24} color={Colors.text.primary} />
+                </TouchableOpacity>
+              </View>
+            </View>
 
-              {/* Sticky Navigation Section */}
-              <View style={styles.stickySection}>
-                {/* Display Mode Buttons */}
+            {/* Sticky Navigation Section */}
+            <View style={styles.stickySection}>
+              {/* Display Mode Buttons */}
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                style={styles.displayModeContainer}
+                contentContainerStyle={styles.displayModeContent}
+              >
+                {displayModeButtons.map((button) => (
+                  <TouchableOpacity
+                    key={button.key}
+                    style={[
+                      styles.displayModeButton,
+                      displayMode === button.key && styles.displayModeButtonActive
+                    ]}
+                    onPress={() => setDisplayMode(button.key as any)}
+                  >
+                    <Text style={[
+                      styles.displayModeText,
+                      displayMode === button.key && styles.displayModeTextActive
+                    ]}>
+                      {button.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+
+              {/* Prayer Navigation */}
+              {subcategories.length > 0 && (
                 <ScrollView 
+                  ref={subcategoryScrollRef}
                   horizontal 
                   showsHorizontalScrollIndicator={false}
-                  style={styles.displayModeContainer}
-                  contentContainerStyle={styles.displayModeContent}
+                  style={styles.prayerNavContainer}
+                  contentContainerStyle={styles.prayerNavContent}
+                  onLayout={(event) => {
+                    const { width } = event.nativeEvent.layout;
+                    setScrollViewWidth(width);
+                    console.log('📐 [DEBUG] ScrollView layout - width:', width);
+                  }}
+                  onContentSizeChange={(contentWidth, contentHeight) => {
+                    setContentWidth(contentWidth);
+                    console.log('📐 [DEBUG] ScrollView content size - width:', contentWidth);
+                  }}
                 >
-                  {displayModeButtons.map((button) => (
+                  {subcategories.map((subcategory, index) => (
                     <TouchableOpacity
-                      key={button.key}
+                      key={subcategory.id}
+                      ref={(ref) => {
+                        subcategoryRefs.current[index] = ref;
+                      }}
                       style={[
-                        styles.displayModeButton,
-                        displayMode === button.key && styles.displayModeButtonActive
+                        styles.prayerNavButton,
+                        selectedSubcategoryIndex === index && styles.prayerNavButtonActive
                       ]}
-                      onPress={() => setDisplayMode(button.key as any)}
+                      onPress={() => handleSubcategorySelect(index)}
                     >
                       <Text style={[
-                        styles.displayModeText,
-                        displayMode === button.key && styles.displayModeTextActive
+                        styles.prayerNavText,
+                        selectedSubcategoryIndex === index && styles.prayerNavTextActive
                       ]}>
-                        {button.label}
+                        {subcategory.title}
                       </Text>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
+              )}
+            </View>
+            
+            {/* Scrollable Content */}
+            <View style={styles.mainContentWrapper}>
+              <ScrollView 
+                ref={scrollRef}
+                style={styles.scrollView} 
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+              >
 
-                {/* Prayer Navigation */}
-                {subcategories.length > 0 && (
-                  <ScrollView 
-                    ref={subcategoryScrollRef}
-                    horizontal 
-                    showsHorizontalScrollIndicator={false}
-                    style={styles.prayerNavContainer}
-                    contentContainerStyle={styles.prayerNavContent}
-                    onLayout={(event) => {
-                      const { width } = event.nativeEvent.layout;
-                      setScrollViewWidth(width);
-                      console.log('📐 [DEBUG] ScrollView layout - width:', width);
-                    }}
-                    onContentSizeChange={(contentWidth, contentHeight) => {
-                      setContentWidth(contentWidth);
-                      console.log('📐 [DEBUG] ScrollView content size - width:', contentWidth);
-                    }}
-                  >
-                    {subcategories.map((subcategory, index) => (
-                      <TouchableOpacity
-                        key={subcategory.id}
-                        ref={(ref) => {
-                          subcategoryRefs.current[index] = ref;
-                        }}
-                        style={[
-                          styles.prayerNavButton,
-                          selectedSubcategoryIndex === index && styles.prayerNavButtonActive
-                        ]}
-                        onPress={() => handleSubcategorySelect(index)}
-                      >
-                        <Text style={[
-                          styles.prayerNavText,
-                          selectedSubcategoryIndex === index && styles.prayerNavTextActive
-                        ]}>
-                          {subcategory.title}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
-                  </ScrollView>
-                )}
-              </View>
-              
-              {/* Scrollable Content */}
-              <View style={styles.mainContentWrapper}>
-                <ScrollView 
-                  ref={scrollRef}
-                  style={styles.scrollView} 
-                  contentContainerStyle={styles.scrollContent}
-                  showsVerticalScrollIndicator={false}
-                >
-
-                  {/* Prayer Content - Display all blocks */}
-                  {currentPrayerBlocks.map((block, index) => {
+                {/* Prayer Content - Display all blocks */}
+                {currentPrayerBlocks.map((block, index) => {
             // Determine which icon to use: icon_large takes priority over icon
             const iconToUse = (block.icon_large && block.icon_large.trim().length > 0) 
               ? block.icon_large 
@@ -699,6 +698,7 @@ export default function ChapterScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
+            </View>
           </SafeAreaView>
         </LinearGradient>
       </ImageBackground>
@@ -715,7 +715,7 @@ export default function ChapterScreen() {
         visible={showSymbolsInfo}
         onClose={() => setShowSymbolsInfo(false)}
       />
-    </>
+    </SafeAreaView>
   );
 }
 
