@@ -6,6 +6,7 @@ import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
 import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
+import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 
 export default function ProfileScreen() {
   const { user } = useAuth();
@@ -66,75 +67,89 @@ export default function ProfileScreen() {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            {/* Header */}
-            <View style={styles.header}>
-              <Text style={styles.headerTitle}>Profil</Text>
-              <TouchableOpacity onPress={navigateToAccountSettings}>
-                <Settings size={24} color={Colors.text.primary} />
-              </TouchableOpacity>
-            </View>
+            <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
+              {/* Header */}
+              <View style={styles.header}>
+                <Text style={styles.headerTitle}>Profil</Text>
+                <TouchableOpacity onPress={navigateToAccountSettings}>
+                  <Settings size={24} color={Colors.text.primary} />
+                </TouchableOpacity>
+              </View>
+            </AnimatedScreenWrapper>
 
-            {/* Profile Info */}
-            <View style={styles.profileSection}>
-              <View style={styles.avatarContainer}>
-                <View style={styles.avatar}>
-                  <Text style={styles.avatarText}>{userName.charAt(0)}</Text>
+            <AnimatedScreenWrapper animationType="scale" duration={600} delay={100}>
+              {/* Profile Info */}
+              <View style={styles.profileSection}>
+                <View style={styles.avatarContainer}>
+                  <View style={styles.avatar}>
+                    <Text style={styles.avatarText}>{userName.charAt(0)}</Text>
+                  </View>
+                </View>
+                <Text style={styles.userName}>{userName}</Text>
+                <Text style={styles.userEmail}>{userEmail}</Text>
+              </View>
+            </AnimatedScreenWrapper>
+
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={200}>
+              {/* WhatsApp CTA */}
+              <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsAppContact}>
+                <MessageCircle size={20} color={Colors.white} />
+                <Text style={styles.whatsappButtonText}>Posez nous vos questions</Text>
+              </TouchableOpacity>
+            </AnimatedScreenWrapper>
+
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={300}>
+              {/* Donation CTA */}
+              <TouchableOpacity style={styles.donationButton} onPress={handleDonation}>
+                <Heart size={20} color={Colors.white} />
+                <Text style={styles.donationButtonText}>Faire un don</Text>
+              </TouchableOpacity>
+            </AnimatedScreenWrapper>
+
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={400}>
+              {/* App Description */}
+              <View style={styles.appDescriptionContainer}>
+                <View style={styles.appDescriptionContent}>
+                  <View style={styles.appDescriptionText}>
+                    <Text style={styles.appTitle}>La prière au creux de vos mains</Text>
+                    <Text style={styles.appSubtitle}>
+                      L'application qui accompagne chaque femme dans sa prière.
+                    </Text>
+                  </View>
+                  <View style={styles.appImageContainer}>
+                    <View style={styles.womanIcon}>
+                  <Image
+                    source={require('../../assets/images/App Icon Vector.png')}
+                    style={styles.appIconImage}
+                    resizeMode="contain"
+                  />
                 </View>
               </View>
-              <Text style={styles.userName}>{userName}</Text>
-              <Text style={styles.userEmail}>{userEmail}</Text>
             </View>
+              </View>
+            </AnimatedScreenWrapper>
 
-            {/* WhatsApp CTA */}
-            <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsAppContact}>
-              <MessageCircle size={20} color={Colors.white} />
-              <Text style={styles.whatsappButtonText}>Posez nous vos questions</Text>
-            </TouchableOpacity>
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={500}>
+              {/* Share App CTA */}
+              <TouchableOpacity style={styles.shareButton} onPress={handleShareApp}>
+                <Share2 size={20} color={Colors.primary} />
+                <Text style={styles.shareButtonText}>Partager notre application</Text>
+              </TouchableOpacity>
+            </AnimatedScreenWrapper>
 
-            {/* Donation CTA */}
-            <TouchableOpacity style={styles.donationButton} onPress={handleDonation}>
-              <Heart size={20} color={Colors.white} />
-              <Text style={styles.donationButtonText}>Faire un don</Text>
-            </TouchableOpacity>
-
-            {/* App Description */}
-            <View style={styles.appDescriptionContainer}>
-              <View style={styles.appDescriptionContent}>
-                <View style={styles.appDescriptionText}>
-                  <Text style={styles.appTitle}>La prière au creux de vos mains</Text>
-                  <Text style={styles.appSubtitle}>
-                    L'application qui accompagne chaque femme dans sa prière.
-                  </Text>
-                </View>
-                <View style={styles.appImageContainer}>
-                  <View style={styles.womanIcon}>
+            <AnimatedScreenWrapper animationType="fade" duration={600} delay={600}>
+              {/* Footer with Ilnovation */}
+              <TouchableOpacity style={styles.footerContainer} onPress={handleIlnovationClick}>
+                <Text style={styles.footerText}>Créé avec </Text>
+                <Heart size={16} color={Colors.primary} fill={Colors.primary} />
+                <Text style={styles.footerText}> par </Text>
                 <Image
-                  source={require('../../assets/images/App Icon Vector.png')}
-                  style={styles.appIconImage}
+                  source={require('../../assets/images/logoIlnovation.png')}
+                  style={styles.ilnovationLogo}
                   resizeMode="contain"
                 />
-              </View>
-            </View>
-          </View>
-            </View>
-
-            {/* Share App CTA */}
-            <TouchableOpacity style={styles.shareButton} onPress={handleShareApp}>
-              <Share2 size={20} color={Colors.primary} />
-              <Text style={styles.shareButtonText}>Partager notre application</Text>
-            </TouchableOpacity>
-
-            {/* Footer with Ilnovation */}
-            <TouchableOpacity style={styles.footerContainer} onPress={handleIlnovationClick}>
-              <Text style={styles.footerText}>Créé avec </Text>
-              <Heart size={16} color={Colors.primary} fill={Colors.primary} />
-              <Text style={styles.footerText}> par </Text>
-              <Image
-                source={require('../../assets/images/logoIlnovation.png')}
-                style={styles.ilnovationLogo}
-                resizeMode="contain"
-              />
-            </TouchableOpacity>
+              </TouchableOpacity>
+            </AnimatedScreenWrapper>
           </ScrollView>
         </View>
       </SafeAreaView>
