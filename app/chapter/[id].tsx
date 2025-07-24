@@ -21,6 +21,7 @@ export default function ChapterScreen() {
   const { hebrewFont } = useDisplaySettings();
   const scrollRef = useRef<ScrollView>(null);
   const subcategoryScrollRef = useRef<ScrollView>(null);
+  const subcategoryRefs = useRef<(TouchableOpacity | null)[]>([]);
   
   const [chapter, setChapter] = useState<PrayerChapter | null>(null);
   const [subcategories, setSubcategories] = useState<SiddourSubcategory[]>([]);
@@ -36,6 +37,10 @@ export default function ChapterScreen() {
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   
+  // ScrollView dimensions for precise scrolling calculations
+  const [scrollViewWidth, setScrollViewWidth] = useState(0);
+  const [contentWidth, setContentWidth] = useState(0);
+  
   useEffect(() => {
     loadChapterData();
   }, [id]);
@@ -44,6 +49,17 @@ export default function ChapterScreen() {
     checkFavoriteStatus();
   }, [user, subcategories, selectedSubcategoryIndex]);
 
+  // Auto-scroll to selected subcategory when index changes or dimensions are available
+  useEffect(() => {
+    if (subcategories.length > 0 && scrollViewWidth > 0 && contentWidth > 0) {
+      scrollToSelectedSubcategory();
+    }
+  }, [selectedSubcategoryIndex, scrollViewWidth, contentWidth, subcategories.length]);
+
+  // Initialize subcategory refs array when subcategories change
+  useEffect(() => {
+    subcategoryRefs.current = subcategoryRefs.current.slice(0, subcategories.length);
+  }, [subcategories.length]);
   const loadChapterData = async () => {
     if (!id) return;
     
@@ -82,19 +98,46 @@ export default function ChapterScreen() {
   };
 
   const scrollToSelectedSubcategory = () => {
-    if (!subcategoryScrollRef.current || subcategories.length === 0) return;
+    if (!subcategoryScrollRef.current || subcategories.length === 0 || scrollViewWidth === 0) {
+      console.log('🔄 [DEBUG] scrollToSelectedSubcategory: Cannot scroll - missing refs or dimensions');
+      return;
+    }
     
-    // Estimate button width and spacing
-    const buttonWidth = 120; // Approximate width of each subcategory button
-    const containerWidth = 350; // Approximate visible width of the scroll container
+    const selectedRef = subcategoryRefs.current[selectedSubcategoryIndex];
+    if (!selectedRef) {
+      console.log('🔄 [DEBUG] scrollToSelectedSubcategory: No ref for selected index:', selectedSubcategoryIndex);
+      return;
+    }
     
-    // Calculate position to center the selected subcategory
-    const targetPosition = Math.max(0, (selectedSubcategoryIndex * buttonWidth) - (containerWidth / 2) + (buttonWidth / 2));
-    
-    subcategoryScrollRef.current.scrollTo({
-      x: targetPosition,
-      animated: true
-    });
+    // Measure the selected tab's position and dimensions
+    selectedRef.measureLayout(
+      subcategoryScrollRef.current.getInnerViewNode(),
+      (x, y, width, height) => {
+        console.log('📏 [DEBUG] scrollToSelectedSubcategory: Tab measurements:', { x, width, scrollViewWidth, contentWidth });
+        
+        // Calculate the center position of the selected tab
+        const tabCenter = x + (width / 2);
+        
+        // Calculate the scroll position to center the tab in the viewport
+        const targetScrollX = tabCenter - (scrollViewWidth / 2);
+        
+        // Clamp the scroll position to valid bounds
+        // Don't scroll past the beginning (0) or beyond the scrollable content
+        const maxScrollX = Math.max(0, contentWidth - scrollViewWidth);
+        const clampedScrollX = Math.max(0, Math.min(targetScrollX, maxScrollX));
+        
+        console.log('🎯 [DEBUG] scrollToSelectedSubcategory: Scrolling to position:', clampedScrollX);
+        
+        // Perform the scroll animation
+        subcategoryScrollRef.current?.scrollTo({
+          x: clampedScrollX,
+          animated: true
+        });
+      },
+      (error) => {
+        console.error('❌ [DEBUG] scrollToSelectedSubcategory: Error measuring tab:', error);
+      }
+    );
   };
 
   const loadBlocksForSubcategory = async (subcategoryId: string) => {
@@ -141,9 +184,6 @@ export default function ChapterScreen() {
       setTimeout(() => {
         scrollRef.current?.scrollTo({ y: 0, animated: true });
       }, 100);
-      
-      // Scroll horizontal pour centrer la sous-catégorie sélectionnée
-      scrollToSelectedSubcategory();
     } catch (error) {
       console.error('❌ [DEBUG] loadBlocksForSubcategory: Error loading blocks:', error);
       setCurrentPrayerBlocks([]);
@@ -355,10 +395,22 @@ export default function ChapterScreen() {
             showsHorizontalScrollIndicator={false}
             style={styles.prayerNavContainer}
             contentContainerStyle={styles.prayerNavContent}
+            onLayout={(event) => {
+              const { width } = event.nativeEvent.layout;
+              setScrollViewWidth(width);
+              console.log('📐 [DEBUG] ScrollView layout - width:', width);
+            }}
+            onContentSizeChange={(contentWidth, contentHeight) => {
+              setContentWidth(contentWidth);
+              console.log('📐 [DEBUG] ScrollView content size - width:', contentWidth);
+            }}
           >
             {subcategories.map((subcategory, index) => (
               <TouchableOpacity
                 key={subcategory.id}
+                ref={(ref) => {
+                  subcategoryRefs.current[index] = ref;
+                }}
                 style={[
                   styles.prayerNavButton,
                   selectedSubcategoryIndex === index && styles.prayerNavButtonActive
