@@ -151,8 +151,16 @@ export default function CreatePrayerScreen() {
   };
 
   const stopCurrentMusic = async () => {
-    if (currentSound) {
-      await currentSound.unloadAsync();
+    try {
+      if (currentSound) {
+        await currentSound.unloadAsync();
+        setCurrentSound(null);
+        setIsPlayingMusic(false);
+        setPlayingMusicUrl(null);
+      }
+    } catch (error) {
+      console.error('Error stopping music:', error);
+      // Reset state even if unloading fails
       setCurrentSound(null);
       setIsPlayingMusic(false);
       setPlayingMusicUrl(null);
@@ -229,7 +237,9 @@ export default function CreatePrayerScreen() {
 
   const handleCancel = () => {
     triggerLightHaptic();
-    stopCurrentMusic(); // Stop music when canceling
+    // Stop music when canceling
+    stopCurrentMusic();
+    
     if (prayerName || description || gratitudeText || refouahNames || personalImprovement || dreamsDesires || personalPrayer) {
       Alert.alert(
         'Annuler',
@@ -242,12 +252,26 @@ export default function CreatePrayerScreen() {
           {
             text: 'Annuler',
             style: 'destructive',
-            onPress: () => router.back(),
+            onPress: () => {
+              // Ensure music is stopped before navigation
+              stopCurrentMusic().then(() => {
+                router.push('/my-prayers');
+              }).catch(() => {
+                // If stopping music fails, still navigate
+                router.push('/my-prayers');
+              });
+            },
           },
         ]
       );
     } else {
-      router.back();
+      // If no changes, navigate directly back to my-prayers
+      stopCurrentMusic().then(() => {
+        router.push('/my-prayers');
+      }).catch(() => {
+        // If stopping music fails, still navigate
+        router.push('/my-prayers');
+      });
     }
   };
 
