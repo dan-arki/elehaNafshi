@@ -420,7 +420,10 @@ export default function KeverScreen() {
                         />
                       </View>
                     )}
-                    <View style={block.is_alternative ? styles.alternativeContainer : null}>
+                    <View style={[
+                      block.is_alternative ? styles.alternativeContainer : null,
+                      block.is_alternative && styles.phoneticAlternativeSpacing
+                    ]}>
                       <Text style={[styles.phoneticText, { fontSize: 16 + fontSizeAdjustment }]}>
                         {block.content.phonetic}
                       </Text>
@@ -622,6 +625,10 @@ const styles = StyleSheet.create({
     width: '100%', // Prend toute la largeur disponible
     alignItems: 'flex-end', // Aligne le contenu à droite
     minHeight: 'auto', // Hauteur minimale automatique
+  },
+  phoneticAlternativeSpacing: {
+    marginTop: 12, // Espace entre les conteneurs alternatifs hébreu et phonétique
+    alignItems: 'flex-start', // Aligne le contenu phonétique à gauche
   },
   frenchText: {
     alignSelf: 'flex-end', // Aligne le conteneur à droite
