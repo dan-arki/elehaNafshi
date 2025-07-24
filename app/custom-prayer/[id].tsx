@@ -267,9 +267,15 @@ export default function CustomPrayerDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
+  gradientOverlay: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F5F0FF', // Fond légèrement violet comme dans l'image
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
