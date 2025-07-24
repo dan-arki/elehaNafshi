@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronLeft, Info, ChevronRight, Search } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { getChapters, getAllSiddourSubcategoriesForSearch } from '../../services/firestore';
@@ -114,127 +114,139 @@ export default function SiddourScreen() {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
-            <ChevronLeft size={24} color={Colors.text.primary} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Siddour Eleh'a Nafchi</Text>
-          <TouchableOpacity onPress={() => setShowPrayerInfo(true)}>
-            <Info size={24} color={Colors.primary} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={{flex: 1}}>
-          <ScrollView 
-            style={styles.scrollView} 
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
+        <ImageBackground
+          source={require('../../assets/images/bannerNuages.jpg')}
+          style={styles.backgroundImage}
+          resizeMode="cover"
+        >
+          <LinearGradient
+            colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
+            locations={[0, 0.3, 0.7, 1]}
+            style={styles.gradientOverlay}
           >
-            <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
-              {/* Search Bar */}
-              <View style={styles.searchContainer}>
-                <View style={styles.searchInputContainer}>
-                  <Search size={20} color={Colors.text.muted} style={styles.searchIcon} />
-                  <TextInput
-                    style={styles.searchInput}
-                    placeholder="Rechercher une prière..."
-                    placeholderTextColor={Colors.text.muted}
-                    value={searchQuery}
-                    onChangeText={handleSearchQueryChange}
-                    onFocus={handleSearchInputFocus}
-                    onBlur={handleSearchInputBlur}
-                  />
-                </View>
-              </View>
-            </AnimatedScreenWrapper>
-
-            {/* Search Suggestions */}
-            {showSuggestions && filteredSubcategories.length > 0 && (
-              <View style={styles.suggestionsContainer}>
-                <ScrollView 
-                  style={styles.suggestionsScrollView}
-                  showsVerticalScrollIndicator={true}
-                  keyboardShouldPersistTaps="handled"
-                  nestedScrollEnabled={true}
-                >
-                  {filteredSubcategories.map((subcategory) => (
-                    <TouchableOpacity
-                      key={subcategory.id}
-                      style={styles.suggestionItem}
-                      onPressIn={handleSuggestionPressIn}
-                      onPressOut={handleSuggestionPressOut}
-                      onPress={() => handleSelectSuggestion(subcategory)}
-                      activeOpacity={0.7}
-                    >
-                      <Search size={16} color={Colors.text.muted} />
-                      <View style={styles.suggestionTextContainer}>
-                        <Text style={styles.suggestionText}>{subcategory.title}</Text>
-                        <Text style={styles.suggestionParentText}>dans {subcategory.parentChapterName}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            )}
-
-            <AnimatedScreenWrapper animationType="scale" duration={600} delay={100}>
-              {/* Siddour Book Image */}
-              <View style={styles.bookContainer}>
-                <View style={styles.bookCard}>
-                  <Image
-                    source={require('../../assets/images/siddourIllu.jpg')}
-                    style={styles.bookImage}
-                    resizeMode="cover"
-                  />
-                </View>
-              </View>
-            </AnimatedScreenWrapper>
-
-            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={200}>
-              {/* Sommaire */}
-              <Text style={styles.sectionTitle}>Sommaire</Text>
-            </AnimatedScreenWrapper>
-
-            {/* Chapter List */}
-            <View style={styles.chapterList}>
-              {loading ? (
-                <Text style={styles.loadingText}>Chargement...</Text>
-              ) : (
-                chapters.length === 0 ? (
-                  <View style={styles.emptyState}>
-                    <Text style={styles.emptyStateText}>
-                      Aucune catégorie disponible
-                    </Text>
-                    <Text style={styles.emptyStateSubtext}>
-                      Les catégories du Siddour seront bientôt disponibles.
-                    </Text>
-                  </View>
-                ) :
-                chapters.map((chapter) => (
-                <AnimatedScreenWrapper 
-                  key={chapter.id} 
-                  animationType="slideUp" 
-                  duration={400} 
-                  delay={300 + (chapters.indexOf(chapter) * 100)}
-                >
-                  <TouchableOpacity
-                    style={styles.chapterItem}
-                    onPress={() => navigateToChapter(chapter.id)}
-                  >
-                    <View style={styles.chapterContent}>
-                      <Text style={styles.chapterTitle}>{chapter.title}</Text>
-                      <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
-                    </View>
-                    <ChevronRight size={20} color={Colors.text.primary} />
-                  </TouchableOpacity>
-                </AnimatedScreenWrapper>
-                ))
-              )}
+            {/* Header */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => router.back()}>
+                <ChevronLeft size={24} color={Colors.text.primary} />
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>Siddour Eleh'a Nafchi</Text>
+              <TouchableOpacity onPress={() => setShowPrayerInfo(true)}>
+                <Info size={24} color={Colors.primary} />
+              </TouchableOpacity>
             </View>
-          </ScrollView>
-        </View>
+
+            <View style={{flex: 1}}>
+              <ScrollView 
+                style={styles.scrollView} 
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
+                  {/* Search Bar */}
+                  <View style={styles.searchContainer}>
+                    <View style={styles.searchInputContainer}>
+                      <Search size={20} color={Colors.text.muted} style={styles.searchIcon} />
+                      <TextInput
+                        style={styles.searchInput}
+                        placeholder="Rechercher une prière..."
+                        placeholderTextColor={Colors.text.muted}
+                        value={searchQuery}
+                        onChangeText={handleSearchQueryChange}
+                        onFocus={handleSearchInputFocus}
+                        onBlur={handleSearchInputBlur}
+                      />
+                    </View>
+                  </View>
+                </AnimatedScreenWrapper>
+
+                {/* Search Suggestions */}
+                {showSuggestions && filteredSubcategories.length > 0 && (
+                  <View style={styles.suggestionsContainer}>
+                    <ScrollView 
+                      style={styles.suggestionsScrollView}
+                      showsVerticalScrollIndicator={true}
+                      keyboardShouldPersistTaps="handled"
+                      nestedScrollEnabled={true}
+                    >
+                      {filteredSubcategories.map((subcategory) => (
+                        <TouchableOpacity
+                          key={subcategory.id}
+                          style={styles.suggestionItem}
+                          onPressIn={handleSuggestionPressIn}
+                          onPressOut={handleSuggestionPressOut}
+                          onPress={() => handleSelectSuggestion(subcategory)}
+                          activeOpacity={0.7}
+                        >
+                          <Search size={16} color={Colors.text.muted} />
+                          <View style={styles.suggestionTextContainer}>
+                            <Text style={styles.suggestionText}>{subcategory.title}</Text>
+                            <Text style={styles.suggestionParentText}>dans {subcategory.parentChapterName}</Text>
+                          </View>
+                        </TouchableOpacity>
+                      ))}
+                    </ScrollView>
+                  </View>
+                )}
+
+                <AnimatedScreenWrapper animationType="scale" duration={600} delay={100}>
+                  {/* Siddour Book Image */}
+                  <View style={styles.bookContainer}>
+                    <View style={styles.bookCard}>
+                      <Image
+                        source={require('../../assets/images/siddourIllu.jpg')}
+                        style={styles.bookImage}
+                        resizeMode="cover"
+                      />
+                    </View>
+                  </View>
+                </AnimatedScreenWrapper>
+
+                <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={200}>
+                  {/* Sommaire */}
+                  <Text style={styles.sectionTitle}>Sommaire</Text>
+                </AnimatedScreenWrapper>
+
+                {/* Chapter List */}
+                <View style={styles.chapterList}>
+                  {loading ? (
+                    <Text style={styles.loadingText}>Chargement...</Text>
+                  ) : (
+                    chapters.length === 0 ? (
+                      <View style={styles.emptyState}>
+                        <Text style={styles.emptyStateText}>
+                          Aucune catégorie disponible
+                        </Text>
+                        <Text style={styles.emptyStateSubtext}>
+                          Les catégories du Siddour seront bientôt disponibles.
+                        </Text>
+                      </View>
+                    ) :
+                    chapters.map((chapter) => (
+                    <AnimatedScreenWrapper 
+                      key={chapter.id} 
+                      animationType="slideUp" 
+                      duration={400} 
+                      delay={300 + (chapters.indexOf(chapter) * 100)}
+                    >
+                      <TouchableOpacity
+                        style={styles.chapterItem}
+                        onPress={() => navigateToChapter(chapter.id)}
+                      >
+                        <View style={styles.chapterContent}>
+                          <Text style={styles.chapterTitle}>{chapter.title}</Text>
+                          <Text style={styles.chapterSubtitle}>{chapter.subtitle}</Text>
+                        </View>
+                        <ChevronRight size={20} color={Colors.text.primary} />
+                      </TouchableOpacity>
+                    </AnimatedScreenWrapper>
+                    ))
+                  )}
+                </View>
+              </ScrollView>
+            </View>
+          </LinearGradient>
+        </ImageBackground>
         
         <PrayerInfoBottomSheet 
           visible={showPrayerInfo}
@@ -248,9 +260,14 @@ export default function SiddourScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.white,
   },
   safeArea: {
+    flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+  },
+  gradientOverlay: {
     flex: 1,
   },
   flex: {
