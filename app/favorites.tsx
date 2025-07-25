@@ -139,7 +139,10 @@ export default function FavoritesScreen() {
       <SafeAreaView style={styles.safeArea}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => {
+            triggerLightHaptic();
+            router.back();
+          }}>
             <ChevronLeft size={24} color={Colors.text.primary} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Mes prières favorites</Text>

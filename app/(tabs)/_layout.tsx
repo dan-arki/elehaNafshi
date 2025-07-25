@@ -3,6 +3,7 @@ import { Tabs } from 'expo-router';
 import { Colors } from '../../constants/Colors';
 import { BookOpen, User } from 'lucide-react-native';
 import { Svg, Path } from 'react-native-svg';
+import { triggerMediumHaptic } from '../../utils/haptics';
 
 // Classic Home Icon Component
 export const HomeIcon = ({ size = 24, color = '#000' }: { size?: number; color?: string }) => (
@@ -53,6 +54,11 @@ export default function TabLayout() {
               color={color}
             />
           ),
+          listeners: {
+            tabPress: () => {
+              triggerMediumHaptic();
+            },
+          },
         }}
       />
       <Tabs.Screen
@@ -66,6 +72,11 @@ export default function TabLayout() {
               fill={focused ? color : 'transparent'}
             />
           ),
+          listeners: {
+            tabPress: () => {
+              triggerMediumHaptic();
+            },
+          },
         }}
       />
       <Tabs.Screen
@@ -79,6 +90,11 @@ export default function TabLayout() {
               fill={focused ? color : 'transparent'}
             />
           ),
+          listeners: {
+            tabPress: () => {
+              triggerMediumHaptic();
+            },
+          },
         }}
       />
     </Tabs>
