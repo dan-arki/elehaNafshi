@@ -83,6 +83,7 @@ export default function HomeScreen() {
     
     return allSubcategories
       .filter(subcategory => 
+        subcategory.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         subcategory.parentChapterName.toLowerCase().includes(searchQuery.toLowerCase())
       )
       .slice(0, 10); // Augmenter à 10 suggestions pour démontrer le scroll
