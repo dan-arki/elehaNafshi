@@ -277,17 +277,9 @@ export default function KeverScreen() {
 
           {/* Prayer Content - Display all blocks */}
           {currentPrayerBlocks.map((block, index) => {
-            // Determine which icon to use: icon_large takes priority over icon
-            const iconToUse = (block.icon_large && block.icon_large.trim().length > 0) 
-              ? block.icon_large 
-              : (block.icon && block.icon.trim().length > 0) 
-                ? block.icon 
-                : null;
-            
-            // Determine which icon to use for phonetic text: icon_large_fr takes priority
-            const iconPhoneticToUse = (block.icon_large_fr && block.icon_large_fr.trim().length > 0) 
-              ? block.icon_large_fr 
-              : iconToUse;
+            const hasIcon = block.icon && block.icon.trim().length > 0;
+            const hasIconLarge = block.icon_large && block.icon_large.trim().length > 0;
+            const hasIconLargeFr = block.icon_large_fr && block.icon_large_fr.trim().length > 0;
             
             return (
             <View key={block.id} style={styles.blockContainer}>
@@ -367,13 +359,22 @@ export default function KeverScreen() {
               {/* Block Content */}
               <View style={styles.prayerContent}>
                 {/* Icons above Hebrew text for specific prayers */}
-                {iconToUse && (displayMode === 'hebrew' || displayMode === 'hebrewTrad' || displayMode === 'hebrewPhonetic') && (
+                {(hasIcon || hasIconLarge) && (displayMode === 'hebrew' || displayMode === 'hebrewTrad' || displayMode === 'hebrewPhonetic') && (
                   <View style={styles.iconsContainer}>
-                    <Image 
-                      source={{ uri: iconToUse }} 
-                      style={block.icon_large && block.icon_large.trim().length > 0 ? styles.blockImageLarge : styles.blockImage}
-                      resizeMode="contain"
-                    />
+                    {hasIcon && (
+                      <Image 
+                        source={{ uri: block.icon }} 
+                        style={styles.blockImage}
+                        resizeMode="contain"
+                      />
+                    )}
+                    {hasIconLarge && (
+                      <Image 
+                        source={{ uri: block.icon_large }} 
+                        style={styles.blockImageLarge}
+                        resizeMode="contain"
+                      />
+                    )}
                   </View>
                 )}
 
@@ -411,13 +412,28 @@ export default function KeverScreen() {
                 {block.content.phonetic && block.content.phonetic.trim().length > 0 && (displayMode === 'hebrewPhonetic' || displayMode === 'phonetic') && (
                   <>
                     {/* Icons above Phonetic text - aligned left for phonetic mode, or for hebrewPhonetic mode */}
-                    {iconPhoneticToUse && (displayMode === 'phonetic' || displayMode === 'hebrewPhonetic') && (
+                    {(hasIcon || hasIconLargeFr || hasIconLarge) && (displayMode === 'phonetic' || displayMode === 'hebrewPhonetic') && (
                       <View style={styles.iconsContainerLeft}>
-                        <Image 
-                          source={{ uri: iconPhoneticToUse }} 
-                          style={(block.icon_large_fr && block.icon_large_fr.trim().length > 0) || (block.icon_large && block.icon_large.trim().length > 0) ? styles.blockImageLarge : styles.blockImage}
-                          resizeMode="contain"
-                        />
+                        {hasIcon && (
+                          <Image 
+                            source={{ uri: block.icon }} 
+                            style={styles.blockImage}
+                            resizeMode="contain"
+                          />
+                        )}
+                        {hasIconLargeFr ? (
+                          <Image 
+                            source={{ uri: block.icon_large_fr }} 
+                            style={styles.blockImageLarge}
+                            resizeMode="contain"
+                          />
+                        ) : hasIconLarge && (
+                          <Image 
+                            source={{ uri: block.icon_large }} 
+                            style={styles.blockImageLarge}
+                            resizeMode="contain"
+                          />
+                        )}
                       </View>
                     )}
                     <View style={[

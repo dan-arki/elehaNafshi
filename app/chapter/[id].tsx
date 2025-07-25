@@ -427,18 +427,6 @@ export default function ChapterScreen() {
 
           {/* Prayer Content - Display all blocks */}
           {currentPrayerBlocks.map((block, index) => {
-            // Determine which icon to use: icon_large takes priority over icon
-            const iconToUse = (block.icon_large && block.icon_large.trim().length > 0) 
-              ? block.icon_large 
-              : (block.icon && block.icon.trim().length > 0) 
-                ? block.icon 
-                : null;
-            
-            // Determine which icon to use for phonetic text: icon_large_fr takes priority
-            const iconPhoneticToUse = (block.icon_large_fr && block.icon_large_fr.trim().length > 0) 
-              ? block.icon_large_fr 
-              : iconToUse;
-            
             // Check if block has any content to avoid empty blocks
             const hasHebrewContent = block.content.hebrew && block.content.hebrew.trim().length > 0;
             const hasFrenchContent = block.content.french && block.content.french.trim().length > 0;
@@ -448,9 +436,12 @@ export default function ChapterScreen() {
             const hasImage = block.image && block.image.trim().length > 0;
             const hasImageComment = block.image_comment && block.image_comment.trim().length > 0;
             const hasTextFr = block.text_fr && block.text_fr.trim().length > 0;
+            const hasIcon = block.icon && block.icon.trim().length > 0;
+            const hasIconLarge = block.icon_large && block.icon_large.trim().length > 0;
+            const hasIconLargeFr = block.icon_large_fr && block.icon_large_fr.trim().length > 0;
             
             // Skip completely empty blocks
-            if (!hasHebrewContent && !hasFrenchContent && !hasPhoneticContent && !hasKavana && !hasInformation && !hasImage && !hasTextFr) {
+            if (!hasHebrewContent && !hasFrenchContent && !hasPhoneticContent && !hasKavana && !hasInformation && !hasImage && !hasTextFr && !hasIcon && !hasIconLarge && !hasIconLargeFr) {
               return null;
             }
             
@@ -540,16 +531,25 @@ export default function ChapterScreen() {
               )}
 
               {/* Block Content - Only render if there's actual content to display */}
-              {(hasHebrewContent || hasFrenchContent || hasPhoneticContent || hasTextFr || iconToUse) && (
+              {(hasHebrewContent || hasFrenchContent || hasPhoneticContent || hasTextFr || hasIcon || hasIconLarge || hasIconLargeFr) && (
                 <View style={styles.prayerContent}>
                   {/* Icons above Hebrew text for specific prayers */}
-                  {iconToUse && (displayMode === 'hebrew' || displayMode === 'hebrewTrad' || displayMode === 'hebrewPhonetic') && (
+                  {(hasIcon || hasIconLarge) && (displayMode === 'hebrew' || displayMode === 'hebrewTrad' || displayMode === 'hebrewPhonetic') && (
                     <View style={styles.iconsContainer}>
-                      <Image 
-                        source={{ uri: iconToUse }} 
-                        style={block.icon_large && block.icon_large.trim().length > 0 ? styles.blockImageLarge : styles.blockImage}
-                        resizeMode="contain"
-                      />
+                      {hasIcon && (
+                        <Image 
+                          source={{ uri: block.icon }} 
+                          style={styles.blockImage}
+                          resizeMode="contain"
+                        />
+                      )}
+                      {hasIconLarge && (
+                        <Image 
+                          source={{ uri: block.icon_large }} 
+                          style={styles.blockImageLarge}
+                          resizeMode="contain"
+                        />
+                      )}
                     </View>
                   )}
 
@@ -590,13 +590,28 @@ export default function ChapterScreen() {
                   {hasPhoneticContent && (displayMode === 'hebrewPhonetic' || displayMode === 'phonetic') && (
                     <>
                       {/* Icons above Phonetic text - aligned left for phonetic mode, or for hebrewPhonetic mode */}
-                      {iconPhoneticToUse && (displayMode === 'phonetic' || displayMode === 'hebrewPhonetic') && (
+                      {(hasIcon || hasIconLargeFr || hasIconLarge) && (displayMode === 'phonetic' || displayMode === 'hebrewPhonetic') && (
                         <View style={styles.iconsContainerLeft}>
-                          <Image 
-                            source={{ uri: iconPhoneticToUse }} 
-                            style={(block.icon_large_fr && block.icon_large_fr.trim().length > 0) || (block.icon_large && block.icon_large.trim().length > 0) ? styles.blockImageLarge : styles.blockImage}
-                            resizeMode="contain"
-                          />
+                          {hasIcon && (
+                            <Image 
+                              source={{ uri: block.icon }} 
+                              style={styles.blockImage}
+                              resizeMode="contain"
+                            />
+                          )}
+                          {hasIconLargeFr ? (
+                            <Image 
+                              source={{ uri: block.icon_large_fr }} 
+                              style={styles.blockImageLarge}
+                              resizeMode="contain"
+                            />
+                          ) : hasIconLarge && (
+                            <Image 
+                              source={{ uri: block.icon_large }} 
+                              style={styles.blockImageLarge}
+                              resizeMode="contain"
+                            />
+                          )}
                         </View>
                       )}
                       <View style={block.is_alternative ? styles.alternativeContainer : null}>
