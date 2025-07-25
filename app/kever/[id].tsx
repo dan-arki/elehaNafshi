@@ -427,10 +427,10 @@ export default function KeverScreen() {
                             style={styles.blockImageLarge}
                             resizeMode="contain"
                           />
-                        ) : hasIconLarge && (
-                          <Image 
-                            source={{ uri: block.icon_large }} 
-                            style={styles.blockImageLarge}
+                     <View style={[
+                       block.is_alternative ? styles.alternativeContainer : null,
+                       block.is_alternative && displayMode === 'hebrewPhonetic' && styles.phoneticAlternativeSpacing
+                     ]}>
                             resizeMode="contain"
                           />
                         )}
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
     minHeight: 'auto', // Hauteur minimale automatique
   },
   phoneticAlternativeSpacing: {
-    marginTop: 12, // Espace entre les conteneurs alternatifs hébreu et phonétique
+   marginTop: 16, // Espace entre les conteneurs alternatifs hébreu et phonétique
     alignItems: 'flex-start', // Aligne le contenu phonétique à gauche
   },
   frenchText: {

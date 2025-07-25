@@ -567,7 +567,6 @@ export default function ChapterScreen() {
                   {hasHebrewContent && (displayMode === 'hebrew' || displayMode === 'hebrewTrad' || displayMode === 'hebrewPhonetic') && (
                     <View style={[
                       block.is_alternative ? styles.alternativeContainer : null,
-                      block.is_alternative && styles.phoneticAlternativeSpacing
                     ]}>
                       <Text style={[styles.hebrewText, { fontSize: 18 + fontSizeAdjustment, fontFamily: hebrewFont }]}>
                         {block.content.hebrew}
@@ -617,7 +616,10 @@ export default function ChapterScreen() {
                           )}
                         </View>
                       )}
-                      <View style={block.is_alternative ? styles.alternativeContainer : null}>
+                     <View style={[
+                       block.is_alternative ? styles.alternativeContainer : null,
+                       block.is_alternative && displayMode === 'hebrewPhonetic' && styles.phoneticAlternativeSpacing
+                     ]}>
                         <Text style={[styles.phoneticText, { fontSize: 16 + fontSizeAdjustment }]}>
                           {block.content.phonetic}
                         </Text>
@@ -1067,7 +1069,7 @@ const styles = StyleSheet.create({
     minHeight: 'auto', // Hauteur minimale automatique
   },
   phoneticAlternativeSpacing: {
-    marginTop: 12, // Espace entre les conteneurs alternatifs hébreu et phonétique
+   marginTop: 16, // Espace entre les conteneurs alternatifs hébreu et phonétique
     alignItems: 'flex-start', // Aligne le contenu phonétique à gauche
   },
   commentImageContainer: {

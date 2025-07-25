@@ -202,7 +202,10 @@ export default function CustomPrayerDetailScreen() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()}>
+            <TouchableOpacity onPress={() => {
+              triggerLightHaptic();
+              router.back();
+            }}>
               <ChevronLeft size={24} color={Colors.text.primary} />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>{prayer.title}</Text>
