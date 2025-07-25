@@ -25,7 +25,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
-import { DisplaySettingsProvider } from '../contexts/DisplaySettingsContext';
+import { DisplaySettingsProvider, useDisplaySettings } from '../contexts/DisplaySettingsContext';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 // Prevent splash screen from auto-hiding
@@ -35,6 +35,7 @@ function RootLayoutNav() {
   console.log('[_layout.tsx] Début du rendu');
   useFrameworkReady();
   const { user, loading } = useAuth();
+  const displaySettings = useDisplaySettings();
   const segments = useSegments();
   const router = useRouter();
 
@@ -50,13 +51,13 @@ function RootLayoutNav() {
 
   // Hide splash screen once fonts are loaded
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    if ((fontsLoaded || fontError) && displaySettings.loaded) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded, fontError, displaySettings.loaded]);
 
   useEffect(() => {
-    if (loading || !fontsLoaded) return;
+    if (loading || !fontsLoaded || !displaySettings.loaded) return;
 
     const inAuthGroup = segments[0] === '(tabs)';
     
@@ -67,10 +68,10 @@ function RootLayoutNav() {
       // User is signed in and trying to access auth pages
       router.replace('/(tabs)');
     }
-  }, [user, segments, loading, fontsLoaded]);
+  }, [user, segments, loading, fontsLoaded, displaySettings.loaded]);
 
   // Return null to keep splash screen visible while fonts load
-  if (!fontsLoaded && !fontError || loading) {
+  if ((!fontsLoaded && !fontError) || loading || !displaySettings.loaded) {
     return null;
   }
 
