@@ -427,10 +427,10 @@ export default function KeverScreen() {
                             style={styles.blockImageLarge}
                             resizeMode="contain"
                           />
-                     <View style={[
-                       block.is_alternative ? styles.alternativeContainer : null,
-                       block.is_alternative && displayMode === 'hebrewPhonetic' && styles.phoneticAlternativeSpacing
-                     ]}>
+                        ) : hasIconLarge && (
+                          <Image 
+                            source={{ uri: block.icon_large }} 
+                            style={styles.blockImageLarge}
                             resizeMode="contain"
                           />
                         )}
@@ -438,7 +438,7 @@ export default function KeverScreen() {
                     )}
                     <View style={[
                       block.is_alternative ? styles.alternativeContainer : null,
-                      block.is_alternative && styles.phoneticAlternativeSpacing
+                      block.is_alternative && displayMode === 'hebrewPhonetic' && styles.phoneticAlternativeSpacing
                     ]}>
                       <Text style={[styles.phoneticText, { fontSize: 16 + fontSizeAdjustment }]}>
                         {block.content.phonetic}
