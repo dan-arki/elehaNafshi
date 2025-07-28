@@ -6,7 +6,7 @@ import { ChevronRight, Heart, Search, Calendar } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
-import { getAllSiddourSubcategoriesForSearch, getBanners } from '../../services/firestore';
+import { getAllSiddourSubcategoriesForSearch, getBanners, createBanner } from '../../services/firestore';
 import { Banner } from '../../types';
 import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
 import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
@@ -30,7 +30,33 @@ export default function HomeScreen() {
     loadSubcategoriesForSearch();
     loadHebrewDate();
     loadBanners();
+    
+    // TEMPORARY: Create a test banner (REMOVE AFTER TESTING)
+    createTestBanner();
   }, []);
+
+  // TEMPORARY FUNCTION: Create a test banner for development
+  const createTestBanner = async () => {
+    try {
+      const testBannerData = {
+        title: 'Nouvelle Actualité Test',
+        description: 'Ceci est une bannière de test pour vérifier l\'affichage dynamique',
+        image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop',
+        link: 'https://www.google.com'
+      };
+      
+      console.log('Création d\'une bannière de test...');
+      const bannerId = await createBanner(testBannerData);
+      console.log('Bannière de test créée avec l\'ID:', bannerId);
+      
+      // Recharger les bannières après création
+      setTimeout(() => {
+        loadBanners();
+      }, 1000);
+    } catch (error) {
+      console.error('Erreur lors de la création de la bannière de test:', error);
+    }
+  };
 
   const loadHebrewDate = async () => {
     try {
