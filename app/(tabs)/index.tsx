@@ -475,7 +475,6 @@ export default function HomeScreen() {
             </AnimatedScreenWrapper>
 
             {/* Autres Section */}
-            <Text style={styles.sectionTitle}>Autres</Text>
             <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={300}>
               <TouchableOpacity style={styles.favoriteSection} onPress={navigateToFavorites}>
                 <Heart size={20} color={Colors.primary} />
