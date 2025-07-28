@@ -649,21 +649,13 @@ export const getSiddourSubcategoriesWithPosition = async (): Promise<{id: string
 // Banners
 export const getBanners = async (): Promise<Banner[]> => {
   try {
-    console.log('🔍 [DEBUG] getBanners: Fetching banners...');
     const bannersRef = collection(db, 'banners');
     const q = query(bannersRef, orderBy('order', 'asc'));
     const querySnapshot = await getDocs(q);
     
-    // NOUVEAUX LOGS DÉTAILLÉS
-    console.log('📄 [DEBUG] getBanners: querySnapshot.empty:', querySnapshot.empty);
-    console.log('📄 [DEBUG] getBanners: querySnapshot.size:', querySnapshot.size);
-    console.log('📄 [DEBUG] getBanners: querySnapshot.docs (raw):', querySnapshot.docs);
-    
     const banners = querySnapshot.docs
       .map(doc => {
         const data = doc.data();
-        console.log('📄 [DEBUG] getBanners: Processing document ID:', doc.id);
-        console.log('📄 [DEBUG] getBanners: Processing document data:', data);
         
         return {
           id: doc.id,
@@ -677,27 +669,23 @@ export const getBanners = async (): Promise<Banner[]> => {
         };
       })
       .filter(banner => {
-        const passesFilter = banner.isActive && banner.image && banner.link;
-        console.log(`📄 [DEBUG] getBanners: Banner ${banner.id} - title: "${banner.title}", isActive: ${banner.isActive}, image: "${banner.image}", link: "${banner.link}", passesFilter: ${passesFilter}`);
-        return passesFilter;
+        // Filter out inactive banners or those missing required fields
+        return banner.isActive && 
+               banner.image && 
+               banner.image.trim().length > 0 && 
+               banner.link && 
+               banner.link.trim().length > 0;
       });
-    
-    console.log('✅ [DEBUG] getBanners: Successfully fetched banners (after filter):', banners);
-    console.log('📊 [DEBUG] getBanners: Number of banners found (after filter):', banners.length);
     
     return banners;
   } catch (error: any) {
-    console.error('❌ [DEBUG] getBanners: Error fetching banners:', error);
-    console.error('❌ [DEBUG] getBanners: Error details:', {
-      code: error.code,
-      message: error.message
-    });
+    console.error('Error fetching banners:', error);
     if (error.code === 'permission-denied') {
-      console.warn('Permissions Firestore non configurées pour les bannières');
+      console.warn('Firestore permissions not configured for banners');
       return [];
     }
     if (error.code === 'unavailable') {
-      console.warn('Firestore temporairement indisponible, retour de données vides');
+      console.warn('Firestore temporarily unavailable, returning empty array');
       return [];
     }
     throw error;

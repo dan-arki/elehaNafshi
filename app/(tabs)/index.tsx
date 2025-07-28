@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert, ImageBackground, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight, Heart, Search, Calendar } from 'lucide-react-native';
@@ -12,7 +12,6 @@ import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
 import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 
 export default function HomeScreen() {
-  console.log('[index.tsx] Début du rendu de l\'écran d\'accueil');
   const { user } = useAuth();
   const [hebrewDate, setHebrewDate] = useState<string>("Chargement...");
   const userName = user?.displayName || user?.email?.split('@')[0] || "Shalom 👋";
@@ -24,9 +23,10 @@ export default function HomeScreen() {
   const isTappingSuggestion = useRef(false);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loadingBanners, setLoadingBanners] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [bannerError, setBannerError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('[index.tsx] Chargement des sous-catégories et de la date hébraïque');
     loadSubcategoriesForSearch();
     loadHebrewDate();
     loadBanners();
@@ -69,15 +69,27 @@ export default function HomeScreen() {
   const loadBanners = async () => {
     try {
       setLoadingBanners(true);
+      setBannerError(null);
       const bannersData = await getBanners();
+      setBanners(bannersData);
     } catch (error) {
       console.error('Erreur lors du chargement des bannières:', error);
+      setBannerError('Impossible de charger les actualités');
       setBanners([]);
     } finally {
       setLoadingBanners(false);
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([
+      loadBanners(),
+      loadHebrewDate(),
+      loadSubcategoriesForSearch()
+    ]);
+    setRefreshing(false);
+  };
   const filteredSubcategories = useMemo(() => {
     if (!searchQuery.trim()) return [];
     
@@ -139,10 +151,23 @@ export default function HomeScreen() {
 
   const handleBannerPress = async (banner: Banner) => {
     triggerMediumHaptic();
+    
+    // Validate the link before attempting to open it
+    if (!banner.link || !banner.link.trim()) {
+      Alert.alert('Erreur', 'Ce lien n\'est pas valide');
+      return;
+    }
+    
+    // Ensure the link has a protocol
+    let url = banner.link.trim();
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+    
     try {
-      const canOpen = await Linking.canOpenURL(banner.link);
+      const canOpen = await Linking.canOpenURL(url);
       if (canOpen) {
-        await Linking.openURL(banner.link);
+        await Linking.openURL(url);
       } else {
         Alert.alert('Erreur', 'Impossible d\'ouvrir ce lien');
       }
@@ -167,6 +192,34 @@ export default function HomeScreen() {
     router.push('/(tabs)/siddour');
   };
 
+  const renderBannerCard = (banner: Banner, index: number) => (
+    <AnimatedScreenWrapper key={banner.id} animationType="slideUp" duration={400} delay={index * 50 + 100}>
+      <TouchableOpacity
+        style={[styles.bannerCard, index === banners.length - 1 && styles.lastBannerCard]}
+        onPress={() => handleBannerPress(banner)}
+        activeOpacity={0.8}
+      >
+        <Image
+          source={{ uri: banner.image }}
+          style={styles.bannerImage}
+          resizeMode="cover"
+          onError={() => {
+            console.warn(`Failed to load banner image: ${banner.image}`);
+          }}
+        />
+        <View style={styles.bannerOverlay}>
+          <Text style={styles.bannerTitle} numberOfLines={2}>
+            {banner.title}
+          </Text>
+          {banner.description && (
+            <Text style={styles.bannerDescription} numberOfLines={2}>
+              {banner.description}
+            </Text>
+          )}
+        </View>
+      </TouchableOpacity>
+    </AnimatedScreenWrapper>
+  );
   return (
     <ImageBackground
       source={require('../../assets/images/bannerNuages.jpg')}
@@ -184,6 +237,14 @@ export default function HomeScreen() {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={[Colors.primary]}
+                tintColor={Colors.primary}
+              />
+            }
           >
             <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
               {/* Header */}
@@ -259,48 +320,41 @@ export default function HomeScreen() {
             )}
             </AnimatedScreenWrapper>
 
-            {/* Bannières Section */}
-            {!loadingBanners && banners.length > 0 && (
+            {/* Dynamic Banners Section */}
+            {loadingBanners ? (
+              <AnimatedScreenWrapper animationType="fade" duration={300} delay={100}>
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={Colors.primary} />
+                  <Text style={styles.loadingText}>Chargement des actualités...</Text>
+                </View>
+              </AnimatedScreenWrapper>
+            ) : bannerError ? (
+              <AnimatedScreenWrapper animationType="fade" duration={300} delay={100}>
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>{bannerError}</Text>
+                  <TouchableOpacity style={styles.retryButton} onPress={loadBanners}>
+                    <Text style={styles.retryButtonText}>Réessayer</Text>
+                  </TouchableOpacity>
+                </View>
+              </AnimatedScreenWrapper>
+            ) : banners.length > 0 ? (
               <>
-                <Text style={styles.sectionTitle}>Actualités</Text>
+                <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={100}>
+                  <Text style={styles.sectionTitle}>Actualités</Text>
+                </AnimatedScreenWrapper>
 
-                {/* Bannières Carousel */}
+                {/* Dynamic Banners Carousel */}
                 <ScrollView 
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   style={styles.bannersContainer}
                   contentContainerStyle={styles.bannersContent}
                 >
-                  {banners.map((banner, index) => (
-                    <AnimatedScreenWrapper key={banner.id} animationType="slideUp" duration={400} delay={index * 50 + 100}>
-                      <TouchableOpacity
-                        style={[styles.bannerCard, index === banners.length - 1 && styles.lastBannerCard]}
-                        onPress={() => handleBannerPress(banner)}
-                      >
-                        <Image
-                          source={{ uri: banner.image }}
-                          style={styles.bannerImage}
-                          resizeMode="cover"
-                        />
-                        <View style={styles.bannerOverlay}>
-                          <Text style={styles.bannerTitle} numberOfLines={2}>
-                            {banner.title}
-                          </Text>
-                          {banner.description && (
-                            <Text style={styles.bannerDescription} numberOfLines={2}>
-                              {banner.description}
-                            </Text>
-                          )}
-                        </View>
-                      </TouchableOpacity>
-                    </AnimatedScreenWrapper>
-                  ))}
+                  {banners.map(renderBannerCard)}
                 </ScrollView>
               </>
-            )}
-
-            {/* Fallback - Section Kevarim si pas de bannières */}
-            {(loadingBanners || banners.length === 0) && (
+            ) : (
+              // Fallback - Section Kevarim si pas de bannières
               <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={100}>
                 <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
                   <Text style={styles.kevarimTitle}>Les kivrei tsadikim</Text>
@@ -516,6 +570,37 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.text.primary,
   },
+  loadingContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.text.secondary,
+    marginTop: 12,
+  },
+  errorContainer: {
+    alignItems: 'center',
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: Colors.error,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  retryButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: Colors.white,
+    fontSize: 14,
+    fontWeight: '600',
+  },
   kevarimCard: {
     height: 200,
     borderRadius: 16,
@@ -543,7 +628,8 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   bannersContent: {
-    paddingHorizontal: 20,
+    paddingLeft: 0,
+    paddingRight: 20,
   },
   bannerCard: {
     width: 280,
@@ -556,6 +642,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+    backgroundColor: Colors.background, // Fallback background
   },
   lastBannerCard: {
     marginRight: 20,
@@ -563,6 +650,7 @@ const styles = StyleSheet.create({
   bannerImage: {
     width: '100%',
     height: '100%',
+    backgroundColor: Colors.background, // Fallback for loading
   },
   bannerOverlay: {
     position: 'absolute',
