@@ -2,14 +2,27 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronRight, Heart, Search, Calendar } from 'lucide-react-native';
+import { ChevronRight, Heart, Search, Calendar, MapPin, Send } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
-import { getAllSiddourSubcategoriesForSearch, getBanners } from '../../services/firestore';
+import { getAllSiddourSubcategoriesForSearch, getBanners, getSiddourSubcategoriesWithPosition } from '../../services/firestore';
 import { Banner } from '../../types';
 import { triggerLightHaptic, triggerMediumHaptic } from '../../utils/haptics';
 import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
+import * as Location from 'expo-location';
+import { calculateDistance, formatDistance, generateMapUrl } from '../../utils/locationUtils';
+import MapSelectionBottomSheet from '../../components/MapSelectionBottomSheet';
+
+interface KeverLocation {
+  id: string;
+  name: string;
+  position: {
+    latitude: number;
+    longitude: number;
+  };
+  distance?: number;
+}
 
 export default function HomeScreen() {
   console.log('[index.tsx] Début du rendu de l\'écran d\'accueil');
@@ -24,13 +37,94 @@ export default function HomeScreen() {
   const isTappingSuggestion = useRef(false);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loadingBanners, setLoadingBanners] = useState(true);
+  const [closestKever, setClosestKever] = useState<KeverLocation | null>(null);
+  const [userLocation, setUserLocation] = useState<{latitude: number; longitude: number} | null>(null);
+  const [loadingLocation, setLoadingLocation] = useState(true);
+  const [showMapSelection, setShowMapSelection] = useState(false);
+  const [selectedKeverForMap, setSelectedKeverForMap] = useState<KeverLocation | null>(null);
 
   useEffect(() => {
     console.log('[index.tsx] Chargement des sous-catégories et de la date hébraïque');
     loadSubcategoriesForSearch();
     loadHebrewDate();
     loadBanners();
+    requestLocationPermission();
   }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === 'granted') {
+        getUserLocation();
+      } else {
+        loadKevarimWithoutLocation();
+      }
+    } catch (error) {
+      console.error('Erreur lors de la demande de permission de localisation:', error);
+      loadKevarimWithoutLocation();
+    }
+  };
+
+  const getUserLocation = async () => {
+    try {
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      
+      setUserLocation({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      });
+      
+      loadKevarimWithLocation(location.coords.latitude, location.coords.longitude);
+    } catch (error) {
+      console.error('Erreur lors de la récupération de la position:', error);
+      loadKevarimWithoutLocation();
+    }
+  };
+
+  const loadKevarimWithLocation = async (userLat: number, userLon: number) => {
+    try {
+      setLoadingLocation(true);
+      const kevarimData = await getSiddourSubcategoriesWithPosition();
+      
+      // Calculate distance for each kever
+      const kevarimWithDistance = kevarimData.map(kever => ({
+        ...kever,
+        distance: calculateDistance(userLat, userLon, kever.position.latitude, kever.position.longitude)
+      }));
+      
+      // Sort by distance (closest first)
+      kevarimWithDistance.sort((a, b) => a.distance! - b.distance!);
+      
+      // Set the closest kever
+      if (kevarimWithDistance.length > 0) {
+        setClosestKever(kevarimWithDistance[0]);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des kevarim:', error);
+      setClosestKever(null);
+    } finally {
+      setLoadingLocation(false);
+    }
+  };
+
+  const loadKevarimWithoutLocation = async () => {
+    try {
+      setLoadingLocation(true);
+      const kevarimData = await getSiddourSubcategoriesWithPosition();
+      
+      // Without location, take the first kever as "closest"
+      if (kevarimData.length > 0) {
+        setClosestKever(kevarimData[0]);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des kevarim:', error);
+      setClosestKever(null);
+    } finally {
+      setLoadingLocation(false);
+    }
+  };
 
   const loadHebrewDate = async () => {
     try {
@@ -150,6 +244,12 @@ export default function HomeScreen() {
       console.error('Erreur lors de l\'ouverture du lien:', error);
       Alert.alert('Erreur', 'Impossible d\'ouvrir ce lien');
     }
+  };
+
+  const handleOpenMaps = (kever: KeverLocation) => {
+    triggerLightHaptic();
+    setSelectedKeverForMap(kever);
+    setShowMapSelection(true);
   };
 
   const navigateToKevarim = () => {
@@ -308,15 +408,47 @@ export default function HomeScreen() {
                     <ChevronRight size={20} color={Colors.text.primary} />
                   </TouchableOpacity>
                   
-                  <View style={styles.kevarimCard}>
-                    <Image
-                      source={{ uri: 'https://images.pexels.com/photos/8919544/pexels-photo-8919544.jpeg?auto=compress&cs=tinysrgb&w=800' }}
-                      style={styles.kevarimImage}
-                    />
-                    <View style={styles.kevarimOverlay}>
-                      <Text style={styles.kevarimCardTitle}>Les kivrei tsadikim</Text>
+                  {loadingLocation ? (
+                    <View style={styles.kevarimCard}>
+                      <View style={styles.loadingContainer}>
+                        <Text style={styles.loadingText}>Chargement du kever le plus proche...</Text>
+                      </View>
                     </View>
-                  </View>
+                  ) : closestKever ? (
+                    <View style={styles.closestKeverCard}>
+                      <Image
+                        source={{ uri: generateMapUrl(closestKever.position.latitude, closestKever.position.longitude) }}
+                        style={styles.closestKeverImage}
+                        resizeMode="cover"
+                      />
+                      <View style={styles.closestKeverOverlay}>
+                        <View style={styles.closestKeverInfo}>
+                          <View style={styles.closestKeverHeader}>
+                            <MapPin size={16} color={Colors.white} />
+                            <Text style={styles.closestKeverTitle}>{closestKever.name}</Text>
+                          </View>
+                          {closestKever.distance && userLocation && (
+                            <Text style={styles.closestKeverDistance}>
+                              {formatDistance(closestKever.distance)}
+                            </Text>
+                          )}
+                        </View>
+                        <TouchableOpacity 
+                          style={styles.getDirectionsButton}
+                          onPress={() => handleOpenMaps(closestKever)}
+                        >
+                          <Send size={16} color={Colors.primary} />
+                          <Text style={styles.getDirectionsButtonText}>S'y rendre</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={styles.kevarimCard}>
+                      <View style={styles.loadingContainer}>
+                        <Text style={styles.loadingText}>Aucun kever disponible</Text>
+                      </View>
+                    </View>
+                  )}
                 </>
               </AnimatedScreenWrapper>
             )}
@@ -356,6 +488,19 @@ export default function HomeScreen() {
           </ScrollView>
         </SafeAreaView>
       </LinearGradient>
+
+      {selectedKeverForMap && (
+        <MapSelectionBottomSheet
+          visible={showMapSelection}
+          onClose={() => {
+            setShowMapSelection(false);
+            setSelectedKeverForMap(null);
+          }}
+          latitude={selectedKeverForMap.position.latitude}
+          longitude={selectedKeverForMap.position.longitude}
+          locationName={selectedKeverForMap.name}
+        />
+      )}
     </ImageBackground>
   );
 }
@@ -550,6 +695,78 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: Colors.white,
+  },
+  closestKeverCard: {
+    height: 200,
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginBottom: 32,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  closestKeverImage: {
+    width: '100%',
+    height: '100%',
+  },
+  closestKeverOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+  },
+  closestKeverInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  closestKeverHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  closestKeverTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
+    marginLeft: 6,
+    flex: 1,
+  },
+  closestKeverDistance: {
+    fontSize: 14,
+    color: Colors.white,
+    opacity: 0.9,
+  },
+  getDirectionsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  getDirectionsButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.primary,
+    marginLeft: 6,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.background,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: Colors.text.secondary,
+    textAlign: 'center',
   },
   bannersContainer: {
     marginBottom: 32,
