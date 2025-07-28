@@ -361,7 +361,7 @@ export default function HomeScreen() {
                   {banners.map(renderBannerCard)}
                 </ScrollView>
               </>
-            )}
+            ) : null}
 
             {/* Mes Essentiels */}
             <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={300}>
