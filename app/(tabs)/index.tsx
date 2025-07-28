@@ -474,18 +474,6 @@ export default function HomeScreen() {
               </View>
             </AnimatedScreenWrapper>
 
-            {/* Autres Section */}
-            <Text style={styles.sectionTitle}>Autres</Text>
-            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={300}>
-              <TouchableOpacity style={styles.favoriteSection} onPress={navigateToFavorites}>
-                <Heart size={20} color={Colors.primary} />
-                <View style={styles.favoriteContent}>
-                  <Text style={styles.favoriteTitle}>Mes prières favorites</Text>
-                  <Text style={styles.favoriteSubtitle}>Consulter</Text>
-                </View>
-                <ChevronRight size={20} color={Colors.text.muted} />
-              </TouchableOpacity>
-            </AnimatedScreenWrapper>
           </ScrollView>
         </SafeAreaView>
       </LinearGradient>
