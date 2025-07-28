@@ -302,22 +302,10 @@ export default function HomeScreen() {
             {/* Fallback - Section Kevarim si pas de bannières */}
             {(loadingBanners || banners.length === 0) && (
               <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={100}>
-                <>
-                  <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
-                    <Text style={styles.kevarimTitle}>Les kivrei tsadikim</Text>
-                    <ChevronRight size={20} color={Colors.text.primary} />
-                  </TouchableOpacity>
-                  
-                  <View style={styles.kevarimCard}>
-                    <Image
-                      source={{ uri: 'https://images.pexels.com/photos/8919544/pexels-photo-8919544.jpeg?auto=compress&cs=tinysrgb&w=800' }}
-                      style={styles.kevarimImage}
-                    />
-                    <View style={styles.kevarimOverlay}>
-                      <Text style={styles.kevarimCardTitle}>Les kivrei tsadikim</Text>
-                    </View>
-                  </View>
-                </>
+                <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
+                  <Text style={styles.kevarimTitle}>Les kivrei tsadikim</Text>
+                  <ChevronRight size={20} color={Colors.text.primary} />
+                </TouchableOpacity>
               </AnimatedScreenWrapper>
             )}
 
