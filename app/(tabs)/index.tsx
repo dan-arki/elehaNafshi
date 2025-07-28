@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, Keyboard, Linking, Alert, ImageBackground, AppState } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronRight, Heart, Search, Calendar, MapPin, Send } from 'lucide-react-native';
@@ -40,6 +40,7 @@ export default function HomeScreen() {
   const [closestKever, setClosestKever] = useState<KeverLocation | null>(null);
   const [userLocation, setUserLocation] = useState<{latitude: number; longitude: number} | null>(null);
   const [loadingLocation, setLoadingLocation] = useState(true);
+  const [locationPermission, setLocationPermission] = useState<boolean>(false);
   const [showMapSelection, setShowMapSelection] = useState(false);
   const [selectedKeverForMap, setSelectedKeverForMap] = useState<KeverLocation | null>(null);
 
