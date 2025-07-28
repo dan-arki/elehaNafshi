@@ -193,7 +193,7 @@ export default function HomeScreen() {
   };
 
   const renderBannerCard = (banner: Banner, index: number) => (
-    <AnimatedScreenWrapper key={banner.id} animationType="slideUp" duration={400} delay={index * 50 + 100}>
+    <AnimatedScreenWrapper key={banner.id} animationType="slideUp" duration={400} delay={index * 50 + 250}>
       <TouchableOpacity
         style={[styles.bannerCard, index === banners.length - 1 && styles.lastBannerCard]}
         onPress={() => handleBannerPress(banner)}
@@ -320,6 +320,14 @@ export default function HomeScreen() {
             )}
             </AnimatedScreenWrapper>
 
+            {/* Section Kevarim - Always visible */}
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={150}>
+              <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
+                <Text style={styles.kevarimTitle}>Les kivrei tsadikim</Text>
+                <ChevronRight size={20} color={Colors.text.primary} />
+              </TouchableOpacity>
+            </AnimatedScreenWrapper>
+
             {/* Dynamic Banners Section */}
             {loadingBanners ? (
               <AnimatedScreenWrapper animationType="fade" duration={300} delay={100}>
@@ -339,7 +347,7 @@ export default function HomeScreen() {
               </AnimatedScreenWrapper>
             ) : banners.length > 0 ? (
               <>
-                <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={100}>
+                <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={250}>
                   <Text style={styles.sectionTitle}>Actualités</Text>
                 </AnimatedScreenWrapper>
 
@@ -353,18 +361,10 @@ export default function HomeScreen() {
                   {banners.map(renderBannerCard)}
                 </ScrollView>
               </>
-            ) : (
-              // Fallback - Section Kevarim si pas de bannières
-              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={100}>
-                <TouchableOpacity style={styles.kevarimSection} onPress={navigateToKevarim}>
-                  <Text style={styles.kevarimTitle}>Les kivrei tsadikim</Text>
-                  <ChevronRight size={20} color={Colors.text.primary} />
-                </TouchableOpacity>
-              </AnimatedScreenWrapper>
             )}
 
             {/* Mes Essentiels */}
-            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={200}>
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={300}>
               <Text style={styles.sectionTitle}>Mes essentiels</Text>
               <View style={styles.essentialsContainer}>
                 <TouchableOpacity style={styles.essentialCard} onPress={navigateToSiddour}>
@@ -385,7 +385,7 @@ export default function HomeScreen() {
 
             {/* Autres Section */}
             <Text style={styles.sectionTitle}>Autres</Text>
-            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={300}>
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={400}>
               <TouchableOpacity style={styles.favoriteSection} onPress={navigateToFavorites}>
                 <Heart size={20} color={Colors.primary} />
                 <View style={styles.favoriteContent}>
