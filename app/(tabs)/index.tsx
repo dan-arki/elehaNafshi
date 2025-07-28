@@ -827,7 +827,7 @@ const styles = StyleSheet.create({
   },
   essentialCard: {
     flex: 1,
-    height: 196.15,
+    height: 220,
     borderRadius: 12,
     overflow: 'hidden',
   },
