@@ -440,7 +440,13 @@ export default function KeverScreen() {
                       block.is_alternative ? styles.alternativeContainer : null,
                       block.is_alternative && displayMode === 'hebrewPhonetic' && styles.phoneticAlternativeSpacing
                     ]}>
-                      <Text style={[styles.phoneticText, { fontSize: 16 + fontSizeAdjustment }]}>
+                      <Text style={[
+                        styles.phoneticText, 
+                        { 
+                          fontSize: 16 + fontSizeAdjustment,
+                          color: (block.text_fr && block.text_fr.trim().length > 0 && (!block.content.hebrew || block.content.hebrew.trim().length === 0)) ? Colors.primary : Colors.text.secondary
+                        }
+                      ]}>
                         {block.content.phonetic}
                       </Text>
                     </View>

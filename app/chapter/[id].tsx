@@ -620,7 +620,13 @@ export default function ChapterScreen() {
                        block.is_alternative ? styles.alternativeContainer : null,
                        block.is_alternative && displayMode === 'hebrewPhonetic' && styles.phoneticAlternativeSpacing
                      ]}>
-                        <Text style={[styles.phoneticText, { fontSize: 16 + fontSizeAdjustment }]}>
+                        <Text style={[
+                          styles.phoneticText, 
+                          { 
+                            fontSize: 16 + fontSizeAdjustment,
+                            color: (hasTextFr && !hasHebrewContent) ? Colors.primary : Colors.text.secondary
+                          }
+                        ]}>
                           {block.content.phonetic}
                         </Text>
                       </View>
