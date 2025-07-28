@@ -624,7 +624,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     color: Colors.primary,
     fontWeight: '500',
-    marginBottom: 8,
+    marginBottom: 16,
     lineHeight: 20,
   },
   hebrewText: {
