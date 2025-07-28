@@ -15,8 +15,8 @@ export default function SettingsBottomSheet({
   onClose, 
 }: SettingsBottomSheetProps) {
   const { hebrewFont, setHebrewFont, fontSizeAdjustment, setFontSizeAdjustment } = useDisplaySettings();
-  const minAdjustment = -4;
-  const maxAdjustment = 6;
+  const minAdjustment = 0;
+  const maxAdjustment = 10;
 
   const increaseFontSize = () => {
     if (fontSizeAdjustment < maxAdjustment) {
