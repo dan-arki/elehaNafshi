@@ -646,34 +646,6 @@ export const getSiddourSubcategoriesWithPosition = async (): Promise<{id: string
   }
 };
 
-// Create a test banner (for development/testing purposes)
-export const createBanner = async (bannerData: {
-  title: string;
-  description: string;
-  image: string;
-  link: string;
-}): Promise<string> => {
-  try {
-    const bannersRef = collection(db, 'banners');
-    const docRef = await addDoc(bannersRef, {
-      ...bannerData,
-      order: 1,
-      isActive: true,
-      createdAt: Timestamp.now(),
-    });
-    return docRef.id;
-  } catch (error: any) {
-    console.error('Error creating banner:', error);
-    if (error.code === 'permission-denied') {
-      throw new Error('Les permissions Firestore ne sont pas configurées pour créer des bannières.');
-    }
-    if (error.code === 'unavailable') {
-      throw new Error('Service temporairement indisponible. Veuillez réessayer plus tard.');
-    }
-    throw error;
-  }
-};
-
 // Banners
 export const getBanners = async (): Promise<Banner[]> => {
   try {
