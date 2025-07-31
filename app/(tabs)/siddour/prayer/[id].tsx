@@ -1,21 +1,15 @@
-@@ .. @@
-         default:
-           // Pour les prières du Siddour (chaharit, minha, arvit, etc.)
-           if (chapterId) {
--            router.replace(`/chapter/${chapterId}?subcategoryId=${originalId}`);
-+            router.replace(`/(tabs)/siddour/chapter/${chapterId}?subcategoryId=${originalId}`);
-           } else {
-             setError('Impossible de localiser cette prière dans le Siddour');
-             setLoading(false);
-@@ .. @@
-         case 'kever':
--          router.replace(`/kever/${originalId}`);
-+          router.replace(`/(tabs)/index/kever/${originalId}`);
-           break;
-           
-         case 'custom':
--          router.replace(`/custom-prayer/${originalId}`);
-+          router.replace(`/(tabs)/profile/custom-prayer/${originalId}`);
-           break;
-           
-         default:
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Alert, Dimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ChevronLeft, Settings, Play, Pause } from 'lucide-react-native';
+import { Colors } from '../../../../constants/Colors';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { useDisplaySettings } from '../../../../contexts/DisplaySettingsContext';
+import { getPrayerById, toggleFavorite } from '../../../../services/firestore';
+import { Prayer, PrayerBlock } from '../../../../types';
+import { router, useLocalSearchParams } from 'expo-router';
+import SettingsBottomSheet from '../../../../components/SettingsBottomSheet';
+import PrayerInfoBottomSheet from '../../../../components/PrayerInfoBottomSheet';
+import SymbolsInfoBottomSheet from '../../../../components/SymbolsInfoBottomSheet';
+import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../../../../utils/haptics';
+import { Audio } from 'expo-av';

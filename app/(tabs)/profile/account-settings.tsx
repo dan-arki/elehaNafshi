@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, LogOut, Trash2 } from 'lucide-react-native';
-import { Colors } from '../constants/Colors';
-import { useAuth } from '../contexts/AuthContext';
+import { Colors } from '../../../constants/Colors';
+import { useAuth } from '../../../contexts/AuthContext';
 import { router } from 'expo-router';
-import { triggerLightHaptic, triggerMediumHaptic, triggerErrorHaptic } from '../utils/haptics';
+import { triggerLightHaptic, triggerMediumHaptic, triggerErrorHaptic } from '../../../utils/haptics';
 
 export default function AccountSettingsScreen() {
   const { logout } = useAuth();
