@@ -2,14 +2,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Search, Heart, ChevronRight } from 'lucide-react-native';
-import { Colors } from '../../../constants/Colors';
-import { useAuth } from '../../../contexts/AuthContext';
-import { getFavoritePrayers, getChapters } from '../../../services/firestore';
-import { Prayer, PrayerChapter } from '../../../types';
+import { Colors } from '../constants/Colors';
+import { useAuth } from '../contexts/AuthContext';
+import { getFavoritePrayers, getChapters } from '../services/firestore';
+import { Prayer, PrayerChapter } from '../types';
 import { router } from 'expo-router';
-import { triggerLightHaptic, triggerMediumHaptic } from '../../../utils/haptics';
+import { triggerLightHaptic, triggerMediumHaptic } from '../utils/haptics';
 
-import { getCategoryDisplayName, getEffectivePrayerCategory } from '../../../utils/categoryUtils';
+import { getCategoryDisplayName, getEffectivePrayerCategory } from '../utils/categoryUtils';
 
 export default function FavoritesScreen() {
   const { user } = useAuth();

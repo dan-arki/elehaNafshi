@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, Save, X, Info, Play, Pause } from 'lucide-react-native';
-import { Colors } from '../../../constants/Colors';
-import { useAuth } from '../../../contexts/AuthContext';
-import { createCustomPrayer, updateCustomPrayer } from '../../../services/firestore';
+import { Colors } from '../constants/Colors';
+import { useAuth } from '../contexts/AuthContext';
+import { createCustomPrayer, updateCustomPrayer } from '../services/firestore';
 import { router, useLocalSearchParams } from 'expo-router';
-import PrayerInstructionsBottomSheet from '../../../components/PrayerInstructionsBottomSheet';
-import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../../../utils/haptics';
+import PrayerInstructionsBottomSheet from '../components/PrayerInstructionsBottomSheet';
+import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../utils/haptics';
 import { Audio } from 'expo-av';
 
 export default function CreatePrayerScreen() {

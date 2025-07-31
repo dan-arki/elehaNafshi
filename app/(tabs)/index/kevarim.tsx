@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, Linking, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, MapPin, Navigation, Send, Heart } from 'lucide-react-native';
-import { Colors } from '../../../constants/Colors';
-import { useAuth } from '../../../contexts/AuthContext';
+import { Colors } from '../constants/Colors';
+import { useAuth } from '../contexts/AuthContext';
 import { router } from 'expo-router';
 import * as Location from 'expo-location';
-import { getSiddourSubcategoriesWithPosition, addToFavorites, removeFromFavorites, getFavoritePrayers } from '../../../services/firestore';
-import { Prayer } from '../../../types';
-import MapSelectionBottomSheet from '../../../components/MapSelectionBottomSheet';
-import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../../../utils/haptics';
+import { getSiddourSubcategoriesWithPosition, addToFavorites, removeFromFavorites, getFavoritePrayers } from '../services/firestore';
+import { Prayer } from '../types';
+import MapSelectionBottomSheet from '../components/MapSelectionBottomSheet';
+import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerErrorHaptic } from '../utils/haptics';
 
 interface KeverLocation {
   id: string;
