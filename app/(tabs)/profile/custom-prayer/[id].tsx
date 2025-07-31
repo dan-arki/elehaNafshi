@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronLeft, Settings, Play, Pause, Home as HomeIcon, BookOpen, User } from 'lucide-react-native';
+import { ChevronLeft, Settings, Play, Pause, Chrome as HomeIcon, BookOpen, User } from 'lucide-react-native';
 import { Colors } from '../../../../constants/Colors';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useDisplaySettings } from '../../../../contexts/DisplaySettingsContext';
