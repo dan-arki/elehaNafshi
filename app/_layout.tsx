@@ -88,15 +88,6 @@ function RootLayoutNav() {
             }} 
           />
           <Stack.Screen name="register" />
-          <Stack.Screen name="account-settings" />
-          <Stack.Screen name="chapter/[id]" />
-          <Stack.Screen name="prayer/[id]" />
-          <Stack.Screen name="custom-prayer/[id]" />
-          <Stack.Screen name="favorites" />
-          <Stack.Screen name="my-prayers" />
-          <Stack.Screen name="create-prayer" />
-          <Stack.Screen name="kevarim" />
-          <Stack.Screen name="kever/[id]" />
           <Stack.Screen name="+not-found" />
         </Stack>
       </ErrorBoundary>
