@@ -43,12 +43,12 @@ export default function MyPrayersScreen() {
 
   const handleCreatePrayer = () => {
     triggerMediumHaptic();
-    router.push('/(tabs)/profile/create-prayer');
+    router.push('/create-prayer');
   };
 
   const handleEditPrayer = (prayerId: string) => {
     triggerLightHaptic();
-    router.push(`/(tabs)/profile/create-prayer?edit=${prayerId}`);
+    router.push(`/create-prayer?edit=${prayerId}`);
   };
 
   const handleDeletePrayer = (prayerId: string, prayerTitle: string) => {
@@ -84,7 +84,7 @@ export default function MyPrayersScreen() {
 
   const handleViewPrayer = (prayerId: string) => {
     triggerMediumHaptic();
-    router.push(`/(tabs)/profile/custom-prayer/${prayerId}`);
+    router.push(`/custom-prayer/${prayerId}`);
   };
 
   const formatDate = (date: Date) => {

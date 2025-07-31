@@ -124,7 +124,7 @@ export default function FavoritesScreen() {
   const navigateToPrayer = (prayer: Prayer) => {
     triggerMediumHaptic();
     router.push({
-      pathname: `/(tabs)/siddour/prayer/${prayer.id}`,
+      pathname: `/prayer/${prayer.id}`,
       params: {
         category: prayer.category || 'autres',
         originalId: prayer.originalId || prayer.id,

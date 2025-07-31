@@ -28,7 +28,7 @@ export default function AccountSettingsScreen() {
               triggerMediumHaptic();
               await logout();
               // Rediriger immédiatement vers la page de connexion après déconnexion
-              router.replace('/(tabs)/login');
+              router.replace('/login');
             } catch (error) {
               console.error('Erreur lors de la déconnexion:', error);
               triggerErrorHaptic();

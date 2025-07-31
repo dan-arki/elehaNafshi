@@ -56,7 +56,7 @@ export default function ProfileScreen() {
 
   const navigateToAccountSettings = () => {
     triggerLightHaptic();
-    router.push('/(tabs)/profile/account-settings');
+    router.push('/account-settings');
   };
 
   return (

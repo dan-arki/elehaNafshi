@@ -255,12 +255,12 @@ export default function HomeScreen() {
 
   const navigateToKevarim = () => {
     triggerMediumHaptic();
-    router.push('/(tabs)/index/kevarim');
+    router.push('/kevarim');
   };
 
   const navigateToFavorites = () => {
     triggerMediumHaptic();
-    router.push('/(tabs)/index/favorites');
+    router.push('/favorites');
   };
 
   const navigateToSiddour = () => {
@@ -465,7 +465,7 @@ export default function HomeScreen() {
                   />
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.essentialCard} onPress={() => router.push('/(tabs)/profile/my-prayers')}>
+                <TouchableOpacity style={styles.essentialCard} onPress={() => router.push('/my-prayers')}>
                   <Image
                     source={require('../../assets/images/myPriere.jpg')}
                     style={styles.essentialImage}
