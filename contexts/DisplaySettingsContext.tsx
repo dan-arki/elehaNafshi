@@ -2,11 +2,29 @@ import React, { createContext, useContext, useState } from 'react';
 import { useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+export type DisplayModeKey = 'hebrew' | 'hebrewTrad' | 'phonetic' | 'hebrewPhonetic' | 'french';
+
+export interface DisplayModeOption {
+  key: DisplayModeKey;
+  label: string;
+}
+
+export const DEFAULT_DISPLAY_MODES: DisplayModeOption[] = [
+  { key: 'hebrew', label: 'עברית' },
+  { key: 'hebrewTrad', label: 'עברית + Trad' },
+  { key: 'phonetic', label: 'Phonétique' },
+  { key: 'hebrewPhonetic', label: 'עברית + Phonétique' },
+  { key: 'french', label: 'Traduction' },
+];
+
 interface DisplaySettingsContextType {
   hebrewFont: string;
   setHebrewFont: (font: string) => void;
   fontSizeAdjustment: number;
   setFontSizeAdjustment: (adjustment: number) => void;
+  displayModeOrder: DisplayModeOption[];
+  setDisplayModeOrder: (order: DisplayModeOption[]) => void;
+  resetDisplayModeOrder: () => void;
   loaded: boolean;
 }
 
@@ -23,6 +41,7 @@ export function useDisplaySettings() {
 export function DisplaySettingsProvider({ children }: { children: React.ReactNode }) {
   const [hebrewFont, setHebrewFont] = useState<string>('FrankRuhlLibre-Regular');
   const [fontSizeAdjustment, setFontSizeAdjustment] = useState<number>(0);
+  const [displayModeOrder, setDisplayModeOrder] = useState<DisplayModeOption[]>(DEFAULT_DISPLAY_MODES);
   const [loaded, setLoaded] = useState<boolean>(false);
 
   // Load settings from AsyncStorage on mount
@@ -35,13 +54,14 @@ export function DisplaySettingsProvider({ children }: { children: React.ReactNod
     if (loaded) {
       saveSettings();
     }
-  }, [hebrewFont, fontSizeAdjustment, loaded]);
+  }, [hebrewFont, fontSizeAdjustment, displayModeOrder, loaded]);
 
   const loadSettings = async () => {
     try {
-      const [savedHebrewFont, savedFontSizeAdjustment] = await Promise.all([
+      const [savedHebrewFont, savedFontSizeAdjustment, savedDisplayModeOrder] = await Promise.all([
         AsyncStorage.getItem('hebrewFont'),
-        AsyncStorage.getItem('fontSizeAdjustment')
+        AsyncStorage.getItem('fontSizeAdjustment'),
+        AsyncStorage.getItem('displayModeOrder')
       ]);
 
       if (savedHebrewFont) {
@@ -52,6 +72,17 @@ export function DisplaySettingsProvider({ children }: { children: React.ReactNod
         const adjustment = parseInt(savedFontSizeAdjustment, 10);
         if (!isNaN(adjustment)) {
           setFontSizeAdjustment(adjustment);
+        }
+      }
+
+      if (savedDisplayModeOrder) {
+        try {
+          const parsedOrder = JSON.parse(savedDisplayModeOrder);
+          if (Array.isArray(parsedOrder) && parsedOrder.length === DEFAULT_DISPLAY_MODES.length) {
+            setDisplayModeOrder(parsedOrder);
+          }
+        } catch (error) {
+          console.error('Error parsing saved display mode order:', error);
         }
       }
     } catch (error) {
@@ -65,11 +96,16 @@ export function DisplaySettingsProvider({ children }: { children: React.ReactNod
     try {
       await Promise.all([
         AsyncStorage.setItem('hebrewFont', hebrewFont),
-        AsyncStorage.setItem('fontSizeAdjustment', fontSizeAdjustment.toString())
+        AsyncStorage.setItem('fontSizeAdjustment', fontSizeAdjustment.toString()),
+        AsyncStorage.setItem('displayModeOrder', JSON.stringify(displayModeOrder))
       ]);
     } catch (error) {
       console.error('Erreur lors de la sauvegarde des paramètres d\'affichage:', error);
     }
+  };
+
+  const resetDisplayModeOrder = () => {
+    setDisplayModeOrder([...DEFAULT_DISPLAY_MODES]);
   };
 
   const value = {
@@ -77,6 +113,9 @@ export function DisplaySettingsProvider({ children }: { children: React.ReactNod
     setHebrewFont,
     fontSizeAdjustment,
     setFontSizeAdjustment,
+    displayModeOrder,
+    setDisplayModeOrder,
+    resetDisplayModeOrder,
     loaded,
   };
 

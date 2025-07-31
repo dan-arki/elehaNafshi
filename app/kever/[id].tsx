@@ -19,7 +19,7 @@ import { getCategoryDisplayName } from '../../utils/categoryUtils';
 export default function KeverScreen() {
   const { id } = useLocalSearchParams();
   const { user } = useAuth();
-  const { hebrewFont, fontSizeAdjustment, setFontSizeAdjustment } = useDisplaySettings();
+  const { hebrewFont, fontSizeAdjustment, setFontSizeAdjustment, displayModeOrder } = useDisplaySettings();
   const scrollRef = useRef<ScrollView>(null);
   
   const [subcategory, setSubcategory] = useState<SiddourSubcategory | null>(null);
@@ -192,14 +192,6 @@ export default function KeverScreen() {
     );
   }
 
-  const displayModeButtons = [
-    { key: 'hebrew', label: 'עברית' },
-    { key: 'hebrewTrad', label: 'עברית + Trad' },
-    { key: 'phonetic', label: 'Phonétique' },
-    { key: 'hebrewPhonetic', label: 'עברית + Phonétique' },
-    { key: 'french', label: 'Traduction' },
-  ];
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -244,7 +236,7 @@ export default function KeverScreen() {
           style={styles.displayModeContainer}
           contentContainerStyle={styles.displayModeContent}
         >
-          {displayModeButtons.map((button) => (
+          {displayModeOrder.map((button) => (
             <TouchableOpacity
               key={button.key}
               style={[

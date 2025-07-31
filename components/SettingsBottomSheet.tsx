@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet, Modal, TouchableOpacity, ScrollView } from 'react-native';
-import { X, Plus, Minus, RotateCcw } from 'lucide-react-native';
+import { X, Plus, Minus, RotateCcw, ArrowUpDown } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
 import { useDisplaySettings } from '../contexts/DisplaySettingsContext';
 import { triggerLightHaptic } from '../utils/haptics';
+import DisplayModeReorderBottomSheet from './DisplayModeReorderBottomSheet';
 
 interface SettingsBottomSheetProps {
   visible: boolean;
@@ -15,6 +16,7 @@ export default function SettingsBottomSheet({
   onClose, 
 }: SettingsBottomSheetProps) {
   const { hebrewFont, setHebrewFont, fontSizeAdjustment, setFontSizeAdjustment } = useDisplaySettings();
+  const [showReorderModal, setShowReorderModal] = React.useState(false);
   const minAdjustment = 0;
   const maxAdjustment = 10;
 
@@ -77,6 +79,21 @@ export default function SettingsBottomSheet({
           
           {/* Content */}
           <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+            {/* Display Mode Order Settings */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Ordre des modes d'affichage</Text>
+              <TouchableOpacity 
+                style={styles.reorderButton} 
+                onPress={() => {
+                  triggerLightHaptic();
+                  setShowReorderModal(true);
+                }}
+              >
+                <ArrowUpDown size={20} color={Colors.primary} />
+                <Text style={styles.reorderButtonText}>Personnaliser l'ordre</Text>
+              </TouchableOpacity>
+            </View>
+
             {/* Font Size Settings */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Taille de la police</Text>
@@ -162,6 +179,11 @@ export default function SettingsBottomSheet({
           </ScrollView>
         </View>
       </View>
+      
+      <DisplayModeReorderBottomSheet
+        visible={showReorderModal}
+        onClose={() => setShowReorderModal(false)}
+      />
     </Modal>
   );
 }
@@ -305,5 +327,22 @@ const styles = StyleSheet.create({
   },
   fontOptionTextActive: {
     color: Colors.white,
+  },
+  reorderButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.background,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: Colors.primary,
+  },
+  reorderButtonText: {
+    fontSize: 14,
+    color: Colors.primary,
+    fontWeight: '500',
+    marginLeft: 8,
   },
 });

@@ -20,7 +20,7 @@ import { triggerLightHaptic, triggerMediumHaptic, triggerSuccessHaptic, triggerE
 export default function ChapterScreen() {
   const { id, subcategoryId } = useLocalSearchParams();
   const { user } = useAuth();
-  const { hebrewFont, fontSizeAdjustment, setFontSizeAdjustment } = useDisplaySettings();
+  const { hebrewFont, fontSizeAdjustment, setFontSizeAdjustment, displayModeOrder } = useDisplaySettings();
   const scrollRef = useRef<ScrollView>(null);
   const subcategoryScrollRef = useRef<ScrollView>(null);
   const subcategoryRefs = useRef<(TouchableOpacity | null)[]>([]);
@@ -419,14 +419,6 @@ export default function ChapterScreen() {
     }
   };
 
-  const displayModeButtons = [
-    { key: 'hebrew', label: 'עברית' },
-    { key: 'hebrewTrad', label: 'עברית + Trad' },
-    { key: 'phonetic', label: 'Phonétique' },
-    { key: 'hebrewPhonetic', label: 'עברית + Phonétique' },
-    { key: 'french', label: 'Traduction' },
-  ];
-
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -471,7 +463,7 @@ export default function ChapterScreen() {
           style={styles.displayModeContainer}
           contentContainerStyle={styles.displayModeContent}
         >
-          {displayModeButtons.map((button) => (
+          {displayModeOrder.map((button) => (
             <TouchableOpacity
               key={button.key}
               style={[
