@@ -1078,12 +1078,9 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontWeight: '500',
     marginBottom: 16,
-    lineHeight: 20,
   },
   hebrewText: {
-    lineHeight: 32,
     color: Colors.text.primary,
-    textAlign: 'right',
     writingDirection: 'rtl',
     textAlignVertical: 'top',
     includeFontPadding: false,
@@ -1091,13 +1088,11 @@ const styles = StyleSheet.create({
     fontFamily: 'FrankRuhlLibre-Regular',
   },
   frenchText: {
-    lineHeight: 24,
     color: Colors.text.secondary,
     textAlign: 'left',
     flex: 1,
   },
   phoneticText: {
-    lineHeight: 24,
     color: Colors.text.secondary,
     textAlign: 'left',
     fontStyle: 'italic',
