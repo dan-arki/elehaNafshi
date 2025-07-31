@@ -218,7 +218,7 @@ export default function CreatePrayerScreen() {
 
       triggerSuccessHaptic();
       // Navigate immediately after success
-      router.push('/my-prayers');
+      router.push('/(tabs)/profile/my-prayers');
       
       // Show success message after navigation
       setTimeout(() => {
@@ -253,13 +253,13 @@ export default function CreatePrayerScreen() {
             text: 'Annuler',
             style: 'destructive',
             onPress: () => {
-              router.replace('/my-prayers');
+              router.replace('/(tabs)/profile/my-prayers');
             },
           },
         ]
       );
     } else {
-      router.replace('/my-prayers');
+      router.replace('/(tabs)/profile/my-prayers');
     }
   };
 

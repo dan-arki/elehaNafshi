@@ -74,7 +74,7 @@ export default function SiddourScreen() {
     
     // Navigate with a small delay to ensure state updates are processed
     setTimeout(() => {
-      router.push(`/chapter/${subcategory.chapterId}?subcategoryId=${subcategory.id}`);
+      router.push(`/(tabs)/siddour/chapter/${subcategory.chapterId}?subcategoryId=${subcategory.id}`);
     }, 50);
   };
 
@@ -108,7 +108,7 @@ export default function SiddourScreen() {
 
   const navigateToChapter = (chapterId: string) => {
     triggerMediumHaptic();
-    router.push(`/chapter/${chapterId}`);
+    router.push(`/(tabs)/siddour/chapter/${chapterId}`);
   };
 
   return (

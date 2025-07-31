@@ -219,7 +219,7 @@ export default function KevarimScreen() {
 
   const navigateToKever = (keverId: string) => {
     triggerMediumHaptic();
-    router.push(`/kever/${keverId}`);
+    router.push(`/(tabs)/index/kever/${keverId}`);
   };
 
   const generateMapUrl = (kever: KeverLocation) => {
