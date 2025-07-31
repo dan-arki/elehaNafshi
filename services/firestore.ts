@@ -478,6 +478,7 @@ export const getSiddourBlocks = async (subcategoryId: string): Promise<SiddourBl
       image: doc.data().image,
       image_comment: doc.data().image_comment,
       is_alternative: doc.data().is_alternative || false,
+      audio: doc.data().audio,
     })) as SiddourBlockData[];
     
     return blocks;

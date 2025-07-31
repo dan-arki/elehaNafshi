@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
-import { ChevronLeft, ChevronRight, List, Settings, Heart, Gift, CircleAlert as AlertCircle, ChevronDown, ChevronUp, BookOpen, User } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, List, Settings, Heart, Gift, CircleAlert as AlertCircle, ChevronDown, ChevronUp, BookOpen, User, Play, Pause, Volume2 } from 'lucide-react-native';
+import Slider from '@react-native-community/slider';
+import { Audio } from 'expo-av';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { getChapterById, getSiddourSubcategories, getSiddourBlocks, addToFavorites, removeFromFavorites, checkIfFavorite } from '../../services/firestore';
@@ -36,12 +38,36 @@ export default function ChapterScreen() {
   const [showSymbolsInfo, setShowSymbolsInfo] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   
+  // Audio player states
+  const [currentAudio, setCurrentAudio] = useState<Audio.Sound | null>(null);
+  const [currentPlayingBlockId, setCurrentPlayingBlockId] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audioPosition, setAudioPosition] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(0);
+  const [currentAudioTitle, setCurrentAudioTitle] = useState<string>('');
+  
   // ScrollView dimensions for precise scrolling calculations
   const [scrollViewWidth, setScrollViewWidth] = useState(0);
   const [contentWidth, setContentWidth] = useState(0);
   
   useEffect(() => {
+    // Configure audio mode
+    Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+      staysActiveInBackground: true,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      playThroughEarpieceAndroid: false,
+    });
+
     loadChapterData();
+
+    // Cleanup function
+    return () => {
+      if (currentAudio) {
+        currentAudio.unloadAsync();
+      }
+    };
   }, [id]);
 
   useEffect(() => {
@@ -160,6 +186,7 @@ export default function ChapterScreen() {
         ...(block.image && { image: block.image }),
         ...(block.image_comment && { image_comment: block.image_comment }),
         ...(typeof block.is_alternative === 'boolean' && { is_alternative: block.is_alternative }),
+        ...(block.audio && { audio: block.audio }),
       }));
       
       setCurrentPrayerBlocks(mappedPrayers);
@@ -191,6 +218,7 @@ export default function ChapterScreen() {
   };
 
   const toggleBlockSection = (blockId: string, section: 'kavana' | 'comments') => {
+    triggerLightHaptic();
     setExpandedBlockSections(prev => ({
       ...prev,
       [blockId]: {
@@ -198,6 +226,90 @@ export default function ChapterScreen() {
         [section]: !prev[blockId]?.[section]
       }
     }));
+  };
+
+  const handlePlayPauseAudio = async (block: Prayer) => {
+    if (!block.audio) return;
+    
+    triggerMediumHaptic();
+    
+    try {
+      // If this block is currently playing, pause it
+      if (currentPlayingBlockId === block.id && isPlaying) {
+        if (currentAudio) {
+          await currentAudio.pauseAsync();
+          setIsPlaying(false);
+        }
+        return;
+      }
+      
+      // If this block is paused, resume it
+      if (currentPlayingBlockId === block.id && !isPlaying && currentAudio) {
+        await currentAudio.playAsync();
+        setIsPlaying(true);
+        return;
+      }
+      
+      // Stop current audio if playing different block
+      if (currentAudio) {
+        await currentAudio.unloadAsync();
+        setCurrentAudio(null);
+        setCurrentPlayingBlockId(null);
+        setIsPlaying(false);
+        setAudioPosition(0);
+        setAudioDuration(0);
+      }
+      
+      // Load and play new audio
+      const { sound } = await Audio.Sound.createAsync(
+        { uri: block.audio },
+        { shouldPlay: true, volume: 0.7 }
+      );
+      
+      setCurrentAudio(sound);
+      setCurrentPlayingBlockId(block.id);
+      setCurrentAudioTitle(block.title);
+      setIsPlaying(true);
+      
+      // Set up playback status update
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded) {
+          setIsPlaying(status.isPlaying);
+          setAudioPosition(status.positionMillis || 0);
+          setAudioDuration(status.durationMillis || 0);
+          
+          // If audio finished, reset states
+          if (status.didJustFinish) {
+            setCurrentPlayingBlockId(null);
+            setIsPlaying(false);
+            setAudioPosition(0);
+            setCurrentAudioTitle('');
+          }
+        }
+      });
+      
+    } catch (error) {
+      console.error('Error playing audio:', error);
+      triggerErrorHaptic();
+    }
+  };
+  
+  const handleSeekAudio = async (value: number) => {
+    if (currentAudio) {
+      try {
+        await currentAudio.setPositionAsync(value);
+        setAudioPosition(value);
+      } catch (error) {
+        console.error('Error seeking audio:', error);
+      }
+    }
+  };
+  
+  const formatTime = (milliseconds: number): string => {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   if (loading) {
@@ -442,9 +554,10 @@ export default function ChapterScreen() {
             const hasIcon = block.icon && block.icon.trim().length > 0;
             const hasIconLarge = block.icon_large && block.icon_large.trim().length > 0;
             const hasIconLargeFr = block.icon_large_fr && block.icon_large_fr.trim().length > 0;
+            const hasAudio = block.audio && block.audio.trim().length > 0;
             
             // Skip completely empty blocks
-            if (!hasHebrewContent && !hasFrenchContent && !hasPhoneticContent && !hasKavana && !hasInformation && !hasImage && !hasTextFr && !hasIcon && !hasIconLarge && !hasIconLargeFr) {
+            if (!hasHebrewContent && !hasFrenchContent && !hasPhoneticContent && !hasKavana && !hasInformation && !hasImage && !hasTextFr && !hasIcon && !hasIconLarge && !hasIconLargeFr && !hasAudio) {
               return null;
             }
             
@@ -534,8 +647,27 @@ export default function ChapterScreen() {
               )}
 
               {/* Block Content - Only render if there's actual content to display */}
-              {(hasHebrewContent || hasFrenchContent || hasPhoneticContent || hasTextFr || hasIcon || hasIconLarge || hasIconLargeFr) && (
+              {(hasHebrewContent || hasFrenchContent || hasPhoneticContent || hasTextFr || hasIcon || hasIconLarge || hasIconLargeFr || hasAudio) && (
                 <View style={styles.prayerContent}>
+                  {/* Audio Player Icon - Centered */}
+                  {hasAudio && (
+                    <View style={styles.audioIconContainer}>
+                      <TouchableOpacity
+                        style={[
+                          styles.audioButton,
+                          currentPlayingBlockId === block.id && isPlaying && styles.audioButtonPlaying
+                        ]}
+                        onPress={() => handlePlayPauseAudio(block)}
+                      >
+                        {currentPlayingBlockId === block.id && isPlaying ? (
+                          <Pause size={24} color={Colors.white} />
+                        ) : (
+                          <Play size={24} color={Colors.white} />
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
                   {/* Icons above Hebrew text for specific prayers */}
                   {(hasIcon || hasIconLarge) && (displayMode === 'hebrew' || displayMode === 'hebrewTrad' || displayMode === 'hebrewPhonetic') && (
                     <View style={styles.iconsContainer}>
@@ -715,6 +847,70 @@ export default function ChapterScreen() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Mini Audio Player */}
+      {currentPlayingBlockId && (
+        <View style={styles.miniPlayer}>
+          <View style={styles.miniPlayerContent}>
+            <TouchableOpacity
+              style={styles.miniPlayerButton}
+              onPress={() => {
+                const currentBlock = currentPrayerBlocks.find(b => b.id === currentPlayingBlockId);
+                if (currentBlock) {
+                  handlePlayPauseAudio(currentBlock);
+                }
+              }}
+            >
+              {isPlaying ? (
+                <Pause size={20} color={Colors.primary} />
+              ) : (
+                <Play size={20} color={Colors.primary} />
+              )}
+            </TouchableOpacity>
+            
+            <View style={styles.miniPlayerInfo}>
+              <Text style={styles.miniPlayerTitle} numberOfLines={1}>
+                {currentAudioTitle}
+              </Text>
+              <View style={styles.miniPlayerProgress}>
+                <Text style={styles.miniPlayerTime}>
+                  {formatTime(audioPosition)}
+                </Text>
+                <Slider
+                  style={styles.miniPlayerSlider}
+                  minimumValue={0}
+                  maximumValue={audioDuration}
+                  value={audioPosition}
+                  onValueChange={handleSeekAudio}
+                  minimumTrackTintColor={Colors.primary}
+                  maximumTrackTintColor={Colors.background}
+                  thumbStyle={styles.sliderThumb}
+                />
+                <Text style={styles.miniPlayerTime}>
+                  {formatTime(audioDuration)}
+                </Text>
+              </View>
+            </View>
+            
+            <TouchableOpacity
+              style={styles.miniPlayerCloseButton}
+              onPress={async () => {
+                if (currentAudio) {
+                  await currentAudio.unloadAsync();
+                  setCurrentAudio(null);
+                  setCurrentPlayingBlockId(null);
+                  setIsPlaying(false);
+                  setAudioPosition(0);
+                  setAudioDuration(0);
+                  setCurrentAudioTitle('');
+                }
+              }}
+            >
+              <Volume2 size={16} color={Colors.text.muted} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
 
       <SettingsBottomSheet
         visible={showSettings}
@@ -1093,5 +1289,86 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
     textAlign: 'center',
     marginTop: 50,
+  },
+  audioIconContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  audioButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 25,
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  audioButtonPlaying: {
+    backgroundColor: Colors.secondary,
+  },
+  miniPlayer: {
+    position: 'absolute',
+    bottom: 80,
+    left: 0,
+    right: 0,
+    backgroundColor: Colors.white,
+    borderTopWidth: 1,
+    borderTopColor: Colors.background,
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  miniPlayerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  miniPlayerButton: {
+    backgroundColor: Colors.background,
+    borderRadius: 20,
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  miniPlayerInfo: {
+    flex: 1,
+  },
+  miniPlayerTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    marginBottom: 4,
+  },
+  miniPlayerProgress: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  miniPlayerTime: {
+    fontSize: 12,
+    color: Colors.text.secondary,
+    minWidth: 35,
+  },
+  miniPlayerSlider: {
+    flex: 1,
+    height: 20,
+    marginHorizontal: 8,
+  },
+  sliderThumb: {
+    backgroundColor: Colors.primary,
+    width: 12,
+    height: 12,
+  },
+  miniPlayerCloseButton: {
+    padding: 8,
+    marginLeft: 8,
   },
 });

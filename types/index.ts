@@ -72,6 +72,7 @@ export interface SiddourBlockData {
   text_fr?: string;
   image?: string;
   image_comment?: string;
+  audio?: string;
 }
 
 export interface Kever {
