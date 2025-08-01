@@ -633,6 +633,8 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     marginBottom: 16,
     fontFamily: 'FrankRuhlLibre-Regular',
+    textAlign: 'right',
+    flexWrap: 'wrap',
   },
   alternativeContainer: {
     backgroundColor: '#F3E8FF', // Fond violet clair

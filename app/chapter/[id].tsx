@@ -1086,6 +1086,8 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
     marginBottom: 16,
     fontFamily: 'FrankRuhlLibre-Regular',
+    textAlign: 'right',
+    flexWrap: 'wrap',
   },
   frenchText: {
     color: Colors.text.secondary,
