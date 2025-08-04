@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { triggerLightHaptic, triggerMediumHaptic, triggerErrorHaptic } from '../utils/haptics';
 
 export default function AccountSettingsScreen() {
-  const { logout } = useAuth();
+  const { logout, deleteUserAccount } = useAuth();
 
   const handleLogout = async () => {
     triggerMediumHaptic();
@@ -54,9 +54,34 @@ export default function AccountSettingsScreen() {
           text: 'Supprimer',
           style: 'destructive',
           onPress: async () => {
-            triggerMediumHaptic();
-            // Ici vous pourrez ajouter la logique de suppression du compte
-            Alert.alert('Information', 'La suppression de compte sera bientôt disponible.');
+            try {
+              triggerMediumHaptic();
+              await deleteUserAccount();
+              // Redirection automatique vers login grâce au listener d'auth state
+              router.replace('/login');
+              Alert.alert('Succès', 'Votre compte a été supprimé avec succès.');
+            } catch (error: any) {
+              console.error('Erreur lors de la suppression du compte:', error);
+              triggerErrorHaptic();
+              
+              if (error.message.includes('reconnecter')) {
+                Alert.alert(
+                  'Réauthentification requise',
+                  error.message,
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => {
+                        // Déconnecter l'utilisateur pour qu'il puisse se reconnecter
+                        logout();
+                      }
+                    }
+                  ]
+                );
+              } else {
+                Alert.alert('Erreur', 'Impossible de supprimer le compte. Veuillez réessayer plus tard.');
+              }
+            }
           },
         },
       ]

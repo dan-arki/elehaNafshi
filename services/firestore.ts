@@ -101,6 +101,47 @@ export const deleteCustomPrayer = async (userId: string, prayerId: string): Prom
   }
 };
 
+// Delete all user data
+export const deleteAllCustomPrayers = async (userId: string): Promise<void> => {
+  try {
+    const customPrayersRef = collection(db, 'my_prieres');
+    const q = query(customPrayersRef, where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+    
+    const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+  } catch (error: any) {
+    console.error('Error deleting all custom prayers:', error);
+    if (error.code === 'permission-denied') {
+      throw new Error('Les permissions Firestore ne sont pas configurées pour la suppression des prières.');
+    }
+    if (error.code === 'unavailable') {
+      throw new Error('Service temporairement indisponible. Veuillez réessayer plus tard.');
+    }
+    throw error;
+  }
+};
+
+export const deleteAllFavoritePrayers = async (userId: string): Promise<void> => {
+  try {
+    const favoritesRef = collection(db, 'fav_siddour_sub_categories');
+    const q = query(favoritesRef, where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+    
+    const deletePromises = querySnapshot.docs.map(doc => deleteDoc(doc.ref));
+    await Promise.all(deletePromises);
+  } catch (error: any) {
+    console.error('Error deleting all favorite prayers:', error);
+    if (error.code === 'permission-denied') {
+      throw new Error('Les permissions Firestore ne sont pas configurées pour la suppression des favoris.');
+    }
+    if (error.code === 'unavailable') {
+      throw new Error('Service temporairement indisponible. Veuillez réessayer plus tard.');
+    }
+    throw error;
+  }
+};
+
 // Favorites CRUD
 export const getFavoritePrayers = async (userId: string): Promise<Prayer[]> => {
   try {
