@@ -591,7 +591,6 @@ const styles = StyleSheet.create({
   },
   commentsText: {
     color: Colors.text.secondary,
-    lineHeight: 20,
   },
   commentImageContainer: {
     marginBottom: 12,

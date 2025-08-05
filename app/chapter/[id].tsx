@@ -1045,7 +1045,6 @@ const styles = StyleSheet.create({
   },
   commentsText: {
     color: Colors.text.secondary,
-    lineHeight: 20,
   },
   informationText: {
     color: Colors.primary,
