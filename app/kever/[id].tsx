@@ -123,19 +123,7 @@ export default function KeverScreen() {
   };
 
   const toggleFavorite = async () => {
-    if (!user) {
-      Alert.alert(
-        'Connexion requise',
-        'Vous devez vous connecter pour ajouter des kevarim aux favoris.',
-        [
-          { text: 'Annuler', style: 'cancel' },
-          { text: 'Se connecter', onPress: () => router.push('/login') }
-        ]
-      );
-      return;
-    }
-    
-    if (!subcategory) return;
+    if (!user || !subcategory) return;
     
     triggerMediumHaptic();
     
