@@ -49,8 +49,25 @@ export default function HomeScreen() {
     loadSubcategoriesForSearch();
     loadHebrewDate();
     loadBanners();
-    requestLocationPermission();
+    // Only request location if user is logged in
+    if (user) {
+      requestLocationPermission();
+    } else {
+      setLoadingLocation(false);
+    }
   }, []);
+
+  useEffect(() => {
+    // Update location-based features when user login status changes
+    if (user) {
+      requestLocationPermission();
+    } else {
+      setClosestKever(null);
+      setUserLocation(null);
+      setLocationPermission(false);
+      setLoadingLocation(false);
+    }
+  }, [user]);
 
   const requestLocationPermission = async () => {
     try {
@@ -260,6 +277,17 @@ export default function HomeScreen() {
 
   const navigateToFavorites = () => {
     triggerMediumHaptic();
+    if (!user) {
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez vous connecter pour accéder à vos favoris.',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
+      return;
+    }
     router.push('/favorites');
   };
 
@@ -409,7 +437,22 @@ export default function HomeScreen() {
                     <ChevronRight size={20} color={Colors.text.primary} />
                   </TouchableOpacity>
                   
-                  {loadingLocation ? (
+                  {!user ? (
+                    <View style={styles.kevarimCard}>
+                      <View style={styles.loginPromptContainer}>
+                        <Text style={styles.loginPromptTitle}>Connectez-vous pour voir les kevarim</Text>
+                        <Text style={styles.loginPromptText}>
+                          Accédez aux kevarim les plus proches de votre position
+                        </Text>
+                        <TouchableOpacity 
+                          style={styles.loginPromptButton}
+                          onPress={() => router.push('/login')}
+                        >
+                          <Text style={styles.loginPromptButtonText}>Se connecter</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ) : loadingLocation ? (
                     <View style={styles.kevarimCard}>
                       <View style={styles.loadingContainer}>
                         <Text style={styles.loadingText}>Chargement du kever le plus proche...</Text>
@@ -485,7 +528,23 @@ export default function HomeScreen() {
                 <ChevronRight size={20} color={Colors.text.muted} />
               </TouchableOpacity>
             </AnimatedScreenWrapper>
-          </ScrollView>
+              <TouchableOpacity 
+                style={styles.essentialCard} 
+                onPress={() => {
+                  if (!user) {
+                    Alert.alert(
+                      'Connexion requise',
+                      'Vous devez vous connecter pour créer et gérer vos prières personnalisées.',
+                      [
+                        { text: 'Annuler', style: 'cancel' },
+                        { text: 'Se connecter', onPress: () => router.push('/login') }
+                      ]
+                    );
+                    return;
+                  }
+                  router.push('/my-prayers');
+                }}
+              >
         </SafeAreaView>
       </LinearGradient>
 
@@ -767,6 +826,38 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.text.secondary,
     textAlign: 'center',
+  },
+  loginPromptContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.background,
+    padding: 20,
+  },
+  loginPromptTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  loginPromptText: {
+    fontSize: 14,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  loginPromptButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  loginPromptButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.white,
   },
   bannersContainer: {
     marginBottom: 32,

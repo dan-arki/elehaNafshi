@@ -12,8 +12,8 @@ import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 export default function ProfileScreen() {
   const { user } = useAuth();
   
-  const userName = user?.displayName || user?.email?.split('@')[0] || "Utilisateur";
-  const userEmail = user?.email || "";
+  const userName = user?.displayName || user?.email?.split('@')[0] || "Invité";
+  const userEmail = user?.email || "Non connecté";
 
   const handleWhatsAppContact = () => {
     triggerMediumHaptic();
@@ -41,21 +41,65 @@ export default function ProfileScreen() {
 
   const navigateToFavorites = () => {
     triggerMediumHaptic();
+    if (!user) {
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez vous connecter pour accéder à vos favoris.',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
+      return;
+    }
     router.push('/favorites');
   };
 
   const navigateToKevarim = () => {
     triggerMediumHaptic();
+    if (!user) {
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez vous connecter pour voir les kevarim avec localisation.',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
+      return;
+    }
     router.push('/kevarim');
   };
 
   const navigateToCreatePrayer = () => {
     triggerMediumHaptic();
+    if (!user) {
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez vous connecter pour créer des prières personnalisées.',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
+      return;
+    }
     router.push('/create-prayer');
   };
 
   const navigateToAccountSettings = () => {
     triggerLightHaptic();
+    if (!user) {
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez vous connecter pour accéder aux paramètres du compte.',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
+      return;
+    }
     router.push('/account-settings');
   };
 
@@ -91,12 +135,20 @@ export default function ProfileScreen() {
               {/* Profile Info */}
               <View style={styles.profileSection}>
                 <View style={styles.avatarContainer}>
-                  <View style={styles.avatar}>
+                  <View style={[styles.avatar, !user && styles.guestAvatar]}>
                     <Text style={styles.avatarText}>{userName.charAt(0)}</Text>
                   </View>
                 </View>
                 <Text style={styles.userName}>{userName}</Text>
                 <Text style={styles.userEmail}>{userEmail}</Text>
+                {!user && (
+                  <TouchableOpacity 
+                    style={styles.loginButton}
+                    onPress={() => router.push('/login')}
+                  >
+                    <Text style={styles.loginButtonText}>Se connecter</Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </AnimatedScreenWrapper>
 
@@ -214,6 +266,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  guestAvatar: {
+    backgroundColor: Colors.text.muted,
+  },
   avatarText: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -228,6 +283,18 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: 14,
     color: Colors.text.secondary,
+  },
+  loginButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 20,
+    marginTop: 16,
+  },
+  loginButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
   },
   sectionContainer: {
     paddingHorizontal: 20,

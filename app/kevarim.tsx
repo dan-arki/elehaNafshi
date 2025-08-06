@@ -42,12 +42,13 @@ export default function KevarimScreen() {
   }, [user]);
 
   useEffect(() => {
-    if (locationPermission) {
+    // Only use location if user is logged in
+    if (user && locationPermission) {
       getUserLocation();
     } else {
       loadKevarimWithoutLocation();
     }
-  }, [locationPermission]);
+  }, [locationPermission, user]);
 
   const loadFavoriteKevarim = async () => {
     if (!user) return;
@@ -64,7 +65,14 @@ export default function KevarimScreen() {
 
   const handleToggleFavorite = async (kever: KeverLocation) => {
     if (!user) {
-      Alert.alert('Connexion requise', 'Vous devez être connecté pour ajouter des favoris');
+      Alert.alert(
+        'Connexion requise', 
+        'Vous devez vous connecter pour ajouter des kevarim aux favoris.',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
       return;
     }
 
@@ -112,6 +120,11 @@ export default function KevarimScreen() {
   };
 
   const requestLocationPermission = async () => {
+    if (!user) {
+      setLocationPermission(false);
+      return;
+    }
+    
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       setLocationPermission(status === 'granted');
@@ -258,12 +271,26 @@ export default function KevarimScreen() {
             showsVerticalScrollIndicator={false}
           >
             {/* Location Status */}
-            {!locationPermission && (
+            {user && !locationPermission && (
               <View style={styles.locationWarning}>
                 <MapPin size={20} color={Colors.warning} />
                 <Text style={styles.locationWarningText}>
                   Autorisez la localisation pour voir les distances
                 </Text>
+              </View>
+            )}
+            
+            {!user && (
+              <View style={styles.loginWarning}>
+                <Text style={styles.loginWarningText}>
+                  Connectez-vous pour voir les distances et localiser les kevarim les plus proches
+                </Text>
+                <TouchableOpacity 
+                  style={styles.loginWarningButton}
+                  onPress={() => router.push('/login')}
+                >
+                  <Text style={styles.loginWarningButtonText}>Se connecter</Text>
+                </TouchableOpacity>
               </View>
             )}
 
@@ -331,7 +358,7 @@ export default function KevarimScreen() {
                         <MapPin size={20} color={Colors.primary} />
                         <View style={styles.keverInfo}>
                           <Text style={styles.keverTitle}>{kever.name}</Text>
-                          {kever.distance && (
+                          {user && kever.distance && (
                             <Text style={styles.keverDistance}>
                               {formatDistance(kever.distance)}
                             </Text>
@@ -341,16 +368,18 @@ export default function KevarimScreen() {
                       <Text style={styles.keverSubtitle}>Consulter</Text>
                     </View>
                     <View style={styles.keverActions}>
-                      <TouchableOpacity 
-                        style={styles.favoriteButton}
-                        onPress={() => handleToggleFavorite(kever)}
-                      >
-                        <Heart 
-                          size={20} 
-                          color={favoriteKeverIds.has(kever.id) ? Colors.error : Colors.text.muted}
-                          fill={favoriteKeverIds.has(kever.id) ? Colors.error : 'transparent'}
-                        />
-                      </TouchableOpacity>
+                      {user && (
+                        <TouchableOpacity 
+                          style={styles.favoriteButton}
+                          onPress={() => handleToggleFavorite(kever)}
+                        >
+                          <Heart 
+                            size={20} 
+                            color={favoriteKeverIds.has(kever.id) ? Colors.error : Colors.text.muted}
+                            fill={favoriteKeverIds.has(kever.id) ? Colors.error : 'transparent'}
+                          />
+                        </TouchableOpacity>
+                      )}
                       <TouchableOpacity onPress={() => handleOpenMaps(kever)}>
                         <Send size={20} color={Colors.text.muted} />
                       </TouchableOpacity>
@@ -427,6 +456,31 @@ const styles = StyleSheet.create({
     color: Colors.warning,
     marginLeft: 8,
     flex: 1,
+  },
+  loginWarning: {
+    backgroundColor: '#E3F2FD',
+    padding: 16,
+    borderRadius: 12,
+    marginVertical: 16,
+    alignItems: 'center',
+  },
+  loginWarningText: {
+    fontSize: 14,
+    color: Colors.primary,
+    textAlign: 'center',
+    marginBottom: 12,
+    lineHeight: 20,
+  },
+  loginWarningButton: {
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 16,
+  },
+  loginWarningButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.white,
   },
   mapSection: {
     marginVertical: 16,
