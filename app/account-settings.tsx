@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ChevronLeft, LogOut, Trash2 } from 'lucide-react-native';
 import { Colors } from '../constants/Colors';
@@ -12,32 +12,47 @@ export default function AccountSettingsScreen() {
 
   const handleLogout = async () => {
     triggerMediumHaptic();
-    Alert.alert(
-      'Déconnexion',
-      'Êtes-vous sûr de vouloir vous déconnecter ?',
-      [
-        {
-          text: 'Annuler',
-          style: 'cancel',
-        },
-        {
-          text: 'Se déconnecter',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              triggerMediumHaptic();
-              await logout();
-              // Rediriger immédiatement vers la page de connexion après déconnexion
-              router.replace('/login');
-            } catch (error) {
-              console.error('Erreur lors de la déconnexion:', error);
-              triggerErrorHaptic();
-              Alert.alert('Erreur', 'Impossible de se déconnecter');
-            }
+    
+    // Sur web, déconnexion directe pour éviter les problèmes de popup native
+    if (Platform.OS === 'web') {
+      try {
+        await logout();
+        // Rediriger vers l'onglet profil après déconnexion
+        router.replace('/(tabs)/profile');
+      } catch (error) {
+        console.error('Erreur lors de la déconnexion:', error);
+        triggerErrorHaptic();
+        Alert.alert('Erreur', 'Impossible de se déconnecter');
+      }
+    } else {
+      // Sur mobile, conserver la popup de confirmation
+      Alert.alert(
+        'Déconnexion',
+        'Êtes-vous sûr de vouloir vous déconnecter ?',
+        [
+          {
+            text: 'Annuler',
+            style: 'cancel',
           },
-        },
-      ]
-    );
+          {
+            text: 'Se déconnecter',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                triggerMediumHaptic();
+                await logout();
+                // Rediriger vers l'onglet profil après déconnexion
+                router.replace('/(tabs)/profile');
+              } catch (error) {
+                console.error('Erreur lors de la déconnexion:', error);
+                triggerErrorHaptic();
+                Alert.alert('Erreur', 'Impossible de se déconnecter');
+              }
+            },
+          },
+        ]
+      );
+    }
   };
 
   const handleDeleteAccount = () => {
