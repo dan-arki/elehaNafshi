@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ChevronLeft, List, Settings, Heart, Gift, CircleAlert as AlertCircle, ChevronDown, ChevronUp, Send, Check } from 'lucide-react-native';
@@ -125,15 +125,8 @@ export default function KeverScreen() {
   const toggleFavorite = async () => {
     if (!user) {
       triggerErrorHaptic();
-      Alert.alert(
-        'Connexion requise',
-        'Vous devez être connecté pour ajouter des favoris',
-        [
-          { text: 'Annuler', style: 'cancel' },
-          { text: 'Créer un compte', onPress: () => router.push('/register') },
-          { text: 'Se connecter', onPress: () => router.push('/login') }
-        ]
-      );
+      // Redirection directe vers la page d'inscription
+      router.push('/register');
       return;
     }
     
