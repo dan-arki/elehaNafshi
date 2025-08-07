@@ -66,6 +66,12 @@ export default function ChapterScreen() {
     return () => {
       if (currentAudio) {
         currentAudio.unloadAsync();
+        setCurrentAudio(null);
+        setCurrentPlayingBlockId(null);
+        setIsPlaying(false);
+        setAudioPosition(0);
+        setAudioDuration(0);
+        setCurrentAudioTitle('');
       }
     };
   }, [id]);
@@ -80,6 +86,11 @@ export default function ChapterScreen() {
       scrollToSelectedSubcategory();
     }
   }, [selectedSubcategoryIndex, scrollViewWidth, contentWidth, subcategories.length]);
+
+  // Stop audio when changing subcategory
+  useEffect(() => {
+    stopAndResetAudio();
+  }, [selectedSubcategoryIndex]);
 
   // Initialize subcategory refs array when subcategories change
   useEffect(() => {
@@ -228,6 +239,23 @@ export default function ChapterScreen() {
     }));
   };
 
+  const stopAndResetAudio = async () => {
+    try {
+      if (currentAudio) {
+        await currentAudio.unloadAsync();
+      }
+    } catch (error) {
+      console.error('Error stopping audio:', error);
+    } finally {
+      setCurrentAudio(null);
+      setCurrentPlayingBlockId(null);
+      setIsPlaying(false);
+      setAudioPosition(0);
+      setAudioDuration(0);
+      setCurrentAudioTitle('');
+    }
+  };
+
   const handlePlayPauseAudio = async (block: Prayer) => {
     if (!block.audio) return;
     
@@ -251,13 +279,8 @@ export default function ChapterScreen() {
       }
       
       // Stop current audio if playing different block
-      if (currentAudio) {
-        await currentAudio.unloadAsync();
-        setCurrentAudio(null);
-        setCurrentPlayingBlockId(null);
-        setIsPlaying(false);
-        setAudioPosition(0);
-        setAudioDuration(0);
+      if (currentAudio && currentPlayingBlockId !== block.id) {
+        await stopAndResetAudio();
       }
       
       // Load and play new audio
@@ -280,10 +303,7 @@ export default function ChapterScreen() {
           
           // If audio finished, reset states
           if (status.didJustFinish) {
-            setCurrentPlayingBlockId(null);
-            setIsPlaying(false);
-            setAudioPosition(0);
-            setCurrentAudioTitle('');
+            stopAndResetAudio();
           }
         }
       });
@@ -902,15 +922,7 @@ export default function ChapterScreen() {
             <TouchableOpacity
               style={styles.miniPlayerCloseButton}
               onPress={async () => {
-                if (currentAudio) {
-                  await currentAudio.unloadAsync();
-                  setCurrentAudio(null);
-                  setCurrentPlayingBlockId(null);
-                  setIsPlaying(false);
-                  setAudioPosition(0);
-                  setAudioDuration(0);
-                  setCurrentAudioTitle('');
-                }
+                await stopAndResetAudio();
               }}
             >
               <Volume2 size={16} color={Colors.text.muted} />
