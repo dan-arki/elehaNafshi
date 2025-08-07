@@ -25,7 +25,7 @@ export default function CustomPrayerDetailScreen() {
     // Configure audio mode
     Audio.setAudioModeAsync({
       allowsRecordingIOS: false,
-      staysActiveInBackground: true,
+      staysActiveInBackground: false,
       playsInSilentModeIOS: true,
       shouldDuckAndroid: true,
       playThroughEarpieceAndroid: false,
