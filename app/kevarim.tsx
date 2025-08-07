@@ -70,6 +70,7 @@ export default function KevarimScreen() {
         'Vous devez être connecté pour ajouter des favoris',
         [
           { text: 'Annuler', style: 'cancel' },
+          { text: 'Créer un compte', onPress: () => router.push('/register') },
           { text: 'Se connecter', onPress: () => router.push('/login') }
         ]
       );
