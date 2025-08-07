@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ChevronLeft, ChevronRight, List, Settings, Heart, Gift, CircleAlert as AlertCircle, ChevronDown, ChevronUp, BookOpen, User, Play, Pause, Volume2 } from 'lucide-react-native';
