@@ -79,23 +79,23 @@ export default function CreatePrayerScreen() {
 
   const musicOptions = [
     {
-      name: 'Musique 1',
+      name: 'Hachem je t\'aime',
       url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audio.mp3?alt=media&token=44d213bc-13cd-4f3f-af9c-3e6636fccefa'
     },
     {
-      name: 'Musique 2',
+      name: 'Merveille du monde',
       url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audioEleha2.mp3?alt=media&token=1c910bc0-88d1-4a85-8b98-f8046a3d4217'
     },
     {
-      name: 'Musique 3',
+      name: 'La seule vérité',
       url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audioEleha3.mp3?alt=media&token=607c6315-04b8-45b5-8b60-a4b541dc674f'
     },
     {
-      name: 'Musique 4',
+      name: 'Que pour Hachem',
       url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audioEleha4.mp3?alt=media&token=e14f3fc3-e92f-4723-8d61-76e64244ab46'
     },
     {
-      name: 'Musique 5',
+      name: 'Réveilles ton âme',
       url: 'https://firebasestorage.googleapis.com/v0/b/eleha-nafchi-vvurlg.firebasestorage.app/o/audioEleha5.mp3?alt=media&token=70deb202-ef94-428b-9680-d10b69c794cf'
     }
   ];
