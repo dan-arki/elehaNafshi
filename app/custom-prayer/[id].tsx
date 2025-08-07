@@ -58,7 +58,12 @@ export default function CustomPrayerDetailScreen() {
   }, [prayer]);
 
   const loadPrayer = async () => {
-    if (!id || !user) return;
+    if (!id) return;
+    
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
@@ -153,7 +158,25 @@ export default function CustomPrayerDetailScreen() {
   if (!prayer) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.loadingText}>Prière non trouvée</Text>
+        {!user ? (
+          <View style={styles.loginPromptContainer}>
+            <Text style={styles.loginPromptTitle}>Connexion requise</Text>
+            <Text style={styles.loginPromptSubtitle}>
+              Vous devez être connecté pour accéder à vos prières personnelles
+            </Text>
+            <TouchableOpacity 
+              style={styles.loginPromptButton} 
+              onPress={() => {
+                triggerMediumHaptic();
+                router.push('/login');
+              }}
+            >
+              <Text style={styles.loginPromptButtonText}>Se connecter</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <Text style={styles.loadingText}>Prière non trouvée</Text>
+        )}
       </SafeAreaView>
     );
   }
@@ -503,5 +526,36 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
     textAlign: 'center',
     marginTop: 50,
+  },
+  loginPromptContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  loginPromptTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  loginPromptSubtitle: {
+    fontSize: 16,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 32,
+  },
+  loginPromptButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+  },
+  loginPromptButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
   },
 });

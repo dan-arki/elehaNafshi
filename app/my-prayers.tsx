@@ -26,7 +26,10 @@ export default function MyPrayersScreen() {
   }, [user]);
 
   const loadCustomPrayers = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
@@ -42,16 +45,52 @@ export default function MyPrayersScreen() {
   };
 
   const handleCreatePrayer = () => {
+    if (!user) {
+      triggerErrorHaptic();
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez être connecté pour créer des prières personnalisées',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
+      return;
+    }
     triggerMediumHaptic();
     router.push('/create-prayer');
   };
 
   const handleEditPrayer = (prayerId: string) => {
+    if (!user) {
+      triggerErrorHaptic();
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez être connecté pour modifier des prières',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
+      return;
+    }
     triggerLightHaptic();
     router.push(`/create-prayer?edit=${prayerId}`);
   };
 
   const handleDeletePrayer = (prayerId: string, prayerTitle: string) => {
+    if (!user) {
+      triggerErrorHaptic();
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez être connecté pour supprimer des prières',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
+      return;
+    }
     triggerMediumHaptic();
     setPrayerToDelete({ id: prayerId, title: prayerTitle });
     setShowDeleteConfirmation(true);
@@ -145,10 +184,30 @@ export default function MyPrayersScreen() {
               </View>
             ) : customPrayers.length === 0 ? (
               <View style={styles.emptyContainer}>
-                <Text style={styles.emptyTitle}>Aucune prière personnalisée</Text>
-                <Text style={styles.emptySubtitle}>
-                  Créez votre première prière personnalisée en appuyant sur le bouton ci-dessus
-                </Text>
+                {!user ? (
+                  <>
+                    <Text style={styles.emptyTitle}>Connexion requise</Text>
+                    <Text style={styles.emptySubtitle}>
+                      Connectez-vous pour créer et gérer vos prières personnelles
+                    </Text>
+                    <TouchableOpacity 
+                      style={styles.loginPromptButton} 
+                      onPress={() => {
+                        triggerMediumHaptic();
+                        router.push('/login');
+                      }}
+                    >
+                      <Text style={styles.loginPromptButtonText}>Se connecter</Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.emptyTitle}>Aucune prière personnalisée</Text>
+                    <Text style={styles.emptySubtitle}>
+                      Créez votre première prière personnalisée en appuyant sur le bouton ci-dessus
+                    </Text>
+                  </>
+                )}
               </View>
             ) : (
               <View style={styles.prayersList}>
@@ -367,5 +426,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  loginPromptButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    marginTop: 16,
+  },
+  loginPromptButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
   },
 });

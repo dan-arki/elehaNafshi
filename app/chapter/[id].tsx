@@ -344,7 +344,20 @@ export default function ChapterScreen() {
   };
 
   const toggleFavorite = async () => {
-    if (!user || subcategories.length === 0 || selectedSubcategoryIndex < 0) return;
+    if (!user) {
+      triggerErrorHaptic();
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez être connecté pour ajouter des favoris',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
+      return;
+    }
+    
+    if (subcategories.length === 0 || selectedSubcategoryIndex < 0) return;
     
     triggerMediumHaptic();
     

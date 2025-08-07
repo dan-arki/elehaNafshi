@@ -64,7 +64,15 @@ export default function KevarimScreen() {
 
   const handleToggleFavorite = async (kever: KeverLocation) => {
     if (!user) {
-      Alert.alert('Connexion requise', 'Vous devez être connecté pour ajouter des favoris');
+      triggerErrorHaptic();
+      Alert.alert(
+        'Connexion requise',
+        'Vous devez être connecté pour ajouter des favoris',
+        [
+          { text: 'Annuler', style: 'cancel' },
+          { text: 'Se connecter', onPress: () => router.push('/login') }
+        ]
+      );
       return;
     }
 

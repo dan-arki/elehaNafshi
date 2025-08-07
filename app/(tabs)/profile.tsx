@@ -12,7 +12,7 @@ import AnimatedScreenWrapper from '../../components/AnimatedScreenWrapper';
 export default function ProfileScreen() {
   const { user } = useAuth();
   
-  const userName = user?.displayName || user?.email?.split('@')[0] || "Utilisateur";
+  const userName = user?.displayName || user?.email?.split('@')[0] || "Invité";
   const userEmail = user?.email || "";
 
   const handleWhatsAppContact = () => {
@@ -58,6 +58,158 @@ export default function ProfileScreen() {
     triggerLightHaptic();
     router.push('/account-settings');
   };
+
+  const navigateToLogin = () => {
+    triggerMediumHaptic();
+    router.push('/login');
+  };
+
+  const navigateToRegister = () => {
+    triggerMediumHaptic();
+    router.push('/register');
+  };
+
+  // If user is not logged in, show login/register options
+  if (!user) {
+    return (
+      <ImageBackground
+        source={require('../../assets/images/cielBG.jpg')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <LinearGradient
+          colors={['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 0.3)', 'rgba(255, 255, 255, 0.8)', Colors.white]}
+          locations={[0, 0.3, 0.7, 1]}
+          style={styles.gradientOverlay}
+        >
+        <SafeAreaView style={styles.safeArea}>
+          <View style={{flex: 1}}>
+            <ScrollView 
+              style={styles.scrollView}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+            >
+              <AnimatedScreenWrapper animationType="fade" duration={500} delay={0}>
+                {/* Header */}
+                <View style={styles.header}>
+                  <Text style={styles.headerTitle}>Mon compte</Text>
+                </View>
+              </AnimatedScreenWrapper>
+
+              <AnimatedScreenWrapper animationType="scale" duration={600} delay={100}>
+                {/* Guest Profile Info */}
+                <View style={styles.profileSection}>
+                  <View style={styles.avatarContainer}>
+                    <View style={styles.avatar}>
+                      <Text style={styles.avatarText}>👤</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.userName}>Mode invité</Text>
+                  <Text style={styles.userEmail}>Connectez-vous pour sauvegarder vos données</Text>
+                </View>
+              </AnimatedScreenWrapper>
+
+              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={200}>
+                {/* Login/Register Buttons */}
+                <View style={styles.authButtonsContainer}>
+                  <TouchableOpacity style={styles.loginButton} onPress={navigateToLogin}>
+                    <Text style={styles.loginButtonText}>Se connecter</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity style={styles.registerButton} onPress={navigateToRegister}>
+                    <Text style={styles.registerButtonText}>Créer un compte</Text>
+                  </TouchableOpacity>
+                </View>
+              </AnimatedScreenWrapper>
+
+              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={300}>
+                {/* Benefits of Creating Account */}
+                <View style={styles.benefitsContainer}>
+                  <Text style={styles.benefitsTitle}>Avantages d'un compte :</Text>
+                  <View style={styles.benefitsList}>
+                    <View style={styles.benefitItem}>
+                      <Heart size={16} color={Colors.primary} />
+                      <Text style={styles.benefitText}>Sauvegarder vos favoris</Text>
+                    </View>
+                    <View style={styles.benefitItem}>
+                      <BookOpen size={16} color={Colors.primary} />
+                      <Text style={styles.benefitText}>Créer vos prières personnelles</Text>
+                    </View>
+                    <View style={styles.benefitItem}>
+                      <Settings size={16} color={Colors.primary} />
+                      <Text style={styles.benefitText}>Synchroniser sur plusieurs appareils</Text>
+                    </View>
+                  </View>
+                </View>
+              </AnimatedScreenWrapper>
+
+              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={400}>
+                {/* WhatsApp CTA */}
+                <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsAppContact}>
+                  <MessageCircle size={20} color={Colors.white} />
+                  <Text style={styles.whatsappButtonText}>Posez nous vos questions</Text>
+                </TouchableOpacity>
+              </AnimatedScreenWrapper>
+
+              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={500}>
+                {/* Donation CTA */}
+                <TouchableOpacity style={styles.donationButton} onPress={handleDonation}>
+                  <Heart size={20} color={Colors.white} />
+                  <Text style={styles.donationButtonText}>Faire un don</Text>
+                </TouchableOpacity>
+              </AnimatedScreenWrapper>
+
+              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={600}>
+                {/* App Description */}
+                <View style={styles.appDescriptionContainer}>
+                  <View style={styles.appDescriptionContent}>
+                    <View style={styles.appDescriptionText}>
+                      <Text style={styles.appTitle}>La prière au creux de vos mains</Text>
+                      <Text style={styles.appSubtitle}>
+                        L'application qui accompagne chaque femme dans sa prière.
+                      </Text>
+                    </View>
+                    <View style={styles.appImageContainer}>
+                      <View style={styles.womanIcon}>
+                    <Image
+                      source={require('../../assets/images/App Icon Vector.png')}
+                      style={styles.appIconImage}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </View>
+              </View>
+                </View>
+              </AnimatedScreenWrapper>
+
+              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={700}>
+                {/* Share App CTA */}
+                <TouchableOpacity style={styles.shareButton} onPress={handleShareApp}>
+                  <Share2 size={20} color={Colors.primary} />
+                  <Text style={styles.shareButtonText}>Partager notre application</Text>
+                </TouchableOpacity>
+              </AnimatedScreenWrapper>
+
+              <AnimatedScreenWrapper animationType="fade" duration={600} delay={800}>
+                {/* Footer with Ilnovation */}
+                <TouchableOpacity style={styles.footerContainer} onPress={handleIlnovationClick}>
+                  <Text style={styles.footerText}>Créé avec </Text>
+                  <Heart size={16} color={Colors.primary} fill={Colors.primary} />
+                  <Text style={styles.footerText}> par </Text>
+                  <Image
+                    source={require('../../assets/images/logoIlnovation.png')}
+                    style={styles.ilnovationLogo}
+                    resizeMode="contain"
+                  />
+                </TouchableOpacity>
+              </AnimatedScreenWrapper>
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+        </LinearGradient>
+      </ImageBackground>
+    );
+  }
 
   return (
     <ImageBackground
@@ -383,5 +535,61 @@ const styles = StyleSheet.create({
     width: 80,
     height: 20,
     marginLeft: 4,
+  },
+  authButtonsContainer: {
+    paddingHorizontal: 20,
+    marginBottom: 32,
+  },
+  loginButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  loginButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
+  },
+  registerButton: {
+    backgroundColor: Colors.background,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.primary,
+  },
+  registerButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
+  benefitsContainer: {
+    backgroundColor: Colors.background,
+    marginHorizontal: 20,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 32,
+  },
+  benefitsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  benefitsList: {
+    gap: 12,
+  },
+  benefitItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  benefitText: {
+    fontSize: 14,
+    color: Colors.text.primary,
+    marginLeft: 12,
+    flex: 1,
   },
 });

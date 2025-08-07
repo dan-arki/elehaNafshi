@@ -58,14 +58,9 @@ function RootLayoutNav() {
 
   useEffect(() => {
     if (loading || !fontsLoaded || !displaySettings.loaded) return;
-
-    const inAuthGroup = segments[0] === '(tabs)';
     
-    if (!user && inAuthGroup) {
-      // User is not signed in and trying to access protected routes
-      router.replace('/login');
-    } else if (user && (segments[0] === 'login' || segments[0] === 'register')) {
-      // User is signed in and trying to access auth pages
+    // Only redirect if user is signed in and trying to access auth pages
+    if (user && (segments[0] === 'login' || segments[0] === 'register')) {
       router.replace('/(tabs)');
     }
   }, [user, segments, loading, fontsLoaded, displaySettings.loaded]);

@@ -15,6 +15,53 @@ export default function CreatePrayerScreen() {
   const { user } = useAuth();
   const isEditing = !!edit;
   
+  // If user is not logged in, show login prompt
+  if (!user) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => {
+            triggerLightHaptic();
+            router.back();
+          }}>
+            <ChevronLeft size={24} color={Colors.text.primary} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Ma prière</Text>
+          <View style={styles.headerSpacer} />
+        </View>
+
+        <View style={styles.loginPromptContainer}>
+          <Text style={styles.loginPromptTitle}>Connexion requise</Text>
+          <Text style={styles.loginPromptSubtitle}>
+            Vous devez être connecté pour créer et modifier des prières personnelles
+          </Text>
+          
+          <View style={styles.loginPromptButtons}>
+            <TouchableOpacity 
+              style={styles.loginPromptButton} 
+              onPress={() => {
+                triggerMediumHaptic();
+                router.push('/login');
+              }}
+            >
+              <Text style={styles.loginPromptButtonText}>Se connecter</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.registerPromptButton} 
+              onPress={() => {
+                triggerMediumHaptic();
+                router.push('/register');
+              }}
+            >
+              <Text style={styles.registerPromptButtonText}>Créer un compte</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   const [prayerName, setPrayerName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedMusicUrl, setSelectedMusicUrl] = useState<string | null>(null);
@@ -168,12 +215,6 @@ export default function CreatePrayerScreen() {
   };
 
   const handleSave = async () => {
-    if (!user) {
-      triggerErrorHaptic();
-      Alert.alert('Erreur', 'Vous devez être connecté pour créer une prière');
-      return;
-    }
-    
     if (!prayerName.trim()) {
       triggerErrorHaptic();
       Alert.alert('Erreur', 'Le nom de votre prière est obligatoire');
@@ -659,5 +700,56 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     color: Colors.text.secondary,
+  },
+  headerSpacer: {
+    width: 24,
+  },
+  loginPromptContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  loginPromptTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: Colors.text.primary,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  loginPromptSubtitle: {
+    fontSize: 16,
+    color: Colors.text.secondary,
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 32,
+  },
+  loginPromptButtons: {
+    width: '100%',
+    gap: 12,
+  },
+  loginPromptButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+  },
+  loginPromptButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
+  },
+  registerPromptButton: {
+    backgroundColor: Colors.background,
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: Colors.primary,
+  },
+  registerPromptButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.primary,
   },
 });

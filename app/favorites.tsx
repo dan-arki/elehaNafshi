@@ -24,7 +24,10 @@ export default function FavoritesScreen() {
   }, [user]);
 
   const loadFavoritePrayers = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
@@ -200,13 +203,33 @@ export default function FavoritesScreen() {
             ) : filteredPrayers.length === 0 ? (
               <View style={styles.emptyContainer}>
                 <Heart size={48} color={Colors.text.muted} />
-                <Text style={styles.emptyTitle}>Aucune prière favorite</Text>
-                <Text style={styles.emptySubtitle}>
-                  {searchQuery || selectedCategory !== 'all' 
-                    ? 'Aucune prière ne correspond à vos critères'
-                    : 'Ajoutez des prières à vos favoris pour les retrouver ici'
-                  }
-                </Text>
+                {!user ? (
+                  <>
+                    <Text style={styles.emptyTitle}>Connexion requise</Text>
+                    <Text style={styles.emptySubtitle}>
+                      Connectez-vous pour accéder à vos prières favorites
+                    </Text>
+                    <TouchableOpacity 
+                      style={styles.loginPromptButton} 
+                      onPress={() => {
+                        triggerMediumHaptic();
+                        router.push('/login');
+                      }}
+                    >
+                      <Text style={styles.loginPromptButtonText}>Se connecter</Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.emptyTitle}>Aucune prière favorite</Text>
+                    <Text style={styles.emptySubtitle}>
+                      {searchQuery || selectedCategory !== 'all' 
+                        ? 'Aucune prière ne correspond à vos critères'
+                        : 'Ajoutez des prières à vos favoris pour les retrouver ici'
+                      }
+                    </Text>
+                  </>
+                )}
               </View>
             ) : (
               <View style={styles.prayersList}>
@@ -384,5 +407,17 @@ const styles = StyleSheet.create({
     color: Colors.text.secondary,
     marginLeft: 32,
     lineHeight: 18,
+  },
+  loginPromptButton: {
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    marginTop: 16,
+  },
+  loginPromptButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
   },
 });
