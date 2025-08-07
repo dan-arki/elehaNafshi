@@ -17,7 +17,7 @@ export default function ProfileScreen() {
 
   const handleWhatsAppContact = () => {
     triggerMediumHaptic();
-    const whatsappUrl = 'https://wa.me/972537080475';
+    const whatsappUrl = 'https://wa.me/33614843645';
     Linking.openURL(whatsappUrl);
   };
 
