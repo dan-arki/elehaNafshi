@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Image, Alert, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Settings, Heart, BookOpen, MapPin, MessageCircle, Share2 } from 'lucide-react-native';
+import { Settings, Heart, BookOpen, MapPin, MessageCircle, Share2, ShoppingCart } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
@@ -33,6 +33,11 @@ export default function ProfileScreen() {
     Linking.openURL(appStoreUrl);
   };
 
+  const handleBuySiddour = () => {
+    triggerMediumHaptic();
+    const siddourUrl = 'https://private.invoice4u.co.il/newsite/he/clearing/public/i4u-clearing?ProductGuid=8eac273e-30ca-478e-b017-0461d3acd608';
+    Linking.openURL(siddourUrl);
+  };
   const handleIlnovationClick = () => {
     triggerLightHaptic();
     const ilnovationUrl = 'https://ilnovation.com/';
@@ -159,6 +164,20 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               </AnimatedScreenWrapper>
 
+              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={250}>
+                {/* Buy Siddour CTA */}
+                <TouchableOpacity style={styles.buySiddourButton} onPress={handleBuySiddour}>
+                  <ShoppingCart size={20} color={Colors.white} />
+                  <Text style={styles.buySiddourButtonText}>Acheter le Siddour</Text>
+                </TouchableOpacity>
+              </AnimatedScreenWrapper>
+              <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={350}>
+                {/* Buy Siddour CTA */}
+                <TouchableOpacity style={styles.buySiddourButton} onPress={handleBuySiddour}>
+                  <ShoppingCart size={20} color={Colors.white} />
+                  <Text style={styles.buySiddourButtonText}>Acheter le Siddour</Text>
+                </TouchableOpacity>
+              </AnimatedScreenWrapper>
               <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={600}>
                 {/* App Description */}
                 <View style={styles.appDescriptionContainer}>
@@ -433,6 +452,22 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   donationButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.white,
+    marginLeft: 8,
+  },
+  buySiddourButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#8B5CF6', // Purple color matching app theme
+    marginHorizontal: 20,
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+  },
+  buySiddourButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: Colors.white,
