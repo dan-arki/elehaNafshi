@@ -26,6 +26,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
 import { DisplaySettingsProvider, useDisplaySettings } from '../contexts/DisplaySettingsContext';
+import { ShabbatProvider, useShabbat } from '../contexts/ShabbatContext';
+import ShabbatBlocker from '../components/ShabbatBlocker';
 import ErrorBoundary from '../components/ErrorBoundary';
 
 // Prevent splash screen from auto-hiding
@@ -36,6 +38,7 @@ function RootLayoutNav() {
   useFrameworkReady();
   const { user, loading } = useAuth();
   const displaySettings = useDisplaySettings();
+  const { isShabbat, loadingShabbatData } = useShabbat();
   const segments = useSegments();
   const router = useRouter();
 
@@ -66,7 +69,12 @@ function RootLayoutNav() {
   }, [user, segments, loading, fontsLoaded, displaySettings.loaded]);
 
   // Return null to keep splash screen visible while fonts load
-  if ((!fontsLoaded && !fontError) || loading || !displaySettings.loaded) {
+  if ((!fontsLoaded && !fontError) || loading || !displaySettings.loaded || loadingShabbatData) {
+    return null;
+  }
+
+  // If it's Shabbat, don't render the main app navigation
+  if (isShabbat) {
     return null;
   }
 
@@ -103,10 +111,13 @@ function RootLayoutNav() {
 export default function RootLayout() {
   useFrameworkReady();
   return (
-    <AuthProvider>
-      <DisplaySettingsProvider>
-        <RootLayoutNav />
-      </DisplaySettingsProvider>
-    </AuthProvider>
+    <ShabbatProvider>
+      <AuthProvider>
+        <DisplaySettingsProvider>
+          <RootLayoutNav />
+          <ShabbatBlocker />
+        </DisplaySettingsProvider>
+      </AuthProvider>
+    </ShabbatProvider>
   );
 }
