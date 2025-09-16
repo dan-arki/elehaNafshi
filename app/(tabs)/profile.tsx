@@ -287,6 +287,13 @@ export default function ProfileScreen() {
               </TouchableOpacity>
             </AnimatedScreenWrapper>
 
+            <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={350}>
+              {/* Buy Siddour CTA */}
+              <TouchableOpacity style={styles.buySiddourButton} onPress={handleBuySiddour}>
+                <ShoppingCart size={20} color={Colors.white} />
+                <Text style={styles.buySiddourButtonText}>Acheter le Siddour</Text>
+              </TouchableOpacity>
+            </AnimatedScreenWrapper>
             <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={400}>
               {/* App Description */}
               <View style={styles.appDescriptionContainer}>
