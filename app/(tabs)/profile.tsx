@@ -29,8 +29,8 @@ export default function ProfileScreen() {
 
   const handleShareApp = () => {
     triggerMediumHaptic();
-    const shareUrl = 'https://linktr.ee/elehanafchi';
-    Linking.openURL(shareUrl);
+    const appStoreUrl = 'https://apps.apple.com/fr/app/eleha-nafchi/id6745874835';
+    Linking.openURL(appStoreUrl);
   };
 
   const handleIlnovationClick = () => {
