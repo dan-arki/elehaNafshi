@@ -98,9 +98,12 @@ export function ShabbatProvider({ children }: ShabbatProvider) {
 
   const fetchShabbatTimes = async (latitude: number, longitude: number) => {
     try {
-      const response = await fetch(
-        `https://www.hebcal.com/api/v2/shabbat?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`
-      );
+      // Use proxy for web development to avoid CORS issues
+      const apiUrl = __DEV__ && typeof window !== 'undefined' 
+        ? `/api/hebcal/api/v2/shabbat?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`
+        : `https://www.hebcal.com/api/v2/shabbat?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`;
+      
+      const response = await fetch(apiUrl);
       
       if (!response.ok) {
         throw new Error('Failed to fetch Shabbat times');
