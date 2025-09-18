@@ -6,7 +6,7 @@ import { Colors } from '../constants/Colors';
 import { useShabbat } from '../contexts/ShabbatContext';
 
 export default function ShabbatBlocker() {
-  const { isShabbat, shabbatEndTime, locationPermissionGranted, locationError } = useShabbat();
+  const { isShabbat, shabbatEndTime } = useShabbat();
 
   // Only render if it's actually Shabbat
   if (!isShabbat) {
@@ -52,30 +52,17 @@ export default function ShabbatBlocker() {
                 L'application est temporairement bloquée pour respecter le Shabbat
               </Text>
 
-              {locationPermissionGranted && !locationError ? (
-                <>
-                  <Text style={styles.description}>
-                    Nous respectons ce temps sacré de repos et de spiritualité.
+              <Text style={styles.description}>
+                Nous respectons ce temps sacré de repos et de spiritualité.
+              </Text>
+              
+              {shabbatEndTime && (
+                <View style={styles.timeContainer}>
+                  <Text style={styles.timeLabel}>
+                    L'application se débloquera automatiquement :
                   </Text>
-                  
-                  {shabbatEndTime && (
-                    <View style={styles.timeContainer}>
-                      <Text style={styles.timeLabel}>
-                        L'application se débloquera automatiquement :
-                      </Text>
-                      <Text style={styles.timeText}>
-                        {formatShabbatEndTime(shabbatEndTime)}
-                      </Text>
-                    </View>
-                  )}
-                </>
-              ) : (
-                <View style={styles.errorContainer}>
-                  <Text style={styles.errorText}>
-                    {locationError || 'Impossible de déterminer les horaires de Shabbat'}
-                  </Text>
-                  <Text style={styles.errorSubtext}>
-                    L'application restera bloquée par précaution pendant le Shabbat
+                  <Text style={styles.timeText}>
+                    {formatShabbatEndTime(shabbatEndTime)}
                   </Text>
                 </View>
               )}
