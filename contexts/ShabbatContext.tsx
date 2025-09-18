@@ -100,29 +100,32 @@ export function ShabbatProvider({ children }: ShabbatProvider) {
     try {
       // Use proxy for web development to avoid CORS issues
       const apiUrl = __DEV__ && typeof window !== 'undefined' 
-        ? `/api/hebcal?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`
-        : `https://www.hebcal.com/shabbat?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`;
+        ? `/api/hebcal?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&M=on`
+        : `https://www.hebcal.com/shabbat?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&M=on`;
+      
+      console.log('Fetching Shabbat times from:', apiUrl);
       
       const response = await fetch(apiUrl);
       
+      console.log('Response status:', response.status);
+      console.log('Response content-type:', response.headers.get('content-type'));
+      
       if (!response.ok) {
-        const errorBody = await response.text(); // Lire le corps de la réponse pour le débogage
-        console.error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
-        throw new Error(`Failed to fetch Shabbat times: HTTP status ${response.status}`);
+        const errorBody = await response.text();
+        console.error(`HTTP error! status: ${response.status}, body:`, errorBody);
+        throw new Error(`Failed to fetch Shabbat times: HTTP ${response.status}`);
       }
 
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const errorBody = await response.text();
-        console.error(`Expected JSON, but received ${contentType}. Body: ${errorBody}`);
-        throw new Error(`Failed to fetch Shabbat times: Expected JSON, but received ${contentType}`);
+        console.error(`Expected JSON, but received ${contentType}. Body:`, errorBody);
+        throw new Error(`API returned ${contentType} instead of JSON`);
       }
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch Shabbat times');
-      }
 
       const data = await response.json();
+      console.log('Shabbat API response:', data);
       
       // Find candle lighting and havdalah times
       const now = new Date();
