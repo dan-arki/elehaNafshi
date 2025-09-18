@@ -25,6 +25,18 @@
         "NSMicrophoneUsageDescription": "Cette application n'utilise pas le microphone."
       }
     },
+    "android": {
+      "package": "com.mycompany.elehanafchi",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/iconApp.png",
+        "backgroundColor": "#8B5CF6"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
     "web": {
       "bundler": "metro",
       "output": "single",
