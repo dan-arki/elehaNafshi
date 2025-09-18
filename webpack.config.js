@@ -12,7 +12,7 @@ module.exports = async function (env, argv) {
           target: 'https://www.hebcal.com',
           changeOrigin: true,
           pathRewrite: {
-            '^/api/hebcal': ''
+            '^/api/hebcal': '/api/v2/shabbat'
           },
           secure: true,
           headers: {

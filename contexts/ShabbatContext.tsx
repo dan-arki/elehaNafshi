@@ -100,7 +100,7 @@ export function ShabbatProvider({ children }: ShabbatProvider) {
     try {
       // Use proxy for web development to avoid CORS issues
       const apiUrl = __DEV__ && typeof window !== 'undefined' 
-        ? `/api/hebcal/api/v2/shabbat?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`
+        ? `/api/hebcal?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`
         : `https://www.hebcal.com/api/v2/shabbat?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`;
       
       const response = await fetch(apiUrl);
