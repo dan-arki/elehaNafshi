@@ -11,8 +11,8 @@ module.exports = async function (env, argv) {
         '/api/hebcal': {
           target: 'https://www.hebcal.com',
           changeOrigin: true,
-          pathRewrite: {
-            '^/api/hebcal': '/api/v2/shabbat'
+          pathRewrite: { // Corrige le chemin pour pointer vers l'endpoint /shabbat
+            '^/api/hebcal': '/shabbat'
           },
           secure: true,
           headers: {
