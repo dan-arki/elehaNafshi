@@ -101,10 +101,23 @@ export function ShabbatProvider({ children }: ShabbatProvider) {
       // Use proxy for web development to avoid CORS issues
       const apiUrl = __DEV__ && typeof window !== 'undefined' 
         ? `/api/hebcal?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`
-        : `https://www.hebcal.com/api/v2/shabbat?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`;
+        : `https://www.hebcal.com/shabbat?cfg=json&geo=pos&latitude=${latitude}&longitude=${longitude}&m=50`;
       
       const response = await fetch(apiUrl);
       
+      if (!response.ok) {
+        const errorBody = await response.text(); // Lire le corps de la réponse pour le débogage
+        console.error(`HTTP error! status: ${response.status}, body: ${errorBody}`);
+        throw new Error(`Failed to fetch Shabbat times: HTTP status ${response.status}`);
+      }
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const errorBody = await response.text();
+        console.error(`Expected JSON, but received ${contentType}. Body: ${errorBody}`);
+        throw new Error(`Failed to fetch Shabbat times: Expected JSON, but received ${contentType}`);
+      }
+
       if (!response.ok) {
         throw new Error('Failed to fetch Shabbat times');
       }

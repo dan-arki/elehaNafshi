@@ -1,3 +1,4 @@
+```javascript
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 
 module.exports = async function (env, argv) {
@@ -12,7 +13,7 @@ module.exports = async function (env, argv) {
           target: 'https://www.hebcal.com',
           changeOrigin: true,
           pathRewrite: { // Corrige le chemin pour pointer vers l'endpoint /shabbat
-            '^/api/hebcal': '/api/v2/shabbat'
+            '^/api/hebcal': '/shabbat'
           },
           secure: true,
           headers: {
@@ -26,3 +27,4 @@ module.exports = async function (env, argv) {
   
   return config;
 };
+```
