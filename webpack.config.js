@@ -17,7 +17,6 @@ module.exports = async function (env, argv) {
           secure: true,
           headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json',
           }
         }
       }
