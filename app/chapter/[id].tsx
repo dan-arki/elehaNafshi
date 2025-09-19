@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, I18nManager, Image, Alert, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router } from 'expo-router';
 import { ChevronLeft, ChevronRight, List, Settings, Heart, Gift, CircleAlert as AlertCircle, ChevronDown, ChevronUp, BookOpen, User, Play, Pause, Volume2 } from 'lucide-react-native';
@@ -131,40 +131,56 @@ export default function ChapterScreen() {
   };
 
   const scrollToSelectedSubcategory = () => {
-    if (!subcategoryScrollRef.current || subcategories.length === 0 || scrollViewWidth === 0) {
+    if (!subcategoryScrollRef.current || subcategories.length === 0) {
       return;
     }
     
-    const selectedRef = subcategoryRefs.current[selectedSubcategoryIndex];
-    if (!selectedRef) {
-      return;
-    }
-    
-    // Measure the selected tab's position and dimensions
-    selectedRef.measureLayout(
-      subcategoryScrollRef.current.getInnerViewNode(),
-      (x, y, width, height) => {
-        // Calculate the center position of the selected tab
-        const tabCenter = x + (width / 2);
-        
-        // Calculate the scroll position to center the tab in the viewport
-        const targetScrollX = tabCenter - (scrollViewWidth / 2);
-        
-        // Clamp the scroll position to valid bounds
-        // Don't scroll past the beginning (0) or beyond the scrollable content
-        const maxScrollX = Math.max(0, contentWidth - scrollViewWidth);
-        const clampedScrollX = Math.max(0, Math.min(targetScrollX, maxScrollX));
-        
-        // Perform the scroll animation
-        subcategoryScrollRef.current?.scrollTo({
-          x: clampedScrollX,
-          animated: true
-        });
-      },
-      (error) => {
-        console.error('Error measuring tab:', error);
+    // Use simple calculation for Android to avoid measureLayout issues
+    if (Platform.OS === 'android') {
+      // Estimate tab width (adjust based on your actual tab sizes)
+      const estimatedTabWidth = 120; // Average tab width in pixels
+      const tabCenter = selectedSubcategoryIndex * estimatedTabWidth + (estimatedTabWidth / 2);
+      const targetScrollX = Math.max(0, tabCenter - (scrollViewWidth / 2));
+      
+      subcategoryScrollRef.current?.scrollTo({
+        x: targetScrollX,
+        animated: true
+      });
+    } else {
+      // Use measureLayout for iOS and other platforms
+      if (scrollViewWidth === 0) return;
+      
+      const selectedRef = subcategoryRefs.current[selectedSubcategoryIndex];
+      if (!selectedRef) {
+        return;
       }
-    );
+      
+      // Measure the selected tab's position and dimensions
+      selectedRef.measureLayout(
+        subcategoryScrollRef.current.getInnerViewNode(),
+        (x, y, width, height) => {
+          // Calculate the center position of the selected tab
+          const tabCenter = x + (width / 2);
+          
+          // Calculate the scroll position to center the tab in the viewport
+          const targetScrollX = tabCenter - (scrollViewWidth / 2);
+          
+          // Clamp the scroll position to valid bounds
+          // Don't scroll past the beginning (0) or beyond the scrollable content
+          const maxScrollX = Math.max(0, contentWidth - scrollViewWidth);
+          const clampedScrollX = Math.max(0, Math.min(targetScrollX, maxScrollX));
+          
+          // Perform the scroll animation
+          subcategoryScrollRef.current?.scrollTo({
+            x: clampedScrollX,
+            animated: true
+          });
+        },
+        (error) => {
+          console.error('Error measuring tab:', error);
+        }
+      );
+    }
   };
 
   const loadBlocksForSubcategory = async (subcategoryId: string) => {

@@ -1,6 +1,9 @@
 import * as Haptics from 'expo-haptics';
 import { Platform } from 'react-native';
 
+// Check if Android API level is 23 or higher for haptic support
+const isAndroidAPI23OrHigher = Platform.OS === 'android' && Platform.Version >= 23;
+
 /**
  * Utility functions for haptic feedback
  * These functions provide consistent haptic feedback across the app
@@ -11,8 +14,12 @@ import { Platform } from 'react-native';
  * Use for: toggles, small interactive icons, input focus/blur, short list selections
  */
 export const triggerLightHaptic = () => {
-  if (Platform.OS !== 'web') {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  if (Platform.OS !== 'web' && (Platform.OS !== 'android' || isAndroidAPI23OrHigher)) {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } catch (error) {
+      console.warn('Haptic feedback failed:', error);
+    }
   }
 };
 
@@ -21,8 +28,12 @@ export const triggerLightHaptic = () => {
  * Use for: primary buttons, screen navigation, form submission, important list selections
  */
 export const triggerMediumHaptic = () => {
-  if (Platform.OS !== 'web') {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  if (Platform.OS !== 'web' && (Platform.OS !== 'android' || isAndroidAPI23OrHigher)) {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    } catch (error) {
+      console.warn('Haptic feedback failed:', error);
+    }
   }
 };
 
@@ -32,8 +43,12 @@ export const triggerMediumHaptic = () => {
  * Use sparingly to avoid overwhelming the user
  */
 export const triggerHeavyHaptic = () => {
-  if (Platform.OS !== 'web') {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+  if (Platform.OS !== 'web' && (Platform.OS !== 'android' || isAndroidAPI23OrHigher)) {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    } catch (error) {
+      console.warn('Haptic feedback failed:', error);
+    }
   }
 };
 
@@ -42,8 +57,12 @@ export const triggerHeavyHaptic = () => {
  * Use for: successful form submissions, completed actions, positive feedback
  */
 export const triggerSuccessHaptic = () => {
-  if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  if (Platform.OS !== 'web' && (Platform.OS !== 'android' || isAndroidAPI23OrHigher)) {
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (error) {
+      console.warn('Haptic feedback failed:', error);
+    }
   }
 };
 
@@ -52,8 +71,12 @@ export const triggerSuccessHaptic = () => {
  * Use for: validation errors, warnings, attention-grabbing alerts
  */
 export const triggerWarningHaptic = () => {
-  if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  if (Platform.OS !== 'web' && (Platform.OS !== 'android' || isAndroidAPI23OrHigher)) {
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    } catch (error) {
+      console.warn('Haptic feedback failed:', error);
+    }
   }
 };
 
@@ -62,8 +85,12 @@ export const triggerWarningHaptic = () => {
  * Use for: form validation errors, failed actions, error messages
  */
 export const triggerErrorHaptic = () => {
-  if (Platform.OS !== 'web') {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+  if (Platform.OS !== 'web' && (Platform.OS !== 'android' || isAndroidAPI23OrHigher)) {
+    try {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    } catch (error) {
+      console.warn('Haptic feedback failed:', error);
+    }
   }
 };
 
@@ -72,7 +99,11 @@ export const triggerErrorHaptic = () => {
  * Use for: selecting items in lists, changing tabs, picker selections
  */
 export const triggerSelectionHaptic = () => {
-  if (Platform.OS !== 'web') {
-    Haptics.selectionAsync();
+  if (Platform.OS !== 'web' && (Platform.OS !== 'android' || isAndroidAPI23OrHigher)) {
+    try {
+      Haptics.selectionAsync();
+    } catch (error) {
+      console.warn('Haptic feedback failed:', error);
+    }
   }
 };

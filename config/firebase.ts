@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, initializeAuth, getReactNativePersistence, browserLocalPersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { Platform } from 'react-native';
@@ -14,19 +14,47 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+try {
+  // Check if Firebase app is already initialized
+  if (getApps().length === 0) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApp();
+  }
+} catch (error) {
+  console.error('Error initializing Firebase app:', error);
+  // Fallback: try to get existing app or create new one
+  try {
+    app = getApp();
+  } catch {
+    app = initializeApp(firebaseConfig);
+  }
+}
 
 // Initialize Firebase Authentication with platform-specific persistence
 let auth;
 
-if (Platform.OS === 'web') {
-  // For web platform, use getAuth with browser persistence
+try {
+  if (Platform.OS === 'web') {
+    // For web platform, use getAuth with browser persistence
+    auth = getAuth(app);
+  } else {
+    // For native platforms (iOS/Android), use initializeAuth with AsyncStorage
+    try {
+      auth = initializeAuth(app, {
+        persistence: getReactNativePersistence(AsyncStorage)
+      });
+    } catch (error) {
+      console.warn('initializeAuth failed, falling back to getAuth:', error);
+      // Fallback for Android if initializeAuth fails
+      auth = getAuth(app);
+    }
+  }
+} catch (error) {
+  console.error('Error initializing Firebase Auth:', error);
+  // Final fallback
   auth = getAuth(app);
-} else {
-  // For native platforms (iOS/Android), use initializeAuth with AsyncStorage
-  auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage)
-  });
 }
 
 // Initialize Cloud Firestore and get a reference to the service

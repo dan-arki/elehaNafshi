@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface DisplaySettingsContextType {
@@ -27,7 +28,14 @@ export function DisplaySettingsProvider({ children }: { children: React.ReactNod
 
   // Load settings from AsyncStorage on mount
   useEffect(() => {
-    loadSettings();
+    // Add delay for Android to ensure AsyncStorage is ready
+    if (Platform.OS === 'android') {
+      setTimeout(() => {
+        loadSettings();
+      }, 500);
+    } else {
+      loadSettings();
+    }
   }, []);
 
   // Save settings to AsyncStorage when they change
@@ -39,10 +47,27 @@ export function DisplaySettingsProvider({ children }: { children: React.ReactNod
 
   const loadSettings = async () => {
     try {
-      const [savedHebrewFont, savedFontSizeAdjustment] = await Promise.all([
-        AsyncStorage.getItem('hebrewFont'),
-        AsyncStorage.getItem('fontSizeAdjustment')
-      ]);
+      // Check if AsyncStorage is available
+      if (!AsyncStorage) {
+        console.warn('AsyncStorage not available');
+        setLoaded(true);
+        return;
+      }
+
+      let savedHebrewFont, savedFontSizeAdjustment;
+      
+      // Load settings individually with try-catch for each
+      try {
+        savedHebrewFont = await AsyncStorage.getItem('hebrewFont');
+      } catch (error) {
+        console.warn('Error loading hebrewFont from AsyncStorage:', error);
+      }
+      
+      try {
+        savedFontSizeAdjustment = await AsyncStorage.getItem('fontSizeAdjustment');
+      } catch (error) {
+        console.warn('Error loading fontSizeAdjustment from AsyncStorage:', error);
+      }
 
       if (savedHebrewFont) {
         setHebrewFont(savedHebrewFont);
@@ -63,10 +88,24 @@ export function DisplaySettingsProvider({ children }: { children: React.ReactNod
 
   const saveSettings = async () => {
     try {
-      await Promise.all([
-        AsyncStorage.setItem('hebrewFont', hebrewFont),
-        AsyncStorage.setItem('fontSizeAdjustment', fontSizeAdjustment.toString())
-      ]);
+      // Check if AsyncStorage is available
+      if (!AsyncStorage) {
+        console.warn('AsyncStorage not available for saving');
+        return;
+      }
+
+      // Save settings individually with try-catch for each
+      try {
+        await AsyncStorage.setItem('hebrewFont', hebrewFont);
+      } catch (error) {
+        console.warn('Error saving hebrewFont to AsyncStorage:', error);
+      }
+      
+      try {
+        await AsyncStorage.setItem('fontSizeAdjustment', fontSizeAdjustment.toString());
+      } catch (error) {
+        console.warn('Error saving fontSizeAdjustment to AsyncStorage:', error);
+      }
     } catch (error) {
       console.error('Erreur lors de la sauvegarde des paramètres d\'affichage:', error);
     }
