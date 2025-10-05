@@ -688,60 +688,47 @@ export const getSiddourSubcategoriesWithPosition = async (): Promise<{id: string
   }
 };
 
-// Banners
+// Banners - Using Supabase
 export const getBanners = async (): Promise<Banner[]> => {
   try {
-    console.log('🔍 [DEBUG] getBanners: Fetching banners...');
-    const bannersRef = collection(db, 'banners');
-    const q = query(bannersRef, orderBy('order', 'asc'));
-    const querySnapshot = await getDocs(q);
-    
-    // NOUVEAUX LOGS DÉTAILLÉS
-    console.log('📄 [DEBUG] getBanners: querySnapshot.empty:', querySnapshot.empty);
-    console.log('📄 [DEBUG] getBanners: querySnapshot.size:', querySnapshot.size);
-    console.log('📄 [DEBUG] getBanners: querySnapshot.docs (raw):', querySnapshot.docs);
-    
-    const banners = querySnapshot.docs
-      .map(doc => {
-        const data = doc.data();
-        console.log('📄 [DEBUG] getBanners: Processing document ID:', doc.id);
-        console.log('📄 [DEBUG] getBanners: Processing document data:', data);
-        
-        return {
-          id: doc.id,
-          title: data.title || '',
-          description: data.description || '',
-          image: data.image || '',
-          link: data.link || '',
-          order: data.order || 0,
-          isActive: data.isActive !== false, // Default to true if not specified
-          createdAt: data.createdAt?.toDate() || new Date(),
-        };
-      })
-      .filter(banner => {
-        const passesFilter = banner.isActive && banner.image;
-        console.log(`📄 [DEBUG] getBanners: Banner ${banner.id} - title: "${banner.title}", isActive: ${banner.isActive}, image: "${banner.image}", link: "${banner.link || 'none'}", passesFilter: ${passesFilter}`);
-        return passesFilter;
-      });
-    
-    console.log('✅ [DEBUG] getBanners: Successfully fetched banners (after filter):', banners);
-    console.log('📊 [DEBUG] getBanners: Number of banners found (after filter):', banners.length);
-    
+    console.log('🔍 [DEBUG] getBanners: Fetching banners from Supabase...');
+
+    const { supabase } = await import('../config/supabase');
+
+    const { data, error } = await supabase
+      .from('banners')
+      .select('*')
+      .eq('is_active', true)
+      .order('order', { ascending: true });
+
+    if (error) {
+      console.error('❌ [DEBUG] getBanners: Supabase error:', error);
+      return [];
+    }
+
+    console.log('📄 [DEBUG] getBanners: Raw data from Supabase:', data);
+    console.log('📊 [DEBUG] getBanners: Number of banners found:', data?.length || 0);
+
+    const banners: Banner[] = (data || []).map(banner => ({
+      id: banner.id,
+      title: banner.title || '',
+      description: banner.description || '',
+      image: banner.image || '',
+      link: banner.link || '',
+      order: banner.order || 0,
+      isActive: banner.is_active !== false,
+      createdAt: banner.created_at ? new Date(banner.created_at) : new Date(),
+    }));
+
+    console.log('✅ [DEBUG] getBanners: Successfully fetched banners:', banners);
+
     return banners;
   } catch (error: any) {
     console.error('❌ [DEBUG] getBanners: Error fetching banners:', error);
     console.error('❌ [DEBUG] getBanners: Error details:', {
-      code: error.code,
-      message: error.message
+      message: error.message,
+      stack: error.stack
     });
-    if (error.code === 'permission-denied') {
-      console.warn('Permissions Firestore non configurées pour les bannières');
-      return [];
-    }
-    if (error.code === 'unavailable') {
-      console.warn('Firestore temporairement indisponible, retour de données vides');
-      return [];
-    }
-    throw error;
+    return [];
   }
 };

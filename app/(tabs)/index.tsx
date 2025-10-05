@@ -272,12 +272,9 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </AnimatedScreenWrapper>
 
-            {/* Bannières Section */}
+            {/* Bannières Section - Avant Mes Essentiels */}
             {!loadingBanners && banners.length > 0 && (
               <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={150}>
-                <Text style={styles.sectionTitle}>Actualités</Text>
-
-                {/* Bannières Carousel */}
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
