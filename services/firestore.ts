@@ -688,37 +688,33 @@ export const getSiddourSubcategoriesWithPosition = async (): Promise<{id: string
   }
 };
 
-// Banners - Using Supabase
 export const getBanners = async (): Promise<Banner[]> => {
   try {
-    console.log('🔍 [DEBUG] getBanners: Fetching banners from Supabase...');
+    console.log('🔍 [DEBUG] getBanners: Fetching banners from Firebase Firestore...');
 
-    const { supabase } = await import('../config/supabase');
+    const bannersRef = collection(db, 'banners_final');
+    const q = query(
+      bannersRef,
+      where('isActive', '==', true),
+      orderBy('order')
+    );
+    const querySnapshot = await getDocs(q);
 
-    const { data, error } = await supabase
-      .from('banners')
-      .select('*')
-      .eq('is_active', true)
-      .order('order', { ascending: true });
+    console.log('📊 [DEBUG] getBanners: Number of banners found:', querySnapshot.docs.length);
 
-    if (error) {
-      console.error('❌ [DEBUG] getBanners: Supabase error:', error);
-      return [];
-    }
-
-    console.log('📄 [DEBUG] getBanners: Raw data from Supabase:', data);
-    console.log('📊 [DEBUG] getBanners: Number of banners found:', data?.length || 0);
-
-    const banners: Banner[] = (data || []).map(banner => ({
-      id: banner.id,
-      title: banner.title || '',
-      description: banner.description || '',
-      image: banner.image || '',
-      link: banner.link || '',
-      order: banner.order || 0,
-      isActive: banner.is_active !== false,
-      createdAt: banner.created_at ? new Date(banner.created_at) : new Date(),
-    }));
+    const banners: Banner[] = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        title: data.title || '',
+        description: data.description || '',
+        image: data.image || '',
+        link: data.link || '',
+        order: data.order || 0,
+        isActive: data.isActive !== false,
+        createdAt: data.createdAt?.toDate() || new Date(),
+      };
+    });
 
     console.log('✅ [DEBUG] getBanners: Successfully fetched banners:', banners);
 
@@ -727,8 +723,19 @@ export const getBanners = async (): Promise<Banner[]> => {
     console.error('❌ [DEBUG] getBanners: Error fetching banners:', error);
     console.error('❌ [DEBUG] getBanners: Error details:', {
       message: error.message,
-      stack: error.stack
+      stack: error.stack,
+      code: error.code
     });
+
+    if (error.code === 'permission-denied') {
+      console.warn('Permissions Firestore non configurées pour les bannières');
+      return [];
+    }
+    if (error.code === 'unavailable') {
+      console.warn('Firestore temporairement indisponible, retour de données vides');
+      return [];
+    }
+
     return [];
   }
 };
