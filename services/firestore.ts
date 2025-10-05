@@ -719,8 +719,8 @@ export const getBanners = async (): Promise<Banner[]> => {
         };
       })
       .filter(banner => {
-        const passesFilter = banner.isActive && banner.image && banner.link;
-        console.log(`📄 [DEBUG] getBanners: Banner ${banner.id} - title: "${banner.title}", isActive: ${banner.isActive}, image: "${banner.image}", link: "${banner.link}", passesFilter: ${passesFilter}`);
+        const passesFilter = banner.isActive && banner.image;
+        console.log(`📄 [DEBUG] getBanners: Banner ${banner.id} - title: "${banner.title}", isActive: ${banner.isActive}, image: "${banner.image}", link: "${banner.link || 'none'}", passesFilter: ${passesFilter}`);
         return passesFilter;
       });
     

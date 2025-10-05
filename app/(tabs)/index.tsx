@@ -139,6 +139,10 @@ export default function HomeScreen() {
   };
 
   const handleBannerPress = async (banner: Banner) => {
+    if (!banner.link || banner.link.trim() === '') {
+      return;
+    }
+
     triggerMediumHaptic();
     try {
       const canOpen = await Linking.canOpenURL(banner.link);
@@ -280,29 +284,34 @@ export default function HomeScreen() {
                   style={styles.bannersContainer}
                   contentContainerStyle={styles.bannersContent}
                 >
-                  {banners.map((banner, index) => (
-                    <TouchableOpacity
-                      key={banner.id}
-                      style={[styles.bannerCard, index === banners.length - 1 && styles.lastBannerCard]}
-                      onPress={() => handleBannerPress(banner)}
-                    >
-                      <Image
-                        source={{ uri: banner.image }}
-                        style={styles.bannerImage}
-                        resizeMode="cover"
-                      />
-                      <View style={styles.bannerOverlay}>
-                        <Text style={styles.bannerTitle} numberOfLines={2}>
-                          {banner.title}
-                        </Text>
-                        {banner.description && (
-                          <Text style={styles.bannerDescription} numberOfLines={2}>
-                            {banner.description}
+                  {banners.map((banner, index) => {
+                    const hasLink = banner.link && banner.link.trim() !== '';
+                    return (
+                      <TouchableOpacity
+                        key={banner.id}
+                        style={[styles.bannerCard, index === banners.length - 1 && styles.lastBannerCard]}
+                        onPress={() => handleBannerPress(banner)}
+                        activeOpacity={hasLink ? 0.7 : 1}
+                        disabled={!hasLink}
+                      >
+                        <Image
+                          source={{ uri: banner.image }}
+                          style={styles.bannerImage}
+                          resizeMode="cover"
+                        />
+                        <View style={styles.bannerOverlay}>
+                          <Text style={styles.bannerTitle} numberOfLines={2}>
+                            {banner.title}
                           </Text>
-                        )}
-                      </View>
-                    </TouchableOpacity>
-                  ))}
+                          {banner.description && (
+                            <Text style={styles.bannerDescription} numberOfLines={2}>
+                              {banner.description}
+                            </Text>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
                 </ScrollView>
               </AnimatedScreenWrapper>
             )}
