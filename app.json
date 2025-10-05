@@ -22,7 +22,12 @@
         "NSCameraUsageDescription": "Cette application n'utilise pas la caméra.",
         "NSPhotoLibraryUsageDescription": "Cette application n'accède pas à vos photos.",
         "NSLocationWhenInUseUsageDescription": "Cette application utilise votre localisation pour afficher les Kivrei Tsadikim les plus proches.",
-        "NSMicrophoneUsageDescription": "Cette application n'utilise pas le microphone."
+        "NSMicrophoneUsageDescription": "Cette application n'utilise pas le microphone.",
+        "LSApplicationQueriesSchemes": [
+          "waze",
+          "comgooglemaps",
+          "maps"
+        ]
       }
     },
     "android": {
