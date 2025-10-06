@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#25D366', // WhatsApp green
+    backgroundColor: Colors.white,
     marginHorizontal: 20,
     padding: 16,
     borderRadius: 12,
@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
   whatsappButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: Colors.white,
+    color: '#25D366',
     marginLeft: 8,
   },
   whatsappIcon: {
