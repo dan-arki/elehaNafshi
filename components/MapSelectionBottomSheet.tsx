@@ -31,7 +31,7 @@ export default function MapSelectionBottomSheet({
     {
       name: 'Waze',
       logo: require('../assets/images/wazeLogo.jpg'),
-      url: `waze://?ll=${latitude},${longitude}&navigate=yes`,
+      url: `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`,
       fallbackUrl: `https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`
     },
     {
