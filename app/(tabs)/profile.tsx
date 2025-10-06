@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Linking, Image, Alert, ImageBackground } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Settings, Heart, BookOpen, MapPin, MessageCircle, Share2, ShoppingCart } from 'lucide-react-native';
+import { Settings, Heart, BookOpen, MapPin, Share2, ShoppingCart } from 'lucide-react-native';
 import { Colors } from '../../constants/Colors';
 import { useAuth } from '../../contexts/AuthContext';
 import { router } from 'expo-router';
@@ -151,7 +151,11 @@ export default function ProfileScreen() {
               <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={400}>
                 {/* WhatsApp CTA */}
                 <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsAppContact}>
-                  <MessageCircle size={20} color={Colors.white} />
+                  <Image
+                    source={require('../../assets/images/whatsapp-icon-free-png.webp')}
+                    style={styles.whatsappIcon}
+                    resizeMode="contain"
+                  />
                   <Text style={styles.whatsappButtonText}>Posez nous vos questions</Text>
                 </TouchableOpacity>
               </AnimatedScreenWrapper>
@@ -274,7 +278,11 @@ export default function ProfileScreen() {
             <AnimatedScreenWrapper animationType="slideUp" duration={400} delay={200}>
               {/* WhatsApp CTA */}
               <TouchableOpacity style={styles.whatsappButton} onPress={handleWhatsAppContact}>
-                <MessageCircle size={20} color={Colors.white} />
+                <Image
+                  source={require('../../assets/images/whatsapp-icon-free-png.webp')}
+                  style={styles.whatsappIcon}
+                  resizeMode="contain"
+                />
                 <Text style={styles.whatsappButtonText}>Posez nous vos questions</Text>
               </TouchableOpacity>
             </AnimatedScreenWrapper>
@@ -447,6 +455,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.white,
     marginLeft: 8,
+  },
+  whatsappIcon: {
+    width: 20,
+    height: 20,
   },
   donationButton: {
     flexDirection: 'row',
