@@ -523,10 +523,10 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   bannersContent: {
-    paddingHorizontal: 20,
+    paddingLeft: 20,
   },
   bannerCard: {
-    width: 280,
+    width: 300,
     height: 200,
     borderRadius: 16,
     overflow: 'hidden',
