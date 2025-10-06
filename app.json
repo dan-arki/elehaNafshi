@@ -2,7 +2,7 @@
   "expo": {
     "name": "ElehaNafshi",
     "slug": "eleha-nafshi",
-    "version": "1.0.7",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/images/iconApp.png",
     "scheme": "myapp",
@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.mycompany.elehanafchi",
-      "buildNumber": "4",
+      "buildNumber": "1",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "Cette application n'utilise pas la caméra.",
