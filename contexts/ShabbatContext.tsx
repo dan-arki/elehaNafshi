@@ -64,17 +64,17 @@ export function ShabbatProvider({ children }: ShabbatProvider) {
     // Friday from 21:00 onwards
     if (currentDay === 5 && currentHour >= 21) {
       isCurrentlyShabbat = true;
-      // Calculate Saturday 22:00 as end time
+      // Calculate Saturday 17:00 as end time
       endTime = new Date(now);
       endTime.setDate(endTime.getDate() + 1); // Next day (Saturday)
-      endTime.setHours(22, 0, 0, 0); // 22:00
+      endTime.setHours(17, 0, 0, 0); // 17:00
     }
-    // Saturday until 22:00
-    else if (currentDay === 6 && currentHour < 22) {
+    // Saturday until 17:00
+    else if (currentDay === 6 && currentHour < 17) {
       isCurrentlyShabbat = true;
-      // End time is today at 22:00
+      // End time is today at 17:00
       endTime = new Date(now);
-      endTime.setHours(22, 0, 0, 0); // 22:00
+      endTime.setHours(17, 0, 0, 0); // 17:00
     }
 
     setIsShabbat(isCurrentlyShabbat);
