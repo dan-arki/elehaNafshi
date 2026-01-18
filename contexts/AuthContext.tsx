@@ -80,8 +80,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetPassword = async (email: string) => {
-    console.log('[AuthContext] Sending password reset email...');
-    await sendPasswordResetEmail(auth, email);
+    console.log('[AuthContext] Sending password reset email to:', email);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      console.log('[AuthContext] Password reset email sent successfully');
+    } catch (error: any) {
+      console.error('[AuthContext] Error sending password reset email:', error);
+      console.error('[AuthContext] Error code:', error.code);
+      console.error('[AuthContext] Error message:', error.message);
+      throw error;
+    }
   };
 
   const value = {
