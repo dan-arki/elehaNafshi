@@ -91,6 +91,7 @@ function RootLayoutNav() {
             }} 
           />
           <Stack.Screen name="register" />
+          <Stack.Screen name="forgot-password" />
           <Stack.Screen name="account-settings" />
           <Stack.Screen name="chapter/[id]" />
           <Stack.Screen name="prayer/[id]" />

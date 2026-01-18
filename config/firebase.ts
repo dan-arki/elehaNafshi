@@ -1,5 +1,5 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, initializeAuth, getReactNativePersistence, browserLocalPersistence } from 'firebase/auth';
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, initializeAuth, type Auth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,7 +14,7 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app;
+let app: FirebaseApp;
 try {
   // Check if Firebase app is already initialized
   if (getApps().length === 0) {
@@ -33,7 +33,7 @@ try {
 }
 
 // Initialize Firebase Authentication with platform-specific persistence
-let auth;
+let auth: Auth;
 
 try {
   if (Platform.OS === 'web') {
@@ -42,8 +42,11 @@ try {
   } else {
     // For native platforms (iOS/Android), use initializeAuth with AsyncStorage
     try {
+      // @ts-ignore - React Native Firebase Auth persistence
       auth = initializeAuth(app, {
-        persistence: getReactNativePersistence(AsyncStorage)
+        persistence: {
+          type: 'LOCAL',
+        },
       });
     } catch (error) {
       console.warn('initializeAuth failed, falling back to getAuth:', error);

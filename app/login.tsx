@@ -37,7 +37,7 @@ export default function LoginScreen() {
 
   const handleForgotPassword = () => {
     triggerLightHaptic();
-    Alert.alert('Mot de passe oublié', 'Un email de récupération sera envoyé à votre adresse.');
+    router.push('/forgot-password');
   };
 
   const handleSignUp = async () => {

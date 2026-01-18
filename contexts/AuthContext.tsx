@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, deleteUser } from 'firebase/auth';
+import { User, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, deleteUser, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { deleteAllCustomPrayers, deleteAllFavoritePrayers } from '../services/firestore';
 
@@ -10,6 +10,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   deleteUserAccount: () => Promise<void>;
+  resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -77,6 +78,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw error;
     }
   };
+
+  const resetPassword = async (email: string) => {
+    console.log('[AuthContext] Sending password reset email...');
+    await sendPasswordResetEmail(auth, email);
+  };
+
   const value = {
     user,
     loading,
@@ -84,6 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signUp,
     logout,
     deleteUserAccount,
+    resetPassword,
   };
 
   return (
