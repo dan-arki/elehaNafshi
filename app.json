@@ -32,7 +32,7 @@
     },
     "android": {
       "package": "com.ilnovation.elehanafchi",
-      "versionCode": 31,
+      "versionCode": 32,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/iconApp.png",
         "backgroundColor": "#8B5CF6"
