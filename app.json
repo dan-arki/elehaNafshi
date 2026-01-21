@@ -2,7 +2,7 @@
   "expo": {
     "name": "ElehaNafshi",
     "slug": "eleha-nafshi",
-    "version": "1.0.12",
+    "version": "1.0.13",
     "orientation": "portrait",
     "icon": "./assets/images/iconApp.png",
     "scheme": "myapp",
